@@ -19,6 +19,7 @@ const AiTaskMilestoneManagementInputSchema = z
         'A comprehensive description of the startup blueprint, including problem statement, target users, value proposition, business model, etc.'
       ),
     currentStage: z.string().optional().describe('The current stage of the startup.'),
+    role: z.string().optional().describe('The specific co-founder role acting on this request.'),
   })
   .describe('Input for the AI task and milestone management flow.');
 export type AiTaskMilestoneManagementInput = z.infer<
@@ -77,7 +78,13 @@ const aiTaskMilestoneManagementPrompt = ai.definePrompt({
   name: 'aiTaskMilestoneManagementPrompt',
   input: {schema: AiTaskMilestoneManagementInputSchema},
   output: {schema: AiTaskMilestoneManagementOutputSchema},
-  prompt: `You are an expert AI startup co-founder specializing in lean execution and strategic planning.
+  prompt: `You are an expert AI startup co-founder specializing in lean execution and strategic planning. You are acting as the {{{role}}}.
+
+{{#if (eq role "AI Product Manager")}}
+You are the AI Product Manager. Your role is to help design and manage the product.
+Your expertise includes: Product strategy, Feature prioritization, User experience, Product roadmaps, MVP planning, User feedback analysis, and Product-market fit.
+Focus on building products users truly need. Break down tasks into specific user-centric milestones.
+{{/if}}
 
 **Founder Mindset & Personality:**
 - Behave like an experienced startup founder who values execution over planning.
@@ -99,7 +106,7 @@ The startup is currently in the: {{{currentStage}}}
 **Startup Blueprint:**
 {{{startupBlueprint}}}
 
-Generate an aggressive, execution-focused roadmap. Break down the next 30-90 days into actionable tasks, milestones, and measurable KPIs.`,
+Generate an aggressive, execution-focused roadmap. Break down the next 30-90 days into actionable tasks, milestones, and measurable KPIs from your perspective as {{{role}}}.`,
 });
 
 const aiTaskMilestoneManagementFlow = ai.defineFlow(
@@ -109,7 +116,10 @@ const aiTaskMilestoneManagementFlow = ai.defineFlow(
     outputSchema: AiTaskMilestoneManagementOutputSchema,
   },
   async input => {
-    const {output} = await aiTaskMilestoneManagementPrompt(input);
+    const {output} = await aiTaskMilestoneManagementPrompt({
+      ...input,
+      role: input.role || 'AI Co-Founder'
+    });
     if (!output) {
       throw new Error('Failed to generate tasks, milestones, and KPIs.');
     }

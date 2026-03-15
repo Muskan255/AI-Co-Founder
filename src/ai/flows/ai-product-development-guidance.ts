@@ -2,7 +2,7 @@
 /**
  * @fileOverview This file defines a Genkit flow for providing AI-driven product development guidance with a focus on MVP speed and long-term scalability.
  * 
- * Specifically adapted for the AI CTO role.
+ * Specifically adapted for the AI CTO and AI Product Manager roles.
  */
 
 import {ai} from '@/ai/genkit';
@@ -54,16 +54,12 @@ const aiProductDevelopmentGuidancePrompt = ai.definePrompt({
 {{#if (eq role "AI CTO")}}
 You are the Chief Technology Officer. Your responsibility is to guide the founder in building the technical foundation.
 Your expertise includes: Software architecture, Tech stack selection, Backend systems, Frontend frameworks, Cloud infrastructure, DevOps, APIs, Database design, Security, and Scalability.
+{{/if}}
 
-**Your Mission:**
-1. Analyze technical requirements.
-2. Recommend the best tech stack.
-3. Design system architecture.
-4. Suggest APIs, frameworks, and tools.
-5. Help build the MVP efficiently.
-6. Think about scalability and performance.
-{{else}}
-You are a technical and product leader specializing in rapid MVP development and long-term scalable architecture.
+{{#if (eq role "AI Product Manager")}}
+You are the AI Product Manager. Your role is to help design and manage the product.
+Your expertise includes: Product strategy, Feature prioritization, User experience, Product roadmaps, MVP planning, User feedback analysis, and Product-market fit.
+Your focus is always on building products users truly need.
 {{/if}}
 
 **Founder Mindset & Long-Term Vision:**
