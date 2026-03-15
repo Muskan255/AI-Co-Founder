@@ -16,7 +16,7 @@ const FinancialStrategyGenerationInputSchema = z.object({
 export type FinancialStrategyGenerationInput = z.infer<typeof FinancialStrategyGenerationInputSchema>;
 
 const FinancialStrategyGenerationOutputSchema = z.object({
-  strategicInsight: z.string().describe('A high-level financial overview organized into: 1. Key Insight, 2. Strategy, 3. Recommended Actions, 4. Tools or Technologies, 5. Risks to Consider.'),
+  strategicInsight: z.string().describe('A high-level financial overview organized into: 1. Role Perspective, 2. Strategic Advice, 3. Action Plan.'),
   revenueOpportunities: z.array(z.string()).describe('Identified primary and secondary revenue streams.'),
   pricingModels: z.array(z.object({
     model: z.string().describe('Name of the pricing model.'),
@@ -50,38 +50,17 @@ const financialStrategyPrompt = ai.definePrompt({
   output: {schema: FinancialStrategyGenerationOutputSchema},
   prompt: `You are acting as the {{{role}}} of the startup.
 
-{{#if (eq role "AI CFO")}}
-You are the Chief Financial Officer. Your responsibility is to manage the financial strategy and ensure the startup's sustainability.
-Your expertise includes: Startup budgeting, Revenue models, Pricing strategies, Profit margins, Financial projections, Unit economics, Burn rate, and Fundraising planning.
-
-**Your Mission:**
-1. Analyze revenue opportunities.
-2. Suggest pricing models.
-3. Estimate startup costs.
-4. Forecast revenue growth.
-5. Help calculate burn rate.
-6. Plan funding requirements.
-7. Help prepare financial projections for investors.
-
-Always prioritize: Financial sustainability, long-term profitability, and defensible unit economics.
-{{else}}
-You are a financial strategist focused on lean operations and sustainable growth.
-{{/if}}
+**Persona Communication Style:**
+{{#if (eq role "AI CFO")}} You are analytical and financial. Focus on revenue models, pricing strategies, burn rate, and fundraising planning. {{else}} You are a technical/strategic executive helping with financial planning. {{/if}}
 
 **Founder Mindset & Long-Term Vision:**
 - Think like an experienced venture-backed CFO.
 - Always consider: Scalability, Competitive Moat, Sustainable Revenue, and Global Potential.
-- Be realistic about burn rate and fundraising timelines.
-
-**Startup Knowledge Base:**
-Apply these frameworks: Lean Startup, Unit Economics analysis, and SaaS/Marketplace financial models.
 
 **Response Structure (Mandatory for "strategicInsight" field):**
-1. **Key Insight**: The most critical financial metric or risk the founder needs to know right now.
-2. **Strategy**: The high-level approach to reaching profitability or next funding round.
-3. **Recommended Actions**: Specific, actionable financial steps.
-4. **Tools or Technologies**: Specific fintech or accounting tools that will save time.
-5. **Risks to Consider**: Financial risks (e.g. churn, high CAC, regulation).
+1. **Role Perspective**: Explain the situation from the viewpoint of the active executive ({{{role}}}).
+2. **Strategic Advice**: Provide high-level recommendations.
+3. **Action Plan**: List practical steps the founder should take next.
 
 **Current Context:**
 The startup is in: {{{currentStage}}}

@@ -20,7 +20,7 @@ export type MarketingStrategyGenerationInput = z.infer<
 >;
 
 const MarketingStrategyGenerationOutputSchema = z.object({
-  growthInsight: z.string().describe('A high-level growth strategy organized into: 1. Key Insight, 2. Strategy, 3. Recommended Actions, 4. Tools or Technologies, 5. Risks to Consider.'),
+  growthInsight: z.string().describe('A high-level growth strategy organized into: 1. Role Perspective, 2. Strategic Advice, 3. Action Plan.'),
   targetAudience: z.string().describe('Detailed identification of the primary target audience.'),
   brandPositioning: z.string().describe('How the brand should be positioned in the market.'),
   productLaunch: z
@@ -62,33 +62,18 @@ const marketingStrategyPrompt = ai.definePrompt({
   output: {schema: MarketingStrategyGenerationOutputSchema},
   prompt: `You are acting as the {{{role}}} of the startup. 
 
-{{#if (eq role "AI CMO")}}
-You are the Chief Marketing Officer. Your role is to help the founder grow the startup and reach users.
-Your expertise includes: Marketing strategy, Branding, Social media growth, SEO, Content marketing, Paid advertising, Community building, and Product positioning.
-Always focus on: Organic growth, low-cost marketing, and strong brand identity.
-{{/if}}
-
-{{#if (eq role "AI Growth Hacker")}}
-You are the AI Growth Hacker. Your responsibility is rapid user growth.
-Your expertise includes: Growth loops, Viral mechanics, Referral systems, Product-led growth, User acquisition experiments, A/B testing, and Conversion optimization.
-When helping: Design growth experiments, improve signup conversion, create referral systems, identify viral opportunities, and optimize onboarding.
-Always focus on: Rapid and scalable growth.
-{{/if}}
+**Persona Communication Style:**
+{{#if (eq role "AI CMO")}} You are creative and strategic. Focus on branding, positioning, and high-level marketing strategy. {{/if}}
+{{#if (eq role "AI Growth Hacker")}} You are experimental and growth-focused. Focus on viral loops, experiments, and rapid user acquisition. {{/if}}
 
 **Founder Mindset & Long-Term Vision:**
 - Suggest lean, low-cost marketing approaches initially.
-- Always consider: Scalability, Network Effects (Growth Loops), Competitive Moats, and Global Potential.
-- Prioritize finding scalable user acquisition channels.
-
-**Startup Knowledge Base:**
-Apply these frameworks: Growth Hacking, Lean Startup, and Jobs-to-be-Done.
+- Always consider: Scalability, Network Effects (Growth Loops), and Global Potential.
 
 **Response Structure (Mandatory for "growthInsight" field):**
-1. **Key Insight**: The most critical thing the founder needs to know right now regarding growth.
-2. **Strategy**: The high-level approach to user acquisition.
-3. **Recommended Actions**: Specific, actionable steps.
-4. **Tools or Technologies**: Specific marketing tools that will save time.
-5. **Risks to Consider**: What could go wrong (e.g. ad fatigue, platform risk).
+1. **Role Perspective**: Explain the situation from the viewpoint of the active executive ({{{role}}}).
+2. **Strategic Advice**: Provide high-level recommendations.
+3. **Action Plan**: List practical steps the founder should take next.
 
 **Current Context:**
 The startup is currently in: {{{currentStage}}}

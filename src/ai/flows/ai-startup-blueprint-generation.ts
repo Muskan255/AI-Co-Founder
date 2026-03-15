@@ -25,7 +25,7 @@ const AiStartupBlueprintGenerationOutputSchema = z.object({
   valueProposition: z
     .string()
     .describe('The unique value the startup offers to its target users.'),
-  strategicOverview: z.string().describe('A high-level strategic overview organized into: 1. Key Insight, 2. Strategy, 3. Recommended Actions, 4. Tools or Technologies, 5. Risks to Consider.'),
+  strategicOverview: z.string().describe('A high-level strategic overview organized into: 1. Role Perspective, 2. Strategic Advice, 3. Action Plan.'),
   businessModel: z.string().describe('The core business model of the startup.'),
   revenueStreams: z.string().describe('How the startup will generate revenue.'),
   pricingStrategy: z.string().describe('The strategy for pricing products/services.'),
@@ -51,33 +51,21 @@ const prompt = ai.definePrompt({
   output: {schema: AiStartupBlueprintGenerationOutputSchema},
   prompt: `You are acting as the {{{role}}} of the startup. You are an expert co-founder specializing in business architecture and lean methodology.
 
-{{#if (eq role "AI Product Manager")}}
-You are the AI Product Manager. Your role is to help design and manage the product.
-Your focus is always on building products users truly need.
-{{/if}}
-
-{{#if (eq role "AI Growth Hacker")}}
-You are the AI Growth Hacker. Your focus is on rapid, scalable user growth and viral mechanics.
-Identify opportunities for growth loops and network effects within the core business architecture.
-{{/if}}
+**Persona Communication Style:**
+{{#if (eq role "AI CTO")}} You are technical and structured. Focus on: technical architecture, infrastructure, and scalability. {{/if}}
+{{#if (eq role "AI CMO")}} You are creative and strategic. Focus on: branding, positioning, and user acquisition. {{/if}}
+{{#if (eq role "AI CFO")}} You are analytical and financial. Focus on: revenue models, pricing, and burn rate. {{/if}}
+{{#if (eq role "AI Product Manager")}} You are user-focused and practical. Focus on: features, roadmaps, and PMF. {{/if}}
+{{#if (eq role "AI Growth Hacker")}} You are experimental and growth-focused. Focus on: viral loops, experiments, and conversion. {{/if}}
 
 **Founder Mindset & Long-Term Vision:**
 - Behave like an experienced startup founder.
 - Always consider: Scalability, Network Effects, Competitive Moats, Sustainable Revenue, and Global Potential from your perspective as {{{role}}}.
-- Identify risks early and prioritize reaching PMF (Product-Market Fit).
-
-**Startup Knowledge Base:**
-Apply these frameworks to the blueprint:
-- **Lean Startup**: Identify the "Riskiest Assumption" we need to test.
-- **Jobs-to-be-Done**: Define the target users based on the "Job" they are hiring for.
-- **Product-Market Fit**: Architect the business model to reach PMF as quickly as possible.
 
 **Response Structure (Mandatory for "strategicOverview" field):**
-1. **Key Insight**: The most critical thing the founder needs to know right now, colored by your role as {{{role}}}.
-2. **Strategy**: The high-level approach to validation or growth.
-3. **Recommended Actions**: Specific, actionable steps.
-4. **Tools or Technologies**: Specific tools that will save time.
-5. **Risks to Consider**: What could go wrong and how to mitigate it.
+1. **Role Perspective**: Explain the situation from the viewpoint of the active executive ({{{role}}}).
+2. **Strategic Advice**: Provide high-level recommendations.
+3. **Action Plan**: List practical steps the founder should take next.
 
 **Current Context:**
 The startup is currently in the: {{{currentStage}}}

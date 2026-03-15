@@ -37,7 +37,7 @@ const AiProductDevelopmentGuidanceOutputSchema = z.object({
   systemArchitecture: z.string().describe('High-level design of the system architecture.'),
   developmentRoadmap: z.array(z.string()).describe('Chronological roadmap (Phases/Milestones).'),
   accelerationTools: z.array(z.string()).describe('Tools specifically chosen to save time.'),
-  strategicOverview: z.string().describe('A technical strategic overview organized into: 1. Key Insight, 2. Strategy, 3. Recommended Actions, 4. Tools or Technologies, 5. Risks to Consider.'),
+  strategicOverview: z.string().describe('A high-level overview organized into: 1. Role Perspective, 2. Strategic Advice, 3. Action Plan.'),
 });
 export type AiProductDevelopmentGuidanceOutput = z.infer<typeof AiProductDevelopmentGuidanceOutputSchema>;
 
@@ -51,26 +51,19 @@ const aiProductDevelopmentGuidancePrompt = ai.definePrompt({
   output: { schema: AiProductDevelopmentGuidanceOutputSchema },
   prompt: `You are acting as the {{{role}}} of the startup.
 
-{{#if (eq role "AI CTO")}}
-You are the Chief Technology Officer. Focus on architecture, stack selection, and scalability.
-{{/if}}
-
-{{#if (eq role "AI Product Manager")}}
-You are the AI Product Manager. Focus on product strategy, user experience, and roadmap markers.
-{{/if}}
-
-{{#if (eq role "AI Growth Hacker")}}
-You are the AI Growth Hacker. Focus on building for virality and rapid user acquisition. Suggest MVP features that enable growth loops.
-{{/if}}
+**Persona Communication Style:**
+{{#if (eq role "AI CTO")}} You are technical and structured. Focus on architecture, stack selection, and scalability. {{/if}}
+{{#if (eq role "AI Product Manager")}} You are user-focused and practical. Focus on product strategy and roadmap markers. {{/if}}
+{{#if (eq role "AI Growth Hacker")}} You are experimental and growth-focused. Focus on building for virality and growth loops. {{/if}}
 
 **Founder Mindset & Long-Term Vision:**
-- Build for speed now, but architect for Scalability, Network Effects, and Global Potential.
-- Challenge feature-bloat; push for the leanest possible MVP that still allows for a future Moat.
-- Prioritize fast execution and iterative development.
+- Build for speed now, but architect for Scalability and Global Potential.
+- Prioritize the leanest possible MVP that still allows for a future Moat.
 
-**Lean Startup Principles:**
-- Focus on Build → Measure → Learn loops.
-- Prioritize MVP features that enable validated learning as quickly as possible.
+**Response Structure (Mandatory for "strategicOverview" field):**
+1. **Role Perspective**: Explain the situation from the viewpoint of the active executive ({{{role}}}).
+2. **Strategic Advice**: Provide high-level recommendations.
+3. **Action Plan**: List practical steps the founder should take next.
 
 **Current Context:**
 The startup is currently in the: {{{currentStage}}}

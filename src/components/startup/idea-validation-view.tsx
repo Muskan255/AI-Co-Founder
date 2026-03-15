@@ -6,7 +6,7 @@ import { aiIdeaValidation } from '@/ai/flows/ai-idea-validation';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { FeatureCard } from './feature-card';
-import { Lightbulb, Send, Target, TrendingUp, Users, ShieldCheck, Zap, Wrench } from 'lucide-react';
+import { Lightbulb, Send, Target, TrendingUp, Users, ShieldCheck, Zap, Wrench, ShieldAlert } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 
@@ -50,7 +50,7 @@ export function IdeaValidationView({ onComplete }: { onComplete: () => void }) {
           <Badge variant="secondary" className="bg-accent/10 text-accent border-accent/20">{state.role} Mode</Badge>
         </div>
         <p className="text-muted-foreground">
-          Pitch your idea to your {state.role}. I'll prioritize speed and critical validation markers for your current stage.
+          Pitch your idea to your {state.role}. I'll provide an executive perspective and a clear action plan.
         </p>
         <div className="relative group">
           <Textarea 
@@ -72,8 +72,10 @@ export function IdeaValidationView({ onComplete }: { onComplete: () => void }) {
 
       {state.validation && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-          <FeatureCard title="Analysis" description={`${state.role}'s core concept break down`} icon={<Lightbulb />}>
-            <p className="text-sm text-muted-foreground leading-relaxed">{state.validation.analysis}</p>
+          <FeatureCard title="Executive Analysis" description={`${state.role}'s Direct Feedback`} icon={<ShieldAlert className="text-accent" />} className="md:col-span-2">
+            <div className="whitespace-pre-wrap text-sm text-muted-foreground leading-relaxed">
+              {state.validation.analysis}
+            </div>
           </FeatureCard>
 
           <FeatureCard title="Target Market" description="Who are we building for?" icon={<Users />}>
@@ -84,11 +86,11 @@ export function IdeaValidationView({ onComplete }: { onComplete: () => void }) {
             <p className="text-sm text-muted-foreground leading-relaxed">{state.validation.problemSolved}</p>
           </FeatureCard>
 
-          <FeatureCard title="Feasibility" description="Can we actually pull this off?" icon={<TrendingUp />}>
+          <FeatureCard title="Feasibility" description="Technical & Market Analysis" icon={<TrendingUp />}>
             <p className="text-sm text-muted-foreground leading-relaxed">{state.validation.feasibilityEvaluation}</p>
           </FeatureCard>
 
-          <FeatureCard title="Suggested Improvements" description="Co-founder recommendations" icon={<Zap className="text-amber-400" />}>
+          <FeatureCard title="Suggested Improvements" description="Strategic Recommendations" icon={<Zap className="text-amber-400" />}>
             <p className="text-sm text-muted-foreground leading-relaxed">{state.validation.improvementsSuggested}</p>
           </FeatureCard>
 
