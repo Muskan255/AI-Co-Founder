@@ -423,9 +423,9 @@ export function PersonaWorkspaceView() {
       <Dialog open={githubOpen} onOpenChange={setGithubOpen}>
         <DialogContent className="sm:max-w-[400px] bg-[#16181C] border-white/10">
           <DialogHeader>
-            <CardTitle className="flex items-center gap-2">
+            <DialogTitle className="flex items-center gap-2">
               <Github className="w-5 h-5" /> GitHub Integration
-            </CardTitle>
+            </DialogTitle>
             <DialogDescription>
               Deploy your AI-generated code directly to your repositories.
             </DialogDescription>
