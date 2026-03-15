@@ -1,3 +1,4 @@
+
 "use client"
 
 import React, { useState, useMemo } from 'react';
@@ -37,7 +38,8 @@ import {
   Heart,
   Target,
   TrendingUp,
-  BarChart3
+  BarChart3,
+  HeartPulse
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -64,8 +66,9 @@ import { AuthModal } from '@/components/auth/auth-modal';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
 
-type ViewType = 'projects' | 'dashboard' | 'validation' | 'blueprint' | 'product' | 'marketing' | 'finance' | 'tasks' | 'decisions' | 'simulation' | 'workspace' | 'persona-workspace' | 'brain';
+type ViewType = 'projects' | 'dashboard' | 'validation' | 'blueprint' | 'product' | 'marketing' | 'finance' | 'tasks' | 'decisions' | 'simulation' | 'workspace' | 'persona-workspace' | 'brain' | 'health';
 
 function HealthScoreCard() {
   const { state } = useStartup();
@@ -131,6 +134,123 @@ function HealthScoreCard() {
         </div>
       </CardContent>
     </Card>
+  );
+}
+
+function HealthScoreView() {
+  const { state } = useStartup();
+  
+  if (!state.healthScore) {
+    return (
+      <div className="p-12 text-center space-y-4">
+        <div className="w-16 h-16 rounded-3xl bg-white/5 flex items-center justify-center mx-auto mb-4">
+          <HeartPulse className="w-8 h-8 text-muted-foreground/30 animate-pulse" />
+        </div>
+        <h2 className="text-2xl font-headline font-bold">Awaiting Health Audit</h2>
+        <p className="text-muted-foreground max-w-sm mx-auto">
+          Start building your venture to receive a real-time health score from the AI Chief Auditor.
+        </p>
+      </div>
+    );
+  }
+
+  const { totalScore, breakdown, suggestions, analysis } = state.healthScore;
+
+  const scoreColor = totalScore > 75 ? 'text-emerald-400' : totalScore > 40 ? 'text-accent' : 'text-rose-400';
+
+  return (
+    <div className="p-8 max-w-5xl mx-auto space-y-10">
+      <header className="space-y-4">
+        <Badge variant="outline" className="bg-primary/5 text-accent border-accent/20">Venture Diagnostic</Badge>
+        <h2 className="text-5xl font-headline font-bold gradient-text">Startup Health Report</h2>
+        <p className="text-xl text-muted-foreground max-w-2xl">
+          A ruthless audit of your venture's viability based on the shared intelligence in the Startup Brain.
+        </p>
+      </header>
+
+      <div className="grid lg:grid-cols-3 gap-8">
+        <Card className="lg:col-span-2 glass-card border-accent/20 bg-accent/5 overflow-hidden flex flex-col justify-center p-8">
+          <div className="flex flex-col items-center space-y-6">
+            <div className="relative w-48 h-48 flex items-center justify-center">
+              <svg className="w-full h-full transform -rotate-90">
+                <circle
+                  cx="96"
+                  cy="96"
+                  r="88"
+                  stroke="currentColor"
+                  strokeWidth="8"
+                  fill="transparent"
+                  className="text-white/5"
+                />
+                <circle
+                  cx="96"
+                  cy="96"
+                  r="88"
+                  stroke="currentColor"
+                  strokeWidth="8"
+                  fill="transparent"
+                  strokeDasharray={552.92}
+                  strokeDashoffset={552.92 - (552.92 * totalScore) / 100}
+                  className={scoreColor}
+                />
+              </svg>
+              <div className="absolute flex flex-col items-center">
+                <span className={cn("text-6xl font-bold", scoreColor)}>{totalScore}</span>
+                <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Readiness</span>
+              </div>
+            </div>
+            <div className="text-center space-y-2">
+              <h3 className="text-2xl font-headline font-bold">Venture Maturity: {totalScore > 75 ? 'Exceptional' : totalScore > 40 ? 'Developing' : 'Critical'}</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed italic max-w-md mx-auto">"{analysis}"</p>
+            </div>
+          </div>
+        </Card>
+
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 mb-2">
+            <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">Pillar Breakdown</h3>
+          </div>
+          <div className="grid gap-4">
+            {[
+              { label: 'Idea Quality', score: breakdown.ideaQuality, icon: <Lightbulb className="w-4 h-4" /> },
+              { label: 'Market Clarity', score: breakdown.marketClarity, icon: <Target className="w-4 h-4" /> },
+              { label: 'Product Readiness', score: breakdown.productReadiness, icon: <Code2 className="w-4 h-4" /> },
+              { label: 'Revenue Model', score: breakdown.revenueModel, icon: <DollarSign className="w-4 h-4" /> },
+            ].map((item, i) => (
+              <Card key={i} className="glass-card p-4">
+                <div className="flex justify-between items-center mb-2">
+                  <div className="flex items-center gap-2">
+                    <div className="p-1.5 rounded-lg bg-white/5 text-accent">{item.icon}</div>
+                    <span className="text-xs font-bold">{item.label}</span>
+                  </div>
+                  <span className="text-xs font-bold text-accent">{item.score}<span className="text-[10px] text-muted-foreground/60">/25</span></span>
+                </div>
+                <Progress value={(item.score / 25) * 100} className="h-1 bg-white/5" />
+              </Card>
+            ))}
+          </div>
+        </div>
+
+        <Card className="lg:col-span-3 glass-card border-accent/30 bg-accent/5">
+          <CardHeader>
+            <CardTitle className="text-lg flex items-center gap-2 text-accent">
+              <Zap className="w-5 h-5" /> Executive Prescriptions
+            </CardTitle>
+            <CardDescription>Follow these steps to increase your venture's maturity and viability score.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid md:grid-cols-2 gap-4">
+              {suggestions.map((s, i) => (
+                <div key={i} className="p-4 rounded-xl bg-black/20 border border-white/5 flex items-center gap-3 group hover:border-accent/30 transition-all cursor-default">
+                  <div className="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center text-accent font-bold text-xs shrink-0">{i+1}</div>
+                  <p className="text-sm text-muted-foreground">{s}</p>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
   );
 }
 
@@ -281,7 +401,9 @@ function DashboardContent({ setView }: { setView: (v: ViewType) => void }) {
         </div>
 
         <div className="space-y-6">
-          <HealthScoreCard />
+          <div onClick={() => setView('health')} className="cursor-pointer">
+            <HealthScoreCard />
+          </div>
           <div className="grid grid-cols-1 gap-6">
             {progressItems.slice(4).map((item) => (
               <div 
@@ -375,6 +497,7 @@ function MainApp() {
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-4 h-4" /> },
     { id: 'projects', label: 'My Ventures', icon: <Library className="w-4 h-4" /> },
+    { id: 'health', label: 'Venture Health', icon: <ShieldCheck className="w-4 h-4 text-emerald-400" /> },
     { id: 'brain', label: 'Startup Brain', icon: <Brain className="w-4 h-4 text-accent" /> },
     { id: 'workspace', label: 'Turbo Workspace', icon: <Zap className="w-4 h-4 text-accent" /> },
     { id: 'validation', label: 'Idea Validation', icon: <Lightbulb className="w-4 h-4" /> },
@@ -445,6 +568,7 @@ function MainApp() {
     switch(activeWorkspace) {
       case 'projects': return <ProjectListView onSelect={() => setActiveWorkspace('dashboard')} onAuthPrompt={() => setAuthModalOpen(true)} />;
       case 'dashboard': return <DashboardContent setView={setActiveWorkspace} />;
+      case 'health': return <HealthScoreView />;
       case 'brain': return <StartupBrainView />;
       case 'validation': return <IdeaValidationView onComplete={() => setActiveWorkspace('blueprint')} />;
       case 'blueprint': return <BlueprintView onComplete={() => setActiveWorkspace('finance')} />;
@@ -592,6 +716,20 @@ function MainApp() {
           </div>
 
           <div className="flex-1 flex justify-end items-center gap-2">
+            {state.healthScore && (
+              <div 
+                onClick={() => setActiveWorkspace('health')}
+                className="flex items-center gap-2 cursor-pointer hover:bg-white/5 px-2 py-1 rounded-md transition-colors"
+              >
+                <Badge variant="outline" className={cn(
+                  "border-accent/30 text-xs gap-1.5",
+                  state.healthScore.totalScore > 75 ? "text-emerald-400 border-emerald-400/30" : 
+                  state.healthScore.totalScore > 40 ? "text-accent" : "text-rose-400 border-rose-400/30"
+                )}>
+                  <ShieldCheck className="w-3 h-3" /> {state.healthScore.totalScore}
+                </Badge>
+              </div>
+            )}
             <NotificationCenter onNavigate={(view) => setActiveWorkspace(view)} />
             <div className="flex items-center gap-2 text-xs text-muted-foreground font-medium ml-2">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
