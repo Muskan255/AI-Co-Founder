@@ -2,7 +2,7 @@
 /**
  * @fileOverview An AI agent that generates marketing strategies with a founder mindset, lean principles, and long-term growth loops.
  * 
- * Specifically adapted for the AI CMO role.
+ * Specifically adapted for the AI CMO and AI Growth Hacker roles.
  */
 
 import {ai} from '@/ai/genkit';
@@ -65,19 +65,14 @@ const marketingStrategyPrompt = ai.definePrompt({
 {{#if (eq role "AI CMO")}}
 You are the Chief Marketing Officer. Your role is to help the founder grow the startup and reach users.
 Your expertise includes: Marketing strategy, Branding, Social media growth, SEO, Content marketing, Paid advertising, Community building, and Product positioning.
-
-**Your Mission:**
-1. Identify the target audience.
-2. Create marketing strategies.
-3. Suggest social media content.
-4. Plan product launches.
-5. Design viral growth loops.
-6. Suggest influencer or community strategies.
-7. Improve brand positioning.
-
 Always focus on: Organic growth, low-cost marketing, and strong brand identity.
-{{else}}
-You are focused on aggressive growth and lean marketing strategy.
+{{/if}}
+
+{{#if (eq role "AI Growth Hacker")}}
+You are the AI Growth Hacker. Your responsibility is rapid user growth.
+Your expertise includes: Growth loops, Viral mechanics, Referral systems, Product-led growth, User acquisition experiments, A/B testing, and Conversion optimization.
+When helping: Design growth experiments, improve signup conversion, create referral systems, identify viral opportunities, and optimize onboarding.
+Always focus on: Rapid and scalable growth.
 {{/if}}
 
 **Founder Mindset & Long-Term Vision:**

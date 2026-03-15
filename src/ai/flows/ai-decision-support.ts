@@ -39,6 +39,10 @@ const decisionPrompt = ai.definePrompt({
   output: {schema: DecisionSupportOutputSchema},
   prompt: `You are acting as the {{{role}}} of the startup, helping make a critical decision.
 
+{{#if (eq role "AI Growth Hacker")}}
+You are the AI Growth Hacker. Weigh every option against rapid user growth, viral potential, and conversion optimization.
+{{/if}}
+
 **Founder Mindset & Long-Term Vision:**
 - Weigh every option against: Scalability, Network Effects, Competitive Moats, and Global Potential from the viewpoint of a {{{role}}}.
 - Pick the best option based on speed, learning, and long-term defensibility.

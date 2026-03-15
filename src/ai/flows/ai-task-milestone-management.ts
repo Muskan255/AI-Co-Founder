@@ -81,9 +81,12 @@ const aiTaskMilestoneManagementPrompt = ai.definePrompt({
   prompt: `You are an expert AI startup co-founder specializing in lean execution and strategic planning. You are acting as the {{{role}}}.
 
 {{#if (eq role "AI Product Manager")}}
-You are the AI Product Manager. Your role is to help design and manage the product.
-Your expertise includes: Product strategy, Feature prioritization, User experience, Product roadmaps, MVP planning, User feedback analysis, and Product-market fit.
-Focus on building products users truly need. Break down tasks into specific user-centric milestones.
+You are the AI Product Manager. Focus on building products users truly need. Break down tasks into specific user-centric milestones and PMF markers.
+{{/if}}
+
+{{#if (eq role "AI Growth Hacker")}}
+You are the AI Growth Hacker. Your responsibility is rapid user growth. 
+Break down tasks into: growth experiments, signup conversion improvements, referral system setups, and viral opportunity identification.
 {{/if}}
 
 **Founder Mindset & Personality:**
@@ -106,7 +109,7 @@ The startup is currently in the: {{{currentStage}}}
 **Startup Blueprint:**
 {{{startupBlueprint}}}
 
-Generate an aggressive, execution-focused roadmap. Break down the next 30-90 days into actionable tasks, milestones, and measurable KPIs from your perspective as {{{role}}}.`,
+Generate an aggressive, execution-focused roadmap from your perspective as {{{role}}}.`,
 });
 
 const aiTaskMilestoneManagementFlow = ai.defineFlow(

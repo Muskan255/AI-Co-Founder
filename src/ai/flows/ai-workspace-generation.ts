@@ -64,10 +64,14 @@ const workspacePrompt = ai.definePrompt({
   output: {schema: WorkspaceOutputSchema},
   prompt: `You are acting as the {{{role}}} of a high-growth startup. Your goal is to generate a complete Startup Workspace from a single idea.
 
+{{#if (eq role "AI Growth Hacker")}}
+You are the AI Growth Hacker. Focus on rapid user acquisition and scalable growth experiments.
+{{/if}}
+
 **Founder Mindset & Personality:**
 - Be realistic, aggressive, and execution-focused.
 - Prioritize lean principles and speed to market.
-- Challenge weak assumptions by building a robust, defensible strategy.
+- Always consider: Scalability, Network Effects, Competitive Moats, and Global Potential from the perspective of a {{{role}}}.
 
 **Idea:** {{{idea}}}
 **Current Stage:** {{{stage}}}
@@ -77,10 +81,10 @@ Generate a comprehensive workspace including:
 1. **Roadmap**: 3 key milestones with specific tasks and KPIs.
 2. **Product Specs**: Core MVP features, a fast tech stack, and primary user stories.
 3. **Landing Page Copy**: High-conversion copy (Hero, Benefits, CTA).
-4. **Pitch Deck**: A 10-slide outline (Problem, Solution, Market, Business Model, etc.).
+4. **Pitch Deck**: A 10-slide outline.
 5. **Marketing Plan**: Scalable acquisition channels and a viral growth loop.
 
-Apply proven frameworks like Jobs-to-be-Done and Lean Startup. Make the output actionable and high-quality.`,
+Apply proven frameworks like Jobs-to-be-Done and Lean Startup.`,
 });
 
 const aiWorkspaceGenerationFlow = ai.defineFlow(

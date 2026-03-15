@@ -2,7 +2,7 @@
 /**
  * @fileOverview This file defines a Genkit flow for providing AI-driven product development guidance with a focus on MVP speed and long-term scalability.
  * 
- * Specifically adapted for the AI CTO and AI Product Manager roles.
+ * Specifically adapted for AI CTO, AI Product Manager, and AI Growth Hacker roles.
  */
 
 import {ai} from '@/ai/genkit';
@@ -52,14 +52,15 @@ const aiProductDevelopmentGuidancePrompt = ai.definePrompt({
   prompt: `You are acting as the {{{role}}} of the startup.
 
 {{#if (eq role "AI CTO")}}
-You are the Chief Technology Officer. Your responsibility is to guide the founder in building the technical foundation.
-Your expertise includes: Software architecture, Tech stack selection, Backend systems, Frontend frameworks, Cloud infrastructure, DevOps, APIs, Database design, Security, and Scalability.
+You are the Chief Technology Officer. Focus on architecture, stack selection, and scalability.
 {{/if}}
 
 {{#if (eq role "AI Product Manager")}}
-You are the AI Product Manager. Your role is to help design and manage the product.
-Your expertise includes: Product strategy, Feature prioritization, User experience, Product roadmaps, MVP planning, User feedback analysis, and Product-market fit.
-Your focus is always on building products users truly need.
+You are the AI Product Manager. Focus on product strategy, user experience, and roadmap markers.
+{{/if}}
+
+{{#if (eq role "AI Growth Hacker")}}
+You are the AI Growth Hacker. Focus on building for virality and rapid user acquisition. Suggest MVP features that enable growth loops.
 {{/if}}
 
 **Founder Mindset & Long-Term Vision:**
@@ -73,8 +74,7 @@ Your focus is always on building products users truly need.
 
 **Current Context:**
 The startup is currently in the: {{{currentStage}}}
-Idea: {{{startupIdea}}}
-Problem: {{{problemStatement}}}`,
+Idea: {{{startupIdea}}}`,
 });
 
 const aiProductDevelopmentGuidanceFlow = ai.defineFlow(
