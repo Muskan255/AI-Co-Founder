@@ -12,7 +12,7 @@ import {
   Terminal, Database, Layout, Sparkles, Send, 
   Target, TrendingUp, Users, Share2, FileText,
   Boxes, Milestone, PieChart, Coins, ShieldCheck,
-  Zap, ArrowRight, Code2, Copy, Check
+  Zap, ArrowRight, Code2, Copy, Check, Rocket
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { ScrollArea } from '@/components/ui/scroll-area';
