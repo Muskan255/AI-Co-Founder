@@ -1,10 +1,8 @@
 'use server';
 /**
  * @fileOverview This file defines a Genkit flow for providing AI-driven product development guidance with a focus on MVP speed and long-term scalability.
- *
- * - aiProductDevelopmentGuidance - A function that provides suggestions for MVP features, tech stack, and development roadmap.
- * - AiProductDevelopmentGuidanceInput - The input type for the aiProductDevelopmentGuidance function.
- * - AiProductDevelopmentGuidanceOutput - The return type for the aiProductDevelopmentGuidance function.
+ * 
+ * Specifically adapted for the AI CTO role.
  */
 
 import {ai} from '@/ai/genkit';
@@ -36,8 +34,10 @@ const AiProductDevelopmentGuidanceOutputSchema = z.object({
     cloudProvider: z.string().describe('Recommended cloud provider.'),
     otherTools: z.array(z.string()).optional().describe('Other essential tools.'),
   }).describe('Suggested tech stack for speed and future scalability.'),
+  systemArchitecture: z.string().describe('High-level design of the system architecture.'),
   developmentRoadmap: z.array(z.string()).describe('Chronological roadmap (Phases/Milestones).'),
   accelerationTools: z.array(z.string()).describe('Tools specifically chosen to save time.'),
+  strategicOverview: z.string().describe('A technical strategic overview organized into: 1. Key Insight, 2. Strategy, 3. Recommended Actions, 4. Tools or Technologies, 5. Risks to Consider.'),
 });
 export type AiProductDevelopmentGuidanceOutput = z.infer<typeof AiProductDevelopmentGuidanceOutputSchema>;
 
@@ -49,10 +49,25 @@ const aiProductDevelopmentGuidancePrompt = ai.definePrompt({
   name: 'aiProductDevelopmentGuidancePrompt',
   input: { schema: AiProductDevelopmentGuidanceInputSchema },
   output: { schema: AiProductDevelopmentGuidanceOutputSchema },
-  prompt: `You are acting as the {{{role}}} of the startup. You are a technical and product leader specializing in rapid MVP development and long-term scalable architecture.
+  prompt: `You are acting as the {{{role}}} of the startup.
+
+{{#if (eq role "AI CTO")}}
+You are the Chief Technology Officer. Your responsibility is to guide the founder in building the technical foundation.
+Your expertise includes: Software architecture, Tech stack selection, Backend systems, Frontend frameworks, Cloud infrastructure, DevOps, APIs, Database design, Security, and Scalability.
+
+**Your Mission:**
+1. Analyze technical requirements.
+2. Recommend the best tech stack.
+3. Design system architecture.
+4. Suggest APIs, frameworks, and tools.
+5. Help build the MVP efficiently.
+6. Think about scalability and performance.
+{{else}}
+You are a technical and product leader specializing in rapid MVP development and long-term scalable architecture.
+{{/if}}
 
 **Founder Mindset & Long-Term Vision:**
-- Build for speed now, but architect for Scalability, Network Effects, and Global Potential from the perspective of a {{{role}}}.
+- Build for speed now, but architect for Scalability, Network Effects, and Global Potential.
 - Challenge feature-bloat; push for the leanest possible MVP that still allows for a future Moat.
 - Prioritize fast execution and iterative development.
 
@@ -75,7 +90,7 @@ const aiProductDevelopmentGuidanceFlow = ai.defineFlow(
   async (input) => {
     const {output} = await aiProductDevelopmentGuidancePrompt({
       ...input,
-      role: input.role || 'AI Co-Founder'
+      role: input.role || 'AI CTO'
     });
     return output!;
   }

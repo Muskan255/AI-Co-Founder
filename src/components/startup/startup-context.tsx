@@ -1,4 +1,3 @@
-
 "use client"
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
@@ -91,15 +90,29 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
       
       if (user && state.projectId && firestore) {
         const projectRef = doc(firestore, 'users', user.uid, 'projects', state.projectId);
-        setDoc(projectRef, {
+        
+        // Comprehensive record mapping for Startup Memory System
+        const projectRecord = {
           project_id: state.projectId,
           project_name: state.projectName,
           idea_description: state.rawIdea,
+          target_market: state.validation?.targetMarket || '',
+          problem_statement: state.blueprint?.problemStatement || '',
+          value_proposition: state.blueprint?.valueProposition || '',
+          business_model: state.blueprint?.businessModel || '',
+          MVP_features: state.productGuidance?.mvpFeatures || [],
+          tech_stack: state.productGuidance?.techStack || {},
+          marketing_strategy: state.marketing || {},
+          funding_strategy: state.blueprint?.revenueStreams || '', // or a more specific field if added
+          roadmap: state.productGuidance?.developmentRoadmap || [],
           progress_status: state.stage,
+          created_at: state.projectId ? undefined : serverTimestamp(), // only set on create
           last_updated: serverTimestamp(),
           userId: user.uid,
           fullState: state
-        }, { merge: true });
+        };
+
+        setDoc(projectRef, projectRecord, { merge: true });
       }
     }
   }, [state, isHydrated, user, firestore]);
