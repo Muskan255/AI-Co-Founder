@@ -5,6 +5,7 @@ import { IdeaValidationOutput } from '@/ai/flows/ai-idea-validation';
 import { AiStartupBlueprintGenerationOutput } from '@/ai/flows/ai-startup-blueprint-generation';
 import { AiProductDevelopmentGuidanceOutput } from '@/ai/flows/ai-product-development-guidance';
 import { MarketingStrategyGenerationOutput } from '@/ai/flows/ai-marketing-strategy-generation';
+import { FinancialStrategyGenerationOutput } from '@/ai/flows/ai-financial-strategy-generation';
 import { AiTaskMilestoneManagementOutput } from '@/ai/flows/ai-task-milestone-management';
 import { AiStartupSimulationOutput } from '@/ai/flows/ai-startup-simulation';
 import { WorkspaceOutput } from '@/ai/flows/ai-workspace-generation';
@@ -24,6 +25,7 @@ interface StartupState {
   blueprint: AiStartupBlueprintGenerationOutput | null;
   productGuidance: AiProductDevelopmentGuidanceOutput | null;
   marketing: MarketingStrategyGenerationOutput | null;
+  financialStrategy: FinancialStrategyGenerationOutput | null;
   tasks: AiTaskMilestoneManagementOutput | null;
   lastSimulation: AiStartupSimulationOutput | null;
   workspace: WorkspaceOutput | null;
@@ -40,6 +42,7 @@ interface StartupContextType {
   setBlueprint: (b: AiStartupBlueprintGenerationOutput) => void;
   setProductGuidance: (p: AiProductDevelopmentGuidanceOutput) => void;
   setMarketing: (m: MarketingStrategyGenerationOutput) => void;
+  setFinancialStrategy: (f: FinancialStrategyGenerationOutput) => void;
   setTasks: (t: AiTaskMilestoneManagementOutput) => void;
   setSimulation: (s: AiStartupSimulationOutput) => void;
   setWorkspace: (w: WorkspaceOutput) => void;
@@ -60,6 +63,7 @@ const DEFAULT_STATE: StartupState = {
   blueprint: null,
   productGuidance: null,
   marketing: null,
+  financialStrategy: null,
   tasks: null,
   lastSimulation: null,
   workspace: null
@@ -103,10 +107,9 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
           MVP_features: state.productGuidance?.mvpFeatures || [],
           tech_stack: state.productGuidance?.techStack || {},
           marketing_strategy: state.marketing || {},
-          funding_strategy: state.blueprint?.revenueStreams || '', // or a more specific field if added
+          funding_strategy: state.financialStrategy?.fundingPlan?.join(', ') || state.blueprint?.revenueStreams || '',
           roadmap: state.productGuidance?.developmentRoadmap || [],
           progress_status: state.stage,
-          created_at: state.projectId ? undefined : serverTimestamp(), // only set on create
           last_updated: serverTimestamp(),
           userId: user.uid,
           fullState: state
@@ -126,6 +129,7 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
   const setBlueprint = (b: AiStartupBlueprintGenerationOutput) => setState(prev => ({ ...prev, blueprint: b, stage: 'MVP Development' }));
   const setProductGuidance = (p: AiProductDevelopmentGuidanceOutput) => setState(prev => ({ ...prev, productGuidance: p, stage: 'Early Traction' }));
   const setMarketing = (m: MarketingStrategyGenerationOutput) => setState(prev => ({ ...prev, marketing: m, stage: 'Growth Stage' }));
+  const setFinancialStrategy = (f: FinancialStrategyGenerationOutput) => setState(prev => ({ ...prev, financialStrategy: f }));
   const setTasks = (t: AiTaskMilestoneManagementOutput) => setState(prev => ({ ...prev, tasks: t, stage: 'Scaling Stage' }));
   const setSimulation = (s: AiStartupSimulationOutput) => setState(prev => ({ ...prev, lastSimulation: s }));
   const setWorkspace = (w: WorkspaceOutput) => setState(prev => ({ ...prev, workspace: w }));
@@ -160,6 +164,7 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
       setBlueprint, 
       setProductGuidance, 
       setMarketing, 
+      setFinancialStrategy,
       setTasks,
       setSimulation,
       setWorkspace,

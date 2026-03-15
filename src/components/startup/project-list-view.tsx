@@ -1,8 +1,7 @@
-
 "use client"
 
-import React from 'react';
-import { useUser, useCollection } from '@/firebase';
+import React, { useMemo } from 'react';
+import { useUser, useCollection, useFirestore } from '@/firebase';
 import { collection, query, orderBy } from 'firebase/firestore';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,12 +11,16 @@ import { useStartup } from './startup-context';
 
 export function ProjectListView({ onSelect }: { onSelect: () => void }) {
   const { user } = useUser();
+  const firestore = useFirestore();
   const { loadProject, reset } = useStartup();
   
-  const projectsQuery = user ? query(
-    collection(process.env.NEXT_PUBLIC_FIRESTORE_DB || '', 'users', user.uid, 'projects'),
-    orderBy('last_updated', 'desc')
-  ) : null;
+  const projectsQuery = useMemo(() => {
+    if (!user || !firestore) return null;
+    return query(
+      collection(firestore, 'users', user.uid, 'projects'),
+      orderBy('last_updated', 'desc')
+    );
+  }, [user, firestore]);
 
   const { data: projects, loading } = useCollection(projectsQuery);
 

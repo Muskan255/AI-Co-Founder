@@ -1,4 +1,3 @@
-
 "use client"
 
 import React, { useState } from 'react';
@@ -26,7 +25,8 @@ import {
   FastForward,
   LogIn,
   LogOut,
-  Library
+  Library,
+  DollarSign
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -35,6 +35,7 @@ import { IdeaValidationView } from '@/components/startup/idea-validation-view';
 import { BlueprintView } from '@/components/startup/blueprint-view';
 import { ProductGuideView } from '@/components/startup/product-guide-view';
 import { MarketingView } from '@/components/startup/marketing-view';
+import { FinancialView } from '@/components/startup/financial-view';
 import { TaskManagerView } from '@/components/startup/task-manager-view';
 import { DecisionSupportView } from '@/components/startup/decision-support-view';
 import { SimulationView } from '@/components/startup/simulation-view';
@@ -44,7 +45,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useAuth, useUser } from '@/firebase';
 import { signInWithPopup, GoogleAuthProvider, signOut } from 'firebase/auth';
 
-type ViewType = 'projects' | 'dashboard' | 'validation' | 'blueprint' | 'product' | 'marketing' | 'tasks' | 'decisions' | 'simulation' | 'workspace';
+type ViewType = 'projects' | 'dashboard' | 'validation' | 'blueprint' | 'product' | 'marketing' | 'finance' | 'tasks' | 'decisions' | 'simulation' | 'workspace';
 
 function DashboardContent({ setView }: { setView: (v: ViewType) => void }) {
   const { state, reset, setStage } = useStartup();
@@ -53,6 +54,7 @@ function DashboardContent({ setView }: { setView: (v: ViewType) => void }) {
     { id: 'workspace', label: 'Turbo Workspace', icon: <Zap className="text-accent" />, completed: !!state.workspace, description: 'Generate roadmap, pitch deck & specs in one go.' },
     { id: 'validation', label: 'Idea Validation', icon: <Lightbulb />, completed: !!state.validation, description: 'Challenge and stress-test your core concept.' },
     { id: 'blueprint', label: 'Startup Blueprint', icon: <Map />, completed: !!state.blueprint, description: 'Build your business model and revenue engine.' },
+    { id: 'finance', label: 'Financial Strategy', icon: <DollarSign className="text-emerald-400" />, completed: !!state.financialStrategy, description: 'Unit economics, burn rate & funding plans.' },
     { id: 'product', label: 'Product Guidance', icon: <Code2 />, completed: !!state.productGuidance, description: 'MVP specs and architecture recommendations.' },
     { id: 'marketing', label: 'Marketing Strategy', icon: <Rocket />, completed: !!state.marketing, description: 'Growth loops and acquisition strategy.' },
     { id: 'tasks', label: 'Accountability & Tasks', icon: <CheckSquare />, completed: !!state.tasks, description: 'Roadmaps, milestones, and daily execution.' },
@@ -173,8 +175,8 @@ function DashboardContent({ setView }: { setView: (v: ViewType) => void }) {
             </div>
           </div>
           <div className="flex gap-4">
-            <Button variant="outline" onClick={() => setView('tasks')} className="border-accent/20 hover:bg-accent/5">
-              Accountability Center
+            <Button variant="outline" onClick={() => setView('finance')} className="border-accent/20 hover:bg-accent/5">
+              Financial Analysis
             </Button>
             <Button onClick={() => setView('simulation')} className="bg-accent text-accent-foreground font-bold">
               Run Market Simulation
@@ -213,7 +215,8 @@ function MainApp() {
       case 'projects': return <ProjectListView onSelect={() => setCurrentView('dashboard')} />;
       case 'dashboard': return <DashboardContent setView={setCurrentView} />;
       case 'validation': return <IdeaValidationView onComplete={() => setCurrentView('blueprint')} />;
-      case 'blueprint': return <BlueprintView onComplete={() => setCurrentView('product')} />;
+      case 'blueprint': return <BlueprintView onComplete={() => setCurrentView('finance')} />;
+      case 'finance': return <FinancialView onComplete={() => setCurrentView('product')} />;
       case 'product': return <ProductGuideView onComplete={() => setCurrentView('marketing')} />;
       case 'marketing': return <MarketingView onComplete={() => setCurrentView('tasks')} />;
       case 'tasks': return <TaskManagerView />;
@@ -230,6 +233,7 @@ function MainApp() {
     { id: 'workspace', label: 'Turbo Workspace', icon: <Zap className="w-4 h-4 text-accent" /> },
     { id: 'validation', label: 'Idea Validation', icon: <Lightbulb className="w-4 h-4" /> },
     { id: 'blueprint', label: 'Strategy Blueprint', icon: <Map className="w-4 h-4" /> },
+    { id: 'finance', label: 'Financial Plan', icon: <DollarSign className="w-4 h-4 text-emerald-400" /> },
     { id: 'product', label: 'Product Dev', icon: <Code2 className="w-4 h-4" /> },
     { id: 'marketing', label: 'Growth Plan', icon: <Rocket className="w-4 h-4" /> },
     { id: 'tasks', label: 'Accountability', icon: <CheckSquare className="w-4 h-4" /> },
