@@ -251,8 +251,8 @@ function MainApp() {
       <Sidebar collapsible="icon" className="border-r border-white/5 bg-[#16181C]">
         <SidebarHeader className="p-4">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-              <Sparkles className="w-5 h-5 text-accent" />
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-lg shadow-accent/20">
+              <Rocket className="w-5 h-5 text-white" />
             </div>
             <div className="flex flex-col group-data-[collapsible=icon]:hidden">
               <span className="font-headline font-bold text-lg leading-none uppercase tracking-tighter">AI Founder</span>
