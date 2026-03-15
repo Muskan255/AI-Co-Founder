@@ -30,7 +30,8 @@ import {
   DollarSign,
   ShieldAlert,
   Terminal,
-  Brain
+  Brain,
+  Info
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -47,11 +48,13 @@ import { WorkspaceView } from '@/components/startup/workspace-view';
 import { ProjectListView } from '@/components/startup/project-list-view';
 import { PersonaWorkspaceView } from '@/components/startup/persona-workspace-view';
 import { StartupBrainView } from '@/components/startup/startup-brain-view';
+import { HelpCenter } from '@/components/startup/help-center';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAuth, useUser } from '@/firebase';
 import { signOut } from 'firebase/auth';
 import { AuthModal } from '@/components/auth/auth-modal';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 type ViewType = 'projects' | 'dashboard' | 'validation' | 'blueprint' | 'product' | 'marketing' | 'finance' | 'tasks' | 'decisions' | 'simulation' | 'workspace' | 'persona-workspace' | 'brain';
 
@@ -103,18 +106,38 @@ function DashboardContent({ setView }: { setView: (v: ViewType) => void }) {
             <Badge variant="secondary" className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20 px-3 py-1">
               {state.role} Active
             </Badge>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button className="text-muted-foreground hover:text-accent transition-colors">
+                  <Info className="w-4 h-4" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent className="max-w-xs">
+                <p className="text-xs">Your AI Co-Founder is currently acting as your <strong>{state.role}</strong> during the <strong>{state.stage}</strong>.</p>
+              </TooltipContent>
+            </Tooltip>
           </div>
           <h1 className="text-5xl font-headline font-bold gradient-text">
             {state.projectName === 'New Venture' ? 'Welcome back, Founder.' : state.projectName}
           </h1>
-          <p className="text-center text-sm font-medium text-muted-foreground/60 tracking-wider">An AI Partner for Entrepreneurs</p>
+          <p className="text-sm font-medium text-muted-foreground/60 tracking-wider">An AI Partner for Entrepreneurs</p>
           <p className="text-xl text-muted-foreground max-w-2xl">
             {state.rawIdea || "Execution is the only differentiator. Let's build something world-changing."}
           </p>
         </div>
         
         <div className="flex flex-col gap-2">
-          <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Startup Stage</label>
+          <div className="flex items-center gap-2">
+            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Startup Stage</label>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <HelpCircle className="w-3 h-3 text-muted-foreground cursor-help" />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p className="text-xs">Changing the stage shifts the AI's strategic focus and active role.</p>
+              </TooltipContent>
+            </Tooltip>
+          </div>
           <Select value={state.stage} onValueChange={(val) => setStage(val as StartupStage)}>
             <SelectTrigger className="w-[200px] bg-card border-white/10">
               <SelectValue placeholder="Select Stage" />
@@ -381,6 +404,21 @@ function MainApp() {
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+          
+          <SidebarGroup>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <HelpCenter>
+                    <SidebarMenuButton tooltip="Startup Guide" className="hover:bg-white/5 text-muted-foreground hover:text-accent">
+                      <HelpCircle className="w-4 h-4" />
+                      <span className="font-medium">Startup Guide</span>
+                    </SidebarMenuButton>
+                  </HelpCenter>
+                </SidebarMenuItem>
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>

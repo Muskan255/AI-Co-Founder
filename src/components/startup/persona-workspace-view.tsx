@@ -14,13 +14,15 @@ import {
   Target, TrendingUp, Users, Share2, FileText,
   Boxes, Milestone, PieChart, Coins, ShieldCheck,
   Zap, ArrowRight, Code2, Copy, Rocket,
-  Save, Download, Github, FileSpreadsheet, FileType, Search, Heart, Infinity, Brain
+  Save, Download, Github, FileSpreadsheet, FileType, Search, Heart, Infinity, Brain,
+  Info
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { useFirestore, useUser } from '@/firebase';
 import { doc, setDoc } from 'firebase/firestore';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface Tool {
   id: string;
@@ -198,6 +200,17 @@ export function PersonaWorkspaceView() {
     }
   };
 
+  const getRoleDescription = () => {
+    switch (state.role) {
+      case 'AI CTO': return "Your technical advisor that helps generate code, design system architecture, and define tech stacks.";
+      case 'AI CMO': return "Your marketing strategist focusing on brand identity, SEO, social growth, and launch execution.";
+      case 'AI CFO': return "Your financial partner modeling unit economics, pricing, burn rate, and fundraising logic.";
+      case 'AI Product Manager': return "Your product lead helping define MVP specs, user stories, and development roadmaps.";
+      case 'AI Growth Hacker': return "Your aggressive growth partner designing viral loops, referral systems, and acquisition experiments.";
+      default: return "";
+    }
+  };
+
   return (
     <div className="p-8 max-w-6xl mx-auto space-y-10">
       <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
@@ -206,6 +219,16 @@ export function PersonaWorkspaceView() {
             <Badge variant="outline" className={cn("px-3 py-1 font-bold uppercase tracking-widest", getRoleTheme())}>
               {state.role} OFFICE
             </Badge>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="text-muted-foreground hover:text-accent cursor-help">
+                  <Info className="w-4 h-4" />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent className="max-w-xs">
+                <p className="text-xs">{getRoleDescription()}</p>
+              </TooltipContent>
+            </Tooltip>
             <Badge variant="secondary" className="bg-white/5 border-white/10">{state.stage}</Badge>
             <Badge variant="outline" className="border-accent/30 text-accent flex gap-1 items-center bg-accent/5">
               <Brain className="w-3 h-3" /> Shared Intelligence Active
@@ -222,7 +245,17 @@ export function PersonaWorkspaceView() {
 
       <div className="grid lg:grid-cols-3 gap-8">
         <div className="space-y-4">
-          <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground mb-4">Available Tools</h3>
+          <div className="flex items-center gap-2 mb-4">
+            <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">Available Tools</h3>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <HelpCircle className="w-3 h-3 text-muted-foreground cursor-help" />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p className="text-xs">Each tool utilizes the AI's deep expertise to generate specific startup assets.</p>
+              </TooltipContent>
+            </Tooltip>
+          </div>
           {roleTools.map((tool) => (
             <Card 
               key={tool.id} 
