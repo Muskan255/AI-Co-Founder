@@ -29,7 +29,8 @@ import {
   Library,
   DollarSign,
   ShieldAlert,
-  Terminal
+  Terminal,
+  Brain
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -45,13 +46,14 @@ import { SimulationView } from '@/components/startup/simulation-view';
 import { WorkspaceView } from '@/components/startup/workspace-view';
 import { ProjectListView } from '@/components/startup/project-list-view';
 import { PersonaWorkspaceView } from '@/components/startup/persona-workspace-view';
+import { StartupBrainView } from '@/components/startup/startup-brain-view';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAuth, useUser } from '@/firebase';
 import { signOut } from 'firebase/auth';
 import { AuthModal } from '@/components/auth/auth-modal';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
-type ViewType = 'projects' | 'dashboard' | 'validation' | 'blueprint' | 'product' | 'marketing' | 'finance' | 'tasks' | 'decisions' | 'simulation' | 'workspace' | 'persona-workspace';
+type ViewType = 'projects' | 'dashboard' | 'validation' | 'blueprint' | 'product' | 'marketing' | 'finance' | 'tasks' | 'decisions' | 'simulation' | 'workspace' | 'persona-workspace' | 'brain';
 
 function DashboardContent({ setView }: { setView: (v: ViewType) => void }) {
   const { state, reset, setStage, isGuestMode } = useStartup();
@@ -59,6 +61,7 @@ function DashboardContent({ setView }: { setView: (v: ViewType) => void }) {
   
   const progressItems = [
     { id: 'workspace', label: 'Turbo Workspace', icon: <Zap className="text-accent" />, completed: !!state.workspace, description: 'Generate roadmap, pitch deck & specs in one go.' },
+    { id: 'brain', label: 'Startup Brain', icon: <Brain className="text-accent" />, completed: Object.keys(state.brain).length > 3, description: 'Manage the shared intelligence of your venture.' },
     { id: 'validation', label: 'Idea Validation', icon: <Lightbulb />, completed: !!state.validation, description: 'Challenge and stress-test your core concept.' },
     { id: 'blueprint', label: 'Strategy Blueprint', icon: <Map />, completed: !!state.blueprint, description: 'Build your business model and revenue engine.' },
     { id: 'finance', label: 'Financial Plan', icon: <DollarSign className="text-emerald-400" />, completed: !!state.financialStrategy, description: 'Unit economics, burn rate & funding plans.' },
@@ -225,6 +228,7 @@ function MainApp() {
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-4 h-4" /> },
     { id: 'projects', label: 'My Ventures', icon: <Library className="w-4 h-4" /> },
+    { id: 'brain', label: 'Startup Brain', icon: <Brain className="w-4 h-4 text-accent" /> },
     { id: 'workspace', label: 'Turbo Workspace', icon: <Zap className="w-4 h-4 text-accent" /> },
     { id: 'validation', label: 'Idea Validation', icon: <Lightbulb className="w-4 h-4" /> },
     { id: 'blueprint', label: 'Strategy Blueprint', icon: <Map className="w-4 h-4" /> },
@@ -294,6 +298,7 @@ function MainApp() {
     switch(activeWorkspace) {
       case 'projects': return <ProjectListView onSelect={() => setActiveWorkspace('dashboard')} onAuthPrompt={() => setAuthModalOpen(true)} />;
       case 'dashboard': return <DashboardContent setView={setActiveWorkspace} />;
+      case 'brain': return <StartupBrainView />;
       case 'validation': return <IdeaValidationView onComplete={() => setActiveWorkspace('blueprint')} />;
       case 'blueprint': return <BlueprintView onComplete={() => setActiveWorkspace('finance')} />;
       case 'finance': return <FinancialView onComplete={() => setActiveWorkspace('product')} />;

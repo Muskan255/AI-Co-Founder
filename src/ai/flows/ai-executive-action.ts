@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview AI Executive Action flow for practical startup tasks.
@@ -12,6 +13,7 @@ const ExecutiveActionInputSchema = z.object({
   startupIdea: z.string().describe('The core startup idea'),
   stage: z.string().describe('Current startup stage'),
   userPrompt: z.string().optional().describe('Optional additional context from user'),
+  startupBrain: z.record(z.any()).optional().describe('The global shared intelligence of the startup venture.'),
 });
 export type ExecutiveActionInput = z.infer<typeof ExecutiveActionInputSchema>;
 
@@ -22,6 +24,7 @@ const ExecutiveActionOutputSchema = z.object({
   format: z.enum(['markdown', 'code', 'text']).default('markdown'),
   language: z.string().optional().describe('Programming language if format is code'),
   additionalInsights: z.array(z.string()).optional(),
+  brainUpdate: z.record(z.any()).optional().describe('New intelligence to be added to the Global Startup Brain.'),
 });
 export type ExecutiveActionOutput = z.infer<typeof ExecutiveActionOutputSchema>;
 
@@ -35,6 +38,15 @@ const executiveActionPrompt = ai.definePrompt({
   output: {schema: ExecutiveActionOutputSchema},
   prompt: `You are the {{{role}}} of the startup: "{{{startupIdea}}}".
 Current Stage: {{{stage}}}
+
+**Global Startup Brain (Shared Context):**
+{{#if startupBrain}}
+{{#each startupBrain}}
+- {{this}}
+{{/each}}
+{{else}}
+No existing shared context.
+{{/if}}
 
 Perform the following executive task: **{{{taskType}}}**
 {{#if userPrompt}}Specific User Request: {{{userPrompt}}}{{/if}}
@@ -50,10 +62,9 @@ Perform the following executive task: **{{{taskType}}}**
 1. **title**: A concise title for the generated asset.
 2. **description**: A short explanation of what was created.
 3. **content**: The main body of work. 
-   - If generating code, ensure it is clean and commented.
-   - If generating a strategy, use clear headers and bullet points.
 4. **format**: Set to 'code' ONLY if the main content is a code block. Otherwise 'markdown'.
-5. **language**: If format is 'code', specify the language (e.g., 'typescript', 'sql', 'json').`,
+5. **language**: If format is 'code', specify the language.
+6. **brainUpdate**: If you uncover or define new strategic information (e.g. a specific marketing strategy or tech stack choice), include it here so the Startup Brain can be updated.`,
 });
 
 const aiExecutiveActionFlow = ai.defineFlow(

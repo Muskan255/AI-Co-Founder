@@ -1,6 +1,7 @@
+
 "use client"
 
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { IdeaValidationOutput } from '@/ai/flows/ai-idea-validation';
 import { AiStartupBlueprintGenerationOutput } from '@/ai/flows/ai-startup-blueprint-generation';
 import { AiProductDevelopmentGuidanceOutput } from '@/ai/flows/ai-product-development-guidance';
@@ -15,12 +16,30 @@ import { doc, setDoc, serverTimestamp, getDocs, collection, query, orderBy, limi
 export type StartupStage = 'Idea Stage' | 'Validation Stage' | 'MVP Development' | 'Early Traction' | 'Growth Stage' | 'Scaling Stage';
 export type StartupRole = 'AI CTO' | 'AI CMO' | 'AI CFO' | 'AI Product Manager' | 'AI Growth Hacker';
 
+export interface StartupBrain {
+  startup_idea?: string;
+  target_market?: string;
+  problem_statement?: string;
+  value_proposition?: string;
+  revenue_model?: string;
+  product_features?: string;
+  marketing_strategy?: string;
+  financial_forecast?: string;
+  competitors?: string;
+  tech_stack?: string;
+  customer_segments?: string;
+  pricing_strategy?: string;
+  growth_strategy?: string;
+  funding_stage?: string;
+}
+
 interface StartupState {
   projectId: string | null;
   projectName: string;
   rawIdea: string;
   stage: StartupStage;
   role: StartupRole;
+  brain: StartupBrain;
   validation: IdeaValidationOutput | null;
   blueprint: AiStartupBlueprintGenerationOutput | null;
   productGuidance: AiProductDevelopmentGuidanceOutput | null;
@@ -38,6 +57,7 @@ interface StartupContextType {
   setRawIdea: (idea: string) => void;
   setStage: (stage: StartupStage) => void;
   setRole: (role: StartupRole) => void;
+  updateBrain: (update: Partial<StartupBrain>) => void;
   setValidation: (v: IdeaValidationOutput) => void;
   setBlueprint: (b: AiStartupBlueprintGenerationOutput) => void;
   setProductGuidance: (p: AiProductDevelopmentGuidanceOutput) => void;
@@ -60,6 +80,7 @@ const DEFAULT_STATE: StartupState = {
   rawIdea: '',
   stage: 'Idea Stage',
   role: 'AI Product Manager',
+  brain: {},
   validation: null,
   blueprint: null,
   productGuidance: null,
@@ -78,7 +99,6 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
 
   const isGuestMode = !user;
 
-  // Load from Local Storage on mount
   useEffect(() => {
     const saved = localStorage.getItem('ai-founder-startup-state');
     if (saved) {
@@ -91,12 +111,10 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
     setIsHydrated(true);
   }, []);
 
-  // Sync to Local Storage (Always) and Firestore (Only if authenticated)
   useEffect(() => {
     if (isHydrated) {
       localStorage.setItem('ai-founder-startup-state', JSON.stringify(state));
       
-      // Auto-save to Firestore only for authenticated users
       if (user && state.projectId && firestore) {
         const projectRef = doc(firestore, 'users', user.uid, 'projects', state.projectId);
         
@@ -107,10 +125,10 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
           idea_description: state.rawIdea,
           startup_stage: state.stage,
           last_updated: serverTimestamp(),
+          startup_brain: state.brain,
           fullState: state
         };
 
-        // Non-blocking write
         setDoc(projectRef, projectRecord, { merge: true }).catch(err => {
           console.error("Firestore sync error:", err);
         });
@@ -118,7 +136,6 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
     }
   }, [state, isHydrated, user, firestore]);
 
-  // Session Restore: Fetch latest venture on login if local state is empty
   useEffect(() => {
     if (isHydrated && user && firestore && !state.projectId && state.rawIdea === '') {
       const projectsRef = collection(firestore, 'users', user.uid, 'projects');
@@ -135,8 +152,20 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
 
   const setProjectId = (id: string) => setState(prev => ({ ...prev, projectId: id }));
   const setProjectName = (name: string) => setState(prev => ({ ...prev, projectName: name }));
-  const setRawIdea = (idea: string) => setState(prev => ({ ...prev, rawIdea: idea }));
   
+  const setRawIdea = (idea: string) => setState(prev => ({ 
+    ...prev, 
+    rawIdea: idea,
+    brain: { ...prev.brain, startup_idea: idea } 
+  }));
+  
+  const updateBrain = (update: Partial<StartupBrain>) => {
+    setState(prev => ({
+      ...prev,
+      brain: { ...prev.brain, ...update }
+    }));
+  };
+
   const setStage = (stage: StartupStage) => {
     setState(prev => {
       let role: StartupRole = prev.role;
@@ -148,7 +177,7 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
         case 'Growth Stage': role = 'AI CMO'; break;
         case 'Scaling Stage': role = 'AI CFO'; break;
       }
-      return { ...prev, stage, role };
+      return { ...prev, stage, role, brain: { ...prev.brain, funding_stage: stage } };
     });
   };
 
@@ -156,28 +185,101 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
   
   const setValidation = (v: IdeaValidationOutput) => {
     setState(prev => {
-      const newState = { ...prev, validation: v, stage: 'Validation Stage' as StartupStage, role: 'AI CMO' as StartupRole };
-      // Ensure we have a project ID if we just started validating
-      if (!newState.projectId) {
-        newState.projectId = crypto.randomUUID();
-      }
-      return newState;
+      const brainUpdate: StartupBrain = {
+        target_market: v.target_market,
+        problem_statement: v.problemSolved,
+        competitors: v.competitors
+      };
+      return { 
+        ...prev, 
+        validation: v, 
+        stage: 'Validation Stage', 
+        role: 'AI CMO',
+        brain: { ...prev.brain, ...brainUpdate },
+        projectId: prev.projectId || crypto.randomUUID()
+      };
     });
   };
 
-  const setBlueprint = (b: AiStartupBlueprintGenerationOutput) => setState(prev => ({ ...prev, blueprint: b, stage: 'MVP Development', role: 'AI CTO' }));
-  const setProductGuidance = (p: AiProductDevelopmentGuidanceOutput) => setState(prev => ({ ...prev, productGuidance: p, stage: 'Early Traction', role: 'AI Growth Hacker' }));
-  const setMarketing = (m: MarketingStrategyGenerationOutput) => setState(prev => ({ ...prev, marketing: m, stage: 'Growth Stage', role: 'AI CMO' }));
-  const setFinancialStrategy = (f: FinancialStrategyGenerationOutput) => setState(prev => ({ ...prev, financialStrategy: f }));
+  const setBlueprint = (b: AiStartupBlueprintGenerationOutput) => {
+    setState(prev => {
+      const brainUpdate: StartupBrain = {
+        value_proposition: b.value_proposition,
+        revenue_model: b.revenueStreams,
+        pricing_strategy: b.pricingStrategy
+      };
+      return { 
+        ...prev, 
+        blueprint: b, 
+        stage: 'MVP Development', 
+        role: 'AI CTO',
+        brain: { ...prev.brain, ...brainUpdate }
+      };
+    });
+  };
+
+  const setProductGuidance = (p: AiProductDevelopmentGuidanceOutput) => {
+    setState(prev => {
+      const brainUpdate: StartupBrain = {
+        tech_stack: `${p.techStack.frontend}, ${p.techStack.backend}, ${p.techStack.database}`,
+        product_features: p.mvpFeatures.join(', ')
+      };
+      return { 
+        ...prev, 
+        productGuidance: p, 
+        stage: 'Early Traction', 
+        role: 'AI Growth Hacker',
+        brain: { ...prev.brain, ...brainUpdate }
+      };
+    });
+  };
+
+  const setMarketing = (m: MarketingStrategyGenerationOutput) => {
+    setState(prev => {
+      const brainUpdate: StartupBrain = {
+        marketing_strategy: m.brandPositioning,
+        growth_strategy: m.userAcquisition.join(', ')
+      };
+      return { 
+        ...prev, 
+        marketing: m, 
+        stage: 'Growth Stage', 
+        role: 'AI CMO',
+        brain: { ...prev.brain, ...brainUpdate }
+      };
+    });
+  };
+
+  const setFinancialStrategy = (f: FinancialStrategyGenerationOutput) => {
+    setState(prev => {
+      const brainUpdate: StartupBrain = {
+        financial_forecast: f.revenueForecast,
+        revenue_model: f.pricingModels.map(p => p.model).join(', ')
+      };
+      return { 
+        ...prev, 
+        financialStrategy: f,
+        brain: { ...prev.brain, ...brainUpdate }
+      };
+    });
+  };
+
   const setTasks = (t: AiTaskMilestoneManagementOutput) => setState(prev => ({ ...prev, tasks: t, stage: 'Scaling Stage', role: 'AI CFO' }));
   const setSimulation = (s: AiStartupSimulationOutput) => setState(prev => ({ ...prev, lastSimulation: s }));
+  
   const setWorkspace = (w: WorkspaceOutput) => {
     setState(prev => {
-      const newState = { ...prev, workspace: w };
-      if (!newState.projectId) {
-        newState.projectId = crypto.randomUUID();
-      }
-      return newState;
+      const brainUpdate: StartupBrain = {
+        marketing_strategy: w.marketingPlan.strategy,
+        tech_stack: `${w.productSpecs.techStack.frontend}, ${w.productSpecs.techStack.backend}`,
+        product_features: w.productSpecs.mvpFeatures.join(', ')
+      };
+      return { 
+        ...prev, 
+        workspace: w,
+        brain: { ...prev.brain, ...brainUpdate },
+        projectId: prev.projectId || crypto.randomUUID()
+      };
     });
   };
   
@@ -191,6 +293,7 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
         projectName: projectData.project_name || 'Restored Project',
         rawIdea: projectData.idea_description || '',
         stage: (projectData.startup_stage || projectData.progress_status) as StartupStage,
+        brain: projectData.startup_brain || {}
       });
     }
   };
@@ -208,6 +311,7 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
       setRawIdea, 
       setStage,
       setRole,
+      updateBrain,
       setValidation, 
       setBlueprint, 
       setProductGuidance, 

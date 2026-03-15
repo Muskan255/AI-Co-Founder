@@ -1,3 +1,4 @@
+
 "use client"
 
 import React, { useState, useMemo } from 'react';
@@ -12,16 +13,14 @@ import {
   Terminal, Database, Layout, Sparkles, Send, 
   Target, TrendingUp, Users, Share2, FileText,
   Boxes, Milestone, PieChart, Coins, ShieldCheck,
-  Zap, ArrowRight, Code2, Copy, Check, Rocket,
-  Save, Download, Github, FileCode, CheckCircle2,
-  FileSpreadsheet, FileType, Search, Heart, Infinity
+  Zap, ArrowRight, Code2, Copy, Rocket,
+  Save, Download, Github, FileSpreadsheet, FileType, Search, Heart, Infinity, Brain
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import { useFirestore, useUser } from '@/firebase';
-import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { doc, setDoc } from 'firebase/firestore';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 
 interface Tool {
   id: string;
@@ -31,7 +30,7 @@ interface Tool {
 }
 
 export function PersonaWorkspaceView() {
-  const { state } = useStartup();
+  const { state, updateBrain } = useStartup();
   const { user } = useUser();
   const firestore = useFirestore();
   const [activeTool, setActiveTool] = useState<string | null>(null);
@@ -40,7 +39,6 @@ export function PersonaWorkspaceView() {
   const [result, setResult] = useState<ExecutiveActionOutput | null>(null);
   const { toast } = useToast();
 
-  // GitHub Modal State
   const [githubOpen, setGithubOpen] = useState(false);
   const [githubStep, setGithubStep] = useState<'connect' | 'repo' | 'pushing'>('connect');
 
@@ -101,9 +99,17 @@ export function PersonaWorkspaceView() {
         taskType: toolName,
         startupIdea: state.rawIdea,
         stage: state.stage,
-        userPrompt
+        userPrompt,
+        startupBrain: state.brain as any
       });
+      
       setResult(response);
+      
+      if (response.brainUpdate) {
+        updateBrain(response.brainUpdate);
+        toast({ title: "Brain Updated", description: "Shared intelligence has been enriched." });
+      }
+
       toast({ title: "Task Complete", description: `The ${state.role} has delivered the asset.` });
     } catch (error) {
       toast({ variant: "destructive", title: "Task Failed", description: "The executive is tied up. Try again." });
@@ -201,6 +207,9 @@ export function PersonaWorkspaceView() {
               {state.role} OFFICE
             </Badge>
             <Badge variant="secondary" className="bg-white/5 border-white/10">{state.stage}</Badge>
+            <Badge variant="outline" className="border-accent/30 text-accent flex gap-1 items-center bg-accent/5">
+              <Brain className="w-3 h-3" /> Shared Intelligence Active
+            </Badge>
           </div>
           <h2 className="text-5xl font-headline font-bold gradient-text leading-tight">
             {state.role}&apos;s Studio
@@ -212,7 +221,6 @@ export function PersonaWorkspaceView() {
       </header>
 
       <div className="grid lg:grid-cols-3 gap-8">
-        {/* Tool Sidebar */}
         <div className="space-y-4">
           <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground mb-4">Available Tools</h3>
           {roleTools.map((tool) => (
@@ -237,7 +245,6 @@ export function PersonaWorkspaceView() {
           ))}
         </div>
 
-        {/* Workspace Area */}
         <div className="lg:col-span-2 space-y-6">
           {activeTool ? (
             <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
@@ -248,7 +255,7 @@ export function PersonaWorkspaceView() {
                     {roleTools.find(t => t.id === activeTool)?.name}
                   </CardTitle>
                   <CardDescription>
-                    Provide additional details to customize the output, or leave blank for a standard approach.
+                    Provide additional details to customize the output. Your {state.role} is already aware of your <strong>Startup Brain</strong>.
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -296,7 +303,6 @@ export function PersonaWorkspaceView() {
                           </Badge>
                         </div>
                         
-                        {/* Code Actions */}
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-2">
                           <Button variant="outline" size="sm" onClick={handleSaveToProject} className="gap-2 border-white/10 bg-white/5 hover:bg-accent/10 hover:border-accent/30 text-xs">
                             <Save className="w-3 h-3" /> Save to Project
@@ -340,6 +346,16 @@ export function PersonaWorkspaceView() {
                       </div>
                     )}
 
+                    {result.brainUpdate && (
+                      <div className="mt-6 p-4 rounded-xl bg-accent/5 border border-accent/20 flex items-start gap-3">
+                        <Brain className="w-5 h-5 text-accent mt-0.5 shrink-0" />
+                        <div>
+                          <p className="text-xs font-bold text-accent uppercase tracking-widest mb-1">Brain Update Detected</p>
+                          <p className="text-xs text-muted-foreground">This session has enriched your startup intelligence with new data on: {Object.keys(result.brainUpdate).join(', ')}.</p>
+                        </div>
+                      </div>
+                    )}
+
                     {result.additionalInsights && result.additionalInsights.length > 0 && (
                       <div className="mt-8 pt-8 border-t border-white/5 space-y-4">
                         <h5 className="text-[10px] font-bold uppercase tracking-widest text-accent">Founder Insights</h5>
@@ -372,13 +388,12 @@ export function PersonaWorkspaceView() {
         </div>
       </div>
 
-      {/* GitHub Integration Modal */}
       <Dialog open={githubOpen} onOpenChange={setGithubOpen}>
         <DialogContent className="sm:max-w-[400px] bg-[#16181C] border-white/10">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2">
               <Github className="w-5 h-5" /> GitHub Integration
-            </DialogTitle>
+            </CardTitle>
             <DialogDescription>
               Deploy your AI-generated code directly to your repositories.
             </DialogDescription>
