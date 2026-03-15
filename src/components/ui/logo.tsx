@@ -6,26 +6,31 @@ export function AIFounderLogo({ className }: { className?: string }) {
     <svg 
       viewBox="0 0 100 100" 
       fill="none" 
-      stroke="currentColor" 
-      strokeWidth="5" 
-      strokeLinecap="round" 
-      strokeLinejoin="round" 
+      xmlns="http://www.w3.org/2000/svg"
       className={cn("w-full h-full", className)}
     >
-      {/* Top horizontal stroke */}
-      <path d="M52 18 Q 65 12 82 18" />
+      <defs>
+        <linearGradient id="logo-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="hsl(var(--primary))" />
+          <stop offset="100%" stopColor="hsl(var(--accent))" />
+        </linearGradient>
+      </defs>
       
-      {/* Main flourish body */}
+      {/* Top Seed Shape - Pointing Down */}
       <path 
-        d="M58 15 
-           C 50 35 25 45 25 65 
-           C 25 85 55 95 70 75 
-           C 80 55 55 40 40 50 
-           C 30 60 35 80 50 85" 
+        d="M50 12 
+           C 68 12, 65 42, 50 48 
+           C 35 42, 32 12, 50 12 Z" 
+        fill="currentColor"
       />
       
-      {/* Signature central dot */}
-      <circle cx="42" cy="52" r="3.5" fill="currentColor" stroke="none" />
+      {/* Bottom Seed Shape - Pointing Up */}
+      <path 
+        d="M50 52 
+           C 65 58, 68 88, 50 88 
+           C 32 88, 35 58, 50 52 Z" 
+        fill="currentColor"
+      />
     </svg>
   );
 }
