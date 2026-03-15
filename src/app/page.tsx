@@ -17,7 +17,8 @@ import {
   Zap,
   Trash2,
   TrendingUp,
-  Activity
+  Activity,
+  PlayCircle
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -28,9 +29,10 @@ import { ProductGuideView } from '@/components/startup/product-guide-view';
 import { MarketingView } from '@/components/startup/marketing-view';
 import { TaskManagerView } from '@/components/startup/task-manager-view';
 import { DecisionSupportView } from '@/components/startup/decision-support-view';
+import { SimulationView } from '@/components/startup/simulation-view';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
-type ViewType = 'dashboard' | 'validation' | 'blueprint' | 'product' | 'marketing' | 'tasks' | 'decisions';
+type ViewType = 'dashboard' | 'validation' | 'blueprint' | 'product' | 'marketing' | 'tasks' | 'decisions' | 'simulation';
 
 function DashboardContent({ setView }: { setView: (v: ViewType) => void }) {
   const { state, reset, setStage } = useStartup();
@@ -41,6 +43,7 @@ function DashboardContent({ setView }: { setView: (v: ViewType) => void }) {
     { id: 'product', label: 'Product Guidance', icon: <Code2 />, completed: !!state.productGuidance },
     { id: 'marketing', label: 'Marketing Strategy', icon: <Rocket />, completed: !!state.marketing },
     { id: 'tasks', label: 'Task Management', icon: <CheckSquare />, completed: !!state.tasks },
+    { id: 'simulation', label: 'Startup Simulation', icon: <PlayCircle />, completed: !!state.lastSimulation },
   ];
 
   const stages: StartupStage[] = [
@@ -93,7 +96,7 @@ function DashboardContent({ setView }: { setView: (v: ViewType) => void }) {
               </div>
               {item.completed ? (
                 <div className="bg-emerald-500/20 text-emerald-400 text-xs px-2 py-1 rounded-full flex items-center gap-1">
-                  <Sparkles className="w-3 h-3" /> Completed
+                  <Sparkles className="w-3 h-3" /> {item.id === 'simulation' ? 'Active' : 'Completed'}
                 </div>
               ) : (
                 <div className="bg-white/5 text-muted-foreground text-xs px-2 py-1 rounded-full">
@@ -145,8 +148,8 @@ function DashboardContent({ setView }: { setView: (v: ViewType) => void }) {
               <p className="text-sm text-muted-foreground">Keep executing the critical tasks to level up your venture.</p>
             </div>
           </div>
-          <Button variant="outline" onClick={() => setView('tasks')} className="border-accent/20 hover:bg-accent/5">
-            View Roadmap
+          <Button variant="outline" onClick={() => setView('simulation')} className="border-accent/20 hover:bg-accent/5">
+            Run Simulation
           </Button>
         </div>
       )}
@@ -167,6 +170,7 @@ function MainApp() {
       case 'marketing': return <MarketingView onComplete={() => setCurrentView('tasks')} />;
       case 'tasks': return <TaskManagerView />;
       case 'decisions': return <DecisionSupportView />;
+      case 'simulation': return <SimulationView />;
       default: return <DashboardContent setView={setCurrentView} />;
     }
   };
@@ -178,6 +182,7 @@ function MainApp() {
     { id: 'product', label: 'Product Dev', icon: <Code2 className="w-4 h-4" /> },
     { id: 'marketing', label: 'Marketing', icon: <Rocket className="w-4 h-4" /> },
     { id: 'tasks', label: 'Tasks & Roadmap', icon: <CheckSquare className="w-4 h-4" /> },
+    { id: 'simulation', label: 'Simulations', icon: <PlayCircle className="w-4 h-4" /> },
     { id: 'decisions', label: 'Decision Hub', icon: <HelpCircle className="w-4 h-4" /> },
   ];
 

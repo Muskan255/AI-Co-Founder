@@ -6,6 +6,7 @@ import { AiStartupBlueprintGenerationOutput } from '@/ai/flows/ai-startup-bluepr
 import { AiProductDevelopmentGuidanceOutput } from '@/ai/flows/ai-product-development-guidance';
 import { MarketingStrategyGenerationOutput } from '@/ai/flows/ai-marketing-strategy-generation';
 import { AiTaskMilestoneManagementOutput } from '@/ai/flows/ai-task-milestone-management';
+import { AiStartupSimulationOutput } from '@/ai/flows/ai-startup-simulation';
 
 export type StartupStage = 'Idea Stage' | 'Validation Stage' | 'MVP Development' | 'Early Traction' | 'Growth Stage' | 'Scaling Stage';
 
@@ -17,6 +18,7 @@ interface StartupState {
   productGuidance: AiProductDevelopmentGuidanceOutput | null;
   marketing: MarketingStrategyGenerationOutput | null;
   tasks: AiTaskMilestoneManagementOutput | null;
+  lastSimulation: AiStartupSimulationOutput | null;
 }
 
 interface StartupContextType {
@@ -28,6 +30,7 @@ interface StartupContextType {
   setProductGuidance: (p: AiProductDevelopmentGuidanceOutput) => void;
   setMarketing: (m: MarketingStrategyGenerationOutput) => void;
   setTasks: (t: AiTaskMilestoneManagementOutput) => void;
+  setSimulation: (s: AiStartupSimulationOutput) => void;
   reset: () => void;
   isHydrated: boolean;
 }
@@ -41,14 +44,14 @@ const DEFAULT_STATE: StartupState = {
   blueprint: null,
   productGuidance: null,
   marketing: null,
-  tasks: null
+  tasks: null,
+  lastSimulation: null
 };
 
 export function StartupProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<StartupState>(DEFAULT_STATE);
   const [isHydrated, setIsHydrated] = useState(false);
 
-  // Load state from localStorage once on mount
   useEffect(() => {
     const saved = localStorage.getItem('co-pilot-startup-state');
     if (saved) {
@@ -61,7 +64,6 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
     setIsHydrated(true);
   }, []);
 
-  // Save state to localStorage whenever it changes, but only after hydration
   useEffect(() => {
     if (isHydrated) {
       localStorage.setItem('co-pilot-startup-state', JSON.stringify(state));
@@ -75,6 +77,7 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
   const setProductGuidance = (p: AiProductDevelopmentGuidanceOutput) => setState(prev => ({ ...prev, productGuidance: p, stage: 'Early Traction' }));
   const setMarketing = (m: MarketingStrategyGenerationOutput) => setState(prev => ({ ...prev, marketing: m, stage: 'Growth Stage' }));
   const setTasks = (t: AiTaskMilestoneManagementOutput) => setState(prev => ({ ...prev, tasks: t, stage: 'Scaling Stage' }));
+  const setSimulation = (s: AiStartupSimulationOutput) => setState(prev => ({ ...prev, lastSimulation: s }));
   
   const reset = () => {
     setState(DEFAULT_STATE);
@@ -90,6 +93,7 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
       setProductGuidance, 
       setMarketing, 
       setTasks,
+      setSimulation,
       reset,
       isHydrated
     }}>
