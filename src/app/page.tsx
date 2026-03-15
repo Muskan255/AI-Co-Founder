@@ -18,7 +18,8 @@ import {
   Trash2,
   TrendingUp,
   Activity,
-  PlayCircle
+  PlayCircle,
+  Flag
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -42,8 +43,8 @@ function DashboardContent({ setView }: { setView: (v: ViewType) => void }) {
     { id: 'blueprint', label: 'Startup Blueprint', icon: <Map />, completed: !!state.blueprint },
     { id: 'product', label: 'Product Guidance', icon: <Code2 />, completed: !!state.productGuidance },
     { id: 'marketing', label: 'Marketing Strategy', icon: <Rocket />, completed: !!state.marketing },
-    { id: 'tasks', label: 'Task Management', icon: <CheckSquare />, completed: !!state.tasks },
-    { id: 'simulation', label: 'Startup Simulation', icon: <PlayCircle />, completed: !!state.lastSimulation },
+    { id: 'tasks', label: 'Accountability & Tasks', icon: <CheckSquare />, completed: !!state.tasks },
+    { id: 'simulation', label: 'Venture Simulation', icon: <PlayCircle />, completed: !!state.lastSimulation },
   ];
 
   const stages: StartupStage[] = [
@@ -63,15 +64,18 @@ function DashboardContent({ setView }: { setView: (v: ViewType) => void }) {
             <Badge variant="outline" className="bg-primary/5 text-accent border-accent/20 px-3 py-1 flex gap-2 items-center">
               <Activity className="w-3 h-3" /> {state.stage}
             </Badge>
+            <Badge variant="secondary" className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20 px-3 py-1">
+              Accountability System Active
+            </Badge>
           </div>
-          <h1 className="text-5xl font-headline font-bold gradient-text">Welcome back, Partner.</h1>
+          <h1 className="text-5xl font-headline font-bold gradient-text">Welcome back, Founder.</h1>
           <p className="text-xl text-muted-foreground max-w-2xl">
-            I'm your AI co-founder. Together, we'll build something remarkable. Current mode: <span className="text-accent">{state.stage}</span>.
+            Ready to execute? Your current focus is <span className="text-accent font-bold uppercase tracking-wider">{state.stage}</span>. Let's hit your milestones.
           </p>
         </div>
         
         <div className="flex flex-col gap-2">
-          <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Startup Mode</label>
+          <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Startup Stage</label>
           <Select value={state.stage} onValueChange={(val) => setStage(val as StartupStage)}>
             <SelectTrigger className="w-[200px] bg-card border-white/10">
               <SelectValue placeholder="Select Stage" />
@@ -96,7 +100,7 @@ function DashboardContent({ setView }: { setView: (v: ViewType) => void }) {
               </div>
               {item.completed ? (
                 <div className="bg-emerald-500/20 text-emerald-400 text-xs px-2 py-1 rounded-full flex items-center gap-1">
-                  <Sparkles className="w-3 h-3" /> {item.id === 'simulation' ? 'Active' : 'Completed'}
+                  <Sparkles className="w-3 h-3" /> {item.id === 'tasks' ? 'Executing' : 'Completed'}
                 </div>
               ) : (
                 <div className="bg-white/5 text-muted-foreground text-xs px-2 py-1 rounded-full">
@@ -106,10 +110,10 @@ function DashboardContent({ setView }: { setView: (v: ViewType) => void }) {
             </div>
             <h3 className="text-xl font-headline font-semibold mb-2">{item.label}</h3>
             <p className="text-sm text-muted-foreground mb-4">
-              {item.completed ? 'Review your results and iterate.' : 'Start this phase to progress your idea.'}
+              {item.completed ? 'Review your results and execute.' : 'Start this phase to progress your idea.'}
             </p>
             <div className="flex items-center text-accent text-sm font-medium">
-              Open Section <ChevronRight className="w-4 h-4 ml-1" />
+              Enter Section <ChevronRight className="w-4 h-4 ml-1" />
             </div>
           </div>
         ))}
@@ -122,35 +126,41 @@ function DashboardContent({ setView }: { setView: (v: ViewType) => void }) {
             <Trash2 className="w-6 h-6" />
           </div>
           <h3 className="font-headline font-semibold">Start Fresh</h3>
-          <p className="text-xs text-muted-foreground">Clear all current progress and start a new startup venture.</p>
+          <p className="text-xs text-muted-foreground">Clear current venture data and restart.</p>
         </div>
       </div>
 
       {!state.rawIdea ? (
         <div className="bg-primary/5 border border-primary/20 rounded-2xl p-10 text-center space-y-6">
           <Zap className="w-12 h-12 text-accent mx-auto animate-pulse" />
-          <h2 className="text-3xl font-headline font-bold">Have a new idea?</h2>
+          <h2 className="text-3xl font-headline font-bold">New Venture Detected?</h2>
           <p className="text-muted-foreground max-w-md mx-auto">
-            Let's put it through the validation engine and see if it has wings.
+            Put your idea through the validation engine. I'll be your co-founder and keep you accountable.
           </p>
           <Button size="lg" onClick={() => setView('validation')} className="bg-primary hover:bg-primary/90">
             Validate New Idea
           </Button>
         </div>
       ) : (
-        <div className="glass-card rounded-2xl p-8 flex flex-col md:flex-row items-center gap-8 justify-between">
-          <div className="flex gap-4 items-center">
+        <div className="glass-card rounded-2xl p-8 flex flex-col md:flex-row items-center gap-8 justify-between relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-accent/5 rounded-full -mr-16 -mt-16 blur-3xl" />
+          <div className="flex gap-4 items-center relative z-1">
             <div className="w-16 h-16 rounded-full bg-accent/20 flex items-center justify-center text-accent">
-              <TrendingUp className="w-8 h-8" />
+              <Flag className="w-8 h-8" />
             </div>
             <div>
-              <h3 className="text-xl font-bold font-headline">Road to {stages[Math.min(stages.indexOf(state.stage) + 1, stages.length - 1)]}</h3>
-              <p className="text-sm text-muted-foreground">Keep executing the critical tasks to level up your venture.</p>
+              <h3 className="text-xl font-bold font-headline">Targeting: {stages[Math.min(stages.indexOf(state.stage) + 1, stages.length - 1)]}</h3>
+              <p className="text-sm text-muted-foreground">Execution is the only differentiator. Keep moving.</p>
             </div>
           </div>
-          <Button variant="outline" onClick={() => setView('simulation')} className="border-accent/20 hover:bg-accent/5">
-            Run Simulation
-          </Button>
+          <div className="flex gap-4">
+            <Button variant="outline" onClick={() => setView('tasks')} className="border-accent/20 hover:bg-accent/5">
+              Review Accountability
+            </Button>
+            <Button onClick={() => setView('simulation')} className="bg-accent text-accent-foreground font-bold">
+              Run Venture Simulation
+            </Button>
+          </div>
         </div>
       )}
     </div>
@@ -180,8 +190,8 @@ function MainApp() {
     { id: 'validation', label: 'Idea Validation', icon: <Lightbulb className="w-4 h-4" /> },
     { id: 'blueprint', label: 'Blueprint', icon: <Map className="w-4 h-4" /> },
     { id: 'product', label: 'Product Dev', icon: <Code2 className="w-4 h-4" /> },
-    { id: 'marketing', label: 'Marketing', icon: <Rocket className="w-4 h-4" /> },
-    { id: 'tasks', label: 'Tasks & Roadmap', icon: <CheckSquare className="w-4 h-4" /> },
+    { id: 'marketing', label: 'Growth Plan', icon: <Rocket className="w-4 h-4" /> },
+    { id: 'tasks', label: 'Accountability', icon: <CheckSquare className="w-4 h-4" /> },
     { id: 'simulation', label: 'Simulations', icon: <PlayCircle className="w-4 h-4" /> },
     { id: 'decisions', label: 'Decision Hub', icon: <HelpCircle className="w-4 h-4" /> },
   ];
@@ -195,7 +205,7 @@ function MainApp() {
               <Sparkles className="w-5 h-5 text-accent" />
             </div>
             <div className="flex flex-col group-data-[collapsible=icon]:hidden">
-              <span className="font-headline font-bold text-lg leading-none">AI Co-Founder</span>
+              <span className="font-headline font-bold text-lg leading-none uppercase tracking-tighter">AI Co-Founder</span>
               <span className="text-[10px] text-accent font-bold uppercase tracking-widest mt-1">{state.stage}</span>
             </div>
           </div>
@@ -225,7 +235,7 @@ function MainApp() {
           <div className="flex-1 flex justify-end items-center gap-4">
             <div className="flex items-center gap-2 text-xs text-muted-foreground font-medium">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              {state.stage} Active
+              Founder Active
             </div>
           </div>
         </header>
