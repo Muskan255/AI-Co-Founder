@@ -8,3 +8,4 @@ import '@/ai/flows/ai-task-milestone-management.ts';
 import '@/ai/flows/ai-product-development-guidance.ts';
 import '@/ai/flows/ai-startup-simulation.ts';
 import '@/ai/flows/ai-decision-support.ts';
+import '@/ai/flows/ai-workspace-generation.ts';

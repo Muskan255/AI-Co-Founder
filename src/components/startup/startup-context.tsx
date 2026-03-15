@@ -7,6 +7,7 @@ import { AiProductDevelopmentGuidanceOutput } from '@/ai/flows/ai-product-develo
 import { MarketingStrategyGenerationOutput } from '@/ai/flows/ai-marketing-strategy-generation';
 import { AiTaskMilestoneManagementOutput } from '@/ai/flows/ai-task-milestone-management';
 import { AiStartupSimulationOutput } from '@/ai/flows/ai-startup-simulation';
+import { WorkspaceOutput } from '@/ai/flows/ai-workspace-generation';
 
 export type StartupStage = 'Idea Stage' | 'Validation Stage' | 'MVP Development' | 'Early Traction' | 'Growth Stage' | 'Scaling Stage';
 export type StartupRole = 'AI CTO' | 'AI CMO' | 'AI CFO' | 'AI Product Manager' | 'AI Growth Hacker';
@@ -21,6 +22,7 @@ interface StartupState {
   marketing: MarketingStrategyGenerationOutput | null;
   tasks: AiTaskMilestoneManagementOutput | null;
   lastSimulation: AiStartupSimulationOutput | null;
+  workspace: WorkspaceOutput | null;
 }
 
 interface StartupContextType {
@@ -34,6 +36,7 @@ interface StartupContextType {
   setMarketing: (m: MarketingStrategyGenerationOutput) => void;
   setTasks: (t: AiTaskMilestoneManagementOutput) => void;
   setSimulation: (s: AiStartupSimulationOutput) => void;
+  setWorkspace: (w: WorkspaceOutput) => void;
   reset: () => void;
   isHydrated: boolean;
 }
@@ -49,7 +52,8 @@ const DEFAULT_STATE: StartupState = {
   productGuidance: null,
   marketing: null,
   tasks: null,
-  lastSimulation: null
+  lastSimulation: null,
+  workspace: null
 };
 
 export function StartupProvider({ children }: { children: React.ReactNode }) {
@@ -83,6 +87,7 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
   const setMarketing = (m: MarketingStrategyGenerationOutput) => setState(prev => ({ ...prev, marketing: m, stage: 'Growth Stage' }));
   const setTasks = (t: AiTaskMilestoneManagementOutput) => setState(prev => ({ ...prev, tasks: t, stage: 'Scaling Stage' }));
   const setSimulation = (s: AiStartupSimulationOutput) => setState(prev => ({ ...prev, lastSimulation: s }));
+  const setWorkspace = (w: WorkspaceOutput) => setState(prev => ({ ...prev, workspace: w }));
   
   const reset = () => {
     setState(DEFAULT_STATE);
@@ -100,6 +105,7 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
       setMarketing, 
       setTasks,
       setSimulation,
+      setWorkspace,
       reset,
       isHydrated
     }}>

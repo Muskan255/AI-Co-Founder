@@ -25,7 +25,8 @@ import {
   Megaphone,
   Banknote,
   Box,
-  FastForward
+  FastForward,
+  Briefcase
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -37,20 +38,21 @@ import { MarketingView } from '@/components/startup/marketing-view';
 import { TaskManagerView } from '@/components/startup/task-manager-view';
 import { DecisionSupportView } from '@/components/startup/decision-support-view';
 import { SimulationView } from '@/components/startup/simulation-view';
+import { WorkspaceView } from '@/components/startup/workspace-view';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
-type ViewType = 'dashboard' | 'validation' | 'blueprint' | 'product' | 'marketing' | 'tasks' | 'decisions' | 'simulation';
+type ViewType = 'dashboard' | 'validation' | 'blueprint' | 'product' | 'marketing' | 'tasks' | 'decisions' | 'simulation' | 'workspace';
 
 function DashboardContent({ setView }: { setView: (v: ViewType) => void }) {
   const { state, reset, setStage } = useStartup();
   
   const progressItems = [
-    { id: 'validation', label: 'Idea Validation', icon: <Lightbulb />, completed: !!state.validation },
-    { id: 'blueprint', label: 'Startup Blueprint', icon: <Map />, completed: !!state.blueprint },
-    { id: 'product', label: 'Product Guidance', icon: <Code2 />, completed: !!state.productGuidance },
-    { id: 'marketing', label: 'Marketing Strategy', icon: <Rocket />, completed: !!state.marketing },
-    { id: 'tasks', label: 'Accountability & Tasks', icon: <CheckSquare />, completed: !!state.tasks },
-    { id: 'simulation', label: 'Venture Simulation', icon: <PlayCircle />, completed: !!state.lastSimulation },
+    { id: 'workspace', label: 'Turbo Workspace', icon: <Zap className="text-accent" />, completed: !!state.workspace, description: 'Generate roadmap, pitch deck & specs in one go.' },
+    { id: 'validation', label: 'Idea Validation', icon: <Lightbulb />, completed: !!state.validation, description: 'Challenge and stress-test your core concept.' },
+    { id: 'blueprint', label: 'Startup Blueprint', icon: <Map />, completed: !!state.blueprint, description: 'Build your business model and revenue engine.' },
+    { id: 'product', label: 'Product Guidance', icon: <Code2 />, completed: !!state.productGuidance, description: 'MVP specs and architecture recommendations.' },
+    { id: 'marketing', label: 'Marketing Strategy', icon: <Rocket />, completed: !!state.marketing, description: 'Growth loops and acquisition strategy.' },
+    { id: 'tasks', label: 'Accountability & Tasks', icon: <CheckSquare />, completed: !!state.tasks, description: 'Roadmaps, milestones, and daily execution.' },
   ];
 
   const stages: StartupStage[] = [
@@ -76,7 +78,7 @@ function DashboardContent({ setView }: { setView: (v: ViewType) => void }) {
           </div>
           <h1 className="text-5xl font-headline font-bold gradient-text">Welcome back, Founder.</h1>
           <p className="text-xl text-muted-foreground max-w-2xl">
-            Ready to execute? Your current focus is <span className="text-accent font-bold uppercase tracking-wider">{state.stage}</span>. Let's hit your milestones.
+            Execution is the only differentiator. You're currently in <span className="text-accent font-bold uppercase tracking-wider">{state.stage}</span>.
           </p>
         </div>
         
@@ -105,18 +107,18 @@ function DashboardContent({ setView }: { setView: (v: ViewType) => void }) {
                 {item.icon}
               </div>
               {item.completed ? (
-                <div className="bg-emerald-500/20 text-emerald-400 text-xs px-2 py-1 rounded-full flex items-center gap-1">
-                  <Sparkles className="w-3 h-3" /> {item.id === 'tasks' ? 'Executing' : 'Completed'}
+                <div className="bg-emerald-500/20 text-emerald-400 text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-full flex items-center gap-1">
+                  <Sparkles className="w-3 h-3" /> Ready
                 </div>
               ) : (
-                <div className="bg-white/5 text-muted-foreground text-xs px-2 py-1 rounded-full">
-                  Pending
+                <div className="bg-white/5 text-muted-foreground text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-full">
+                  Start
                 </div>
               )}
             </div>
             <h3 className="text-xl font-headline font-semibold mb-2">{item.label}</h3>
-            <p className="text-sm text-muted-foreground mb-4">
-              {item.completed ? 'Review your results and execute.' : 'Start this phase to progress your idea.'}
+            <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
+              {item.description}
             </p>
             <div className="flex items-center text-accent text-sm font-medium">
               Enter Section <ChevronRight className="w-4 h-4 ml-1" />
@@ -132,20 +134,26 @@ function DashboardContent({ setView }: { setView: (v: ViewType) => void }) {
             <Trash2 className="w-6 h-6" />
           </div>
           <h3 className="font-headline font-semibold">Start Fresh</h3>
-          <p className="text-xs text-muted-foreground">Clear current venture data and restart.</p>
+          <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest">Clear Venture Data</p>
         </div>
       </div>
 
       {!state.rawIdea ? (
-        <div className="bg-primary/5 border border-primary/20 rounded-2xl p-10 text-center space-y-6">
+        <div className="bg-primary/5 border border-primary/20 rounded-2xl p-10 text-center space-y-6 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-transparent pointer-events-none" />
           <Zap className="w-12 h-12 text-accent mx-auto animate-pulse" />
-          <h2 className="text-3xl font-headline font-bold">New Venture Detected?</h2>
+          <h2 className="text-3xl font-headline font-bold">Turbo Launch Engine</h2>
           <p className="text-muted-foreground max-w-md mx-auto">
-            Put your idea through the validation engine. I'll be your co-founder and keep you accountable.
+            Input one idea and get a full workspace: Roadmap, Pitch Deck, Marketing Strategy, and Product Specs instantly.
           </p>
-          <Button size="lg" onClick={() => setView('validation')} className="bg-primary hover:bg-primary/90">
-            Validate New Idea
-          </Button>
+          <div className="flex gap-4 justify-center">
+            <Button size="lg" onClick={() => setView('workspace')} className="bg-primary hover:bg-primary/90 gap-2 px-8">
+              <Sparkles className="w-4 h-4" /> Turbo Generate Workspace
+            </Button>
+            <Button size="lg" variant="outline" onClick={() => setView('validation')} className="border-accent/20">
+              Manual Validation
+            </Button>
+          </div>
         </div>
       ) : (
         <div className="glass-card rounded-2xl p-8 flex flex-col md:flex-row items-center gap-8 justify-between relative overflow-hidden">
@@ -155,16 +163,16 @@ function DashboardContent({ setView }: { setView: (v: ViewType) => void }) {
               <Flag className="w-8 h-8" />
             </div>
             <div>
-              <h3 className="text-xl font-bold font-headline">Targeting: {stages[Math.min(stages.indexOf(state.stage) + 1, stages.length - 1)]}</h3>
-              <p className="text-sm text-muted-foreground">Execution is the only differentiator. Keep moving.</p>
+              <h3 className="text-xl font-bold font-headline">Scaling to: {stages[Math.min(stages.indexOf(state.stage) + 1, stages.length - 1)]}</h3>
+              <p className="text-sm text-muted-foreground">Don't plan for too long. Build something users love.</p>
             </div>
           </div>
           <div className="flex gap-4">
             <Button variant="outline" onClick={() => setView('tasks')} className="border-accent/20 hover:bg-accent/5">
-              Review Accountability
+              Accountability Center
             </Button>
             <Button onClick={() => setView('simulation')} className="bg-accent text-accent-foreground font-bold">
-              Run Venture Simulation
+              Run Market Simulation
             </Button>
           </div>
         </div>
@@ -187,14 +195,16 @@ function MainApp() {
       case 'tasks': return <TaskManagerView />;
       case 'decisions': return <DecisionSupportView />;
       case 'simulation': return <SimulationView />;
+      case 'workspace': return <WorkspaceView />;
       default: return <DashboardContent setView={setCurrentView} />;
     }
   };
 
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-4 h-4" /> },
+    { id: 'workspace', label: 'Turbo Workspace', icon: <Zap className="w-4 h-4 text-accent" /> },
     { id: 'validation', label: 'Idea Validation', icon: <Lightbulb className="w-4 h-4" /> },
-    { id: 'blueprint', label: 'Blueprint', icon: <Map className="w-4 h-4" /> },
+    { id: 'blueprint', label: 'Strategy Blueprint', icon: <Map className="w-4 h-4" /> },
     { id: 'product', label: 'Product Dev', icon: <Code2 className="w-4 h-4" /> },
     { id: 'marketing', label: 'Growth Plan', icon: <Rocket className="w-4 h-4" /> },
     { id: 'tasks', label: 'Accountability', icon: <CheckSquare className="w-4 h-4" /> },
@@ -275,7 +285,7 @@ function MainApp() {
           <div className="flex-1 flex justify-end items-center gap-4">
             <div className="flex items-center gap-2 text-xs text-muted-foreground font-medium">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              {state.role} Active
+              {state.role} Perspective
             </div>
           </div>
         </header>
