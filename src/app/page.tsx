@@ -67,6 +67,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
+import { AIFounderLogo } from '@/components/ui/logo';
 
 type ViewType = 'projects' | 'dashboard' | 'validation' | 'blueprint' | 'product' | 'marketing' | 'finance' | 'tasks' | 'decisions' | 'simulation' | 'workspace' | 'persona-workspace' | 'brain' | 'health';
 
@@ -557,7 +558,7 @@ function MainApp() {
     return (
       <div className="h-svh w-full flex flex-col items-center justify-center bg-[#16181C] space-y-4">
         <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center animate-pulse">
-          <Rocket className="w-6 h-6 text-white" />
+          <AIFounderLogo className="w-6 h-6 text-white" />
         </div>
         <span className="text-xs font-bold uppercase tracking-[0.2em] text-accent animate-pulse">Restoring Workspace...</span>
       </div>
@@ -598,7 +599,7 @@ function MainApp() {
         <SidebarHeader className="p-4">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-lg shadow-accent/20">
-              <Rocket className="w-5 h-5 text-white" />
+              <AIFounderLogo className="w-5 h-5 text-white" />
             </div>
             <div className="flex flex-col group-data-[collapsible=icon]:hidden">
               <span className="font-headline font-bold text-lg leading-none uppercase tracking-tighter">AI Founder</span>

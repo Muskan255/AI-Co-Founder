@@ -1,3 +1,4 @@
+
 "use client"
 
 import React, { useState } from 'react';
@@ -24,6 +25,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { LogIn, UserPlus, Sparkles, Mail, Rocket } from 'lucide-react';
+import { AIFounderLogo } from '@/components/ui/logo';
 
 interface AuthModalProps {
   children?: React.ReactNode;
@@ -147,7 +149,7 @@ export function AuthModal({ children, open, onOpenChange }: AuthModalProps) {
         <div className="p-8 space-y-6">
           <DialogHeader className="space-y-2">
             <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center mx-auto mb-2 shadow-lg shadow-accent/20">
-              <Rocket className="w-6 h-6 text-white" />
+              <AIFounderLogo className="w-6 h-6 text-white" />
             </div>
             <DialogTitle className="text-2xl font-headline font-bold text-center">Founder Portal</DialogTitle>
             <DialogDescription className="text-center text-muted-foreground">
