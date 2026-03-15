@@ -17,6 +17,11 @@ const DecisionSupportInputSchema = z.object({
 });
 export type DecisionSupportInput = z.infer<typeof DecisionSupportInputSchema>;
 
+const ExecutivePerspectiveSchema = z.object({
+  role: z.string().describe('The role providing the perspective.'),
+  insight: z.string().describe('The specific perspective or consideration from this role.'),
+});
+
 const DecisionSupportOutputSchema = z.object({
   recommendation: z.string().describe('The recommended course of action.'),
   options: z.array(z.object({
@@ -26,6 +31,7 @@ const DecisionSupportOutputSchema = z.object({
     effort: z.string().describe('Estimated effort required.'),
   })).describe('Analysis of the options.'),
   frameworkUsed: z.string().describe('The framework used (e.g., Lean Startup, JTBD).'),
+  collaboration: z.array(ExecutivePerspectiveSchema).describe('Insights from the full executive team.'),
 });
 export type DecisionSupportOutput = z.infer<typeof DecisionSupportOutputSchema>;
 
@@ -39,12 +45,8 @@ const decisionPrompt = ai.definePrompt({
   output: {schema: DecisionSupportOutputSchema},
   prompt: `You are acting as the {{{role}}} of the startup, helping make a critical decision.
 
-{{#if (eq role "AI Growth Hacker")}}
-You are the AI Growth Hacker. Weigh every option against rapid user growth, viral potential, and conversion optimization.
-{{/if}}
-
 **Founder Mindset & Long-Term Vision:**
-- Weigh every option against: Scalability, Network Effects, Competitive Moats, and Global Potential from the viewpoint of a {{{role}}}.
+- Weigh every option against: Scalability, Network Effects, Competitive Moats, and Global Potential.
 - Pick the best option based on speed, learning, and long-term defensibility.
 
 **Decision Framework:**
@@ -54,13 +56,19 @@ You are the AI Growth Hacker. Weigh every option against rapid user growth, vira
 4. Estimate Effort
 5. Recommend
 
-**Startup Frameworks:** Use Lean Startup, Design Thinking, PMF, Jobs-to-be-Done, etc.
+**Executive Collaboration Mode:**
+Regardless of your primary active role ({{{role}}}), you must also provide a brief, high-impact perspective from each member of the executive team:
+- AI CTO: Technical considerations (architecture, stack, scalability).
+- AI CMO: Marketing implications (branding, positioning, user reach).
+- AI CFO: Financial impact (burn rate, revenue, sustainability).
+- AI Product Manager: Product strategy (UX, features, PMF).
+- AI Growth Hacker: Growth opportunities (viral loops, acquisition experiments).
 
 **Context:**
 The startup is in: {{{currentStage}}}
 Situation: {{{query}}}
 
-Provide a structured evaluation and a clear recommendation from your perspective as {{{role}}}.`,
+Provide a structured evaluation, a clear recommendation, and the collaborative executive insights.`,
 });
 
 const aiDecisionSupportFlow = ai.defineFlow(
