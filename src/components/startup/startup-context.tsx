@@ -1,6 +1,7 @@
+
 "use client"
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { IdeaValidationOutput } from '@/ai/flows/ai-idea-validation';
 import { AiStartupBlueprintGenerationOutput } from '@/ai/flows/ai-startup-blueprint-generation';
 import { AiProductDevelopmentGuidanceOutput } from '@/ai/flows/ai-product-development-guidance';
@@ -8,11 +9,15 @@ import { MarketingStrategyGenerationOutput } from '@/ai/flows/ai-marketing-strat
 import { AiTaskMilestoneManagementOutput } from '@/ai/flows/ai-task-milestone-management';
 import { AiStartupSimulationOutput } from '@/ai/flows/ai-startup-simulation';
 import { WorkspaceOutput } from '@/ai/flows/ai-workspace-generation';
+import { useUser, useFirestore } from '@/firebase';
+import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 
 export type StartupStage = 'Idea Stage' | 'Validation Stage' | 'MVP Development' | 'Early Traction' | 'Growth Stage' | 'Scaling Stage';
 export type StartupRole = 'AI CTO' | 'AI CMO' | 'AI CFO' | 'AI Product Manager' | 'AI Growth Hacker';
 
 interface StartupState {
+  projectId: string | null;
+  projectName: string;
   rawIdea: string;
   stage: StartupStage;
   role: StartupRole;
@@ -27,6 +32,8 @@ interface StartupState {
 
 interface StartupContextType {
   state: StartupState;
+  setProjectId: (id: string) => void;
+  setProjectName: (name: string) => void;
   setRawIdea: (idea: string) => void;
   setStage: (stage: StartupStage) => void;
   setRole: (role: StartupRole) => void;
@@ -37,6 +44,7 @@ interface StartupContextType {
   setTasks: (t: AiTaskMilestoneManagementOutput) => void;
   setSimulation: (s: AiStartupSimulationOutput) => void;
   setWorkspace: (w: WorkspaceOutput) => void;
+  loadProject: (project: any) => void;
   reset: () => void;
   isHydrated: boolean;
 }
@@ -44,6 +52,8 @@ interface StartupContextType {
 const StartupContext = createContext<StartupContextType | undefined>(undefined);
 
 const DEFAULT_STATE: StartupState = {
+  projectId: null,
+  projectName: 'New Venture',
   rawIdea: '',
   stage: 'Idea Stage',
   role: 'AI Product Manager',
@@ -59,6 +69,8 @@ const DEFAULT_STATE: StartupState = {
 export function StartupProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<StartupState>(DEFAULT_STATE);
   const [isHydrated, setIsHydrated] = useState(false);
+  const { user } = useUser();
+  const firestore = useFirestore();
 
   useEffect(() => {
     const saved = localStorage.getItem('co-pilot-startup-state');
@@ -72,12 +84,28 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
     setIsHydrated(true);
   }, []);
 
+  // Sync to Firestore when state changes and project exists
   useEffect(() => {
     if (isHydrated) {
       localStorage.setItem('co-pilot-startup-state', JSON.stringify(state));
+      
+      if (user && state.projectId && firestore) {
+        const projectRef = doc(firestore, 'users', user.uid, 'projects', state.projectId);
+        setDoc(projectRef, {
+          project_id: state.projectId,
+          project_name: state.projectName,
+          idea_description: state.rawIdea,
+          progress_status: state.stage,
+          last_updated: serverTimestamp(),
+          userId: user.uid,
+          fullState: state
+        }, { merge: true });
+      }
     }
-  }, [state, isHydrated]);
+  }, [state, isHydrated, user, firestore]);
 
+  const setProjectId = (id: string) => setState(prev => ({ ...prev, projectId: id }));
+  const setProjectName = (name: string) => setState(prev => ({ ...prev, projectName: name }));
   const setRawIdea = (idea: string) => setState(prev => ({ ...prev, rawIdea: idea }));
   const setStage = (stage: StartupStage) => setState(prev => ({ ...prev, stage }));
   const setRole = (role: StartupRole) => setState(prev => ({ ...prev, role }));
@@ -89,6 +117,20 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
   const setSimulation = (s: AiStartupSimulationOutput) => setState(prev => ({ ...prev, lastSimulation: s }));
   const setWorkspace = (w: WorkspaceOutput) => setState(prev => ({ ...prev, workspace: w }));
   
+  const loadProject = (projectData: any) => {
+    if (projectData.fullState) {
+      setState(projectData.fullState);
+    } else {
+      setState({
+        ...DEFAULT_STATE,
+        projectId: projectData.project_id,
+        projectName: projectData.project_name,
+        rawIdea: projectData.idea_description,
+        stage: projectData.progress_status as StartupStage,
+      });
+    }
+  };
+
   const reset = () => {
     setState(DEFAULT_STATE);
   };
@@ -96,6 +138,8 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
   return (
     <StartupContext.Provider value={{ 
       state, 
+      setProjectId,
+      setProjectName,
       setRawIdea, 
       setStage,
       setRole,
@@ -106,6 +150,7 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
       setTasks,
       setSimulation,
       setWorkspace,
+      loadProject,
       reset,
       isHydrated
     }}>

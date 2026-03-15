@@ -1,0 +1,97 @@
+
+{
+  "entities": {
+    "StartupProject": {
+      "title": "StartupProject",
+      "description": "A comprehensive record of a startup project venture.",
+      "type": "object",
+      "properties": {
+        "project_id": {
+          "type": "string",
+          "description": "Unique identifier for the project."
+        },
+        "project_name": {
+          "type": "string",
+          "description": "The name of the startup project."
+        },
+        "idea_description": {
+          "type": "string",
+          "description": "Detailed description of the startup idea."
+        },
+        "target_market": {
+          "type": "string"
+        },
+        "problem_statement": {
+          "type": "string"
+        },
+        "value_proposition": {
+          "type": "string"
+        },
+        "business_model": {
+          "type": "string"
+        },
+        "MVP_features": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "tech_stack": {
+          "type": "object"
+        },
+        "marketing_strategy": {
+          "type": "object"
+        },
+        "funding_strategy": {
+          "type": "string"
+        },
+        "roadmap": {
+          "type": "object"
+        },
+        "progress_status": {
+          "type": "string",
+          "enum": [
+            "Idea Stage",
+            "Validation Stage",
+            "MVP Development",
+            "Early Traction",
+            "Growth Stage",
+            "Scaling Stage"
+          ]
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "last_updated": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "userId": {
+          "type": "string",
+          "description": "The owner of this project."
+        },
+        "fullState": {
+          "type": "object",
+          "description": "Serialized full state of the startup context for reconstruction."
+        }
+      },
+      "required": [
+        "project_id",
+        "project_name",
+        "userId"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "google.com"
+    ]
+  },
+  "firestore": {
+    "/users/{userId}/projects/{projectId}": {
+      "schema": "StartupProject",
+      "description": "The collection of projects owned by a user."
+    }
+  }
+}

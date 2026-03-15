@@ -1,8 +1,9 @@
+
 "use client"
 
 import React, { useState } from 'react';
 import { StartupProvider, useStartup, StartupStage, StartupRole } from '@/components/startup/startup-context';
-import { Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarProvider, SidebarInset, SidebarTrigger, SidebarGroup, SidebarGroupLabel, SidebarGroupContent } from '@/components/ui/sidebar';
+import { Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarProvider, SidebarInset, SidebarTrigger, SidebarGroup, SidebarGroupLabel, SidebarGroupContent, SidebarFooter } from '@/components/ui/sidebar';
 import { 
   Lightbulb, 
   LayoutDashboard, 
@@ -11,22 +12,21 @@ import {
   Rocket, 
   CheckSquare, 
   HelpCircle,
-  Menu,
   ChevronRight,
   Sparkles,
   Zap,
   Trash2,
-  TrendingUp,
   Activity,
   PlayCircle,
   Flag,
-  UserCircle2,
   Cpu,
   Megaphone,
   Banknote,
   Box,
   FastForward,
-  Briefcase
+  LogIn,
+  LogOut,
+  Library
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -39,9 +39,12 @@ import { TaskManagerView } from '@/components/startup/task-manager-view';
 import { DecisionSupportView } from '@/components/startup/decision-support-view';
 import { SimulationView } from '@/components/startup/simulation-view';
 import { WorkspaceView } from '@/components/startup/workspace-view';
+import { ProjectListView } from '@/components/startup/project-list-view';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useAuth, useUser } from '@/firebase';
+import { signInWithPopup, GoogleAuthProvider, signOut } from 'firebase/auth';
 
-type ViewType = 'dashboard' | 'validation' | 'blueprint' | 'product' | 'marketing' | 'tasks' | 'decisions' | 'simulation' | 'workspace';
+type ViewType = 'projects' | 'dashboard' | 'validation' | 'blueprint' | 'product' | 'marketing' | 'tasks' | 'decisions' | 'simulation' | 'workspace';
 
 function DashboardContent({ setView }: { setView: (v: ViewType) => void }) {
   const { state, reset, setStage } = useStartup();
@@ -76,9 +79,11 @@ function DashboardContent({ setView }: { setView: (v: ViewType) => void }) {
               {state.role} Active
             </Badge>
           </div>
-          <h1 className="text-5xl font-headline font-bold gradient-text">Welcome back, Founder.</h1>
+          <h1 className="text-5xl font-headline font-bold gradient-text">
+            {state.projectName === 'New Venture' ? 'Welcome back, Founder.' : state.projectName}
+          </h1>
           <p className="text-xl text-muted-foreground max-w-2xl">
-            Execution is the only differentiator. You're currently in <span className="text-accent font-bold uppercase tracking-wider">{state.stage}</span>.
+            {state.rawIdea || "Execution is the only differentiator. Let's build something world-changing."}
           </p>
         </div>
         
@@ -134,7 +139,7 @@ function DashboardContent({ setView }: { setView: (v: ViewType) => void }) {
             <Trash2 className="w-6 h-6" />
           </div>
           <h3 className="font-headline font-semibold">Start Fresh</h3>
-          <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest">Clear Venture Data</p>
+          <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest">Clear Local Venture Data</p>
         </div>
       </div>
 
@@ -182,11 +187,30 @@ function DashboardContent({ setView }: { setView: (v: ViewType) => void }) {
 }
 
 function MainApp() {
-  const [currentView, setCurrentView] = useState<ViewType>('dashboard');
+  const { user } = useUser();
+  const auth = useAuth();
+  const [currentView, setCurrentView] = useState<ViewType>(user ? 'projects' : 'dashboard');
   const { state, setRole } = useStartup();
+
+  const handleSignIn = async () => {
+    if (!auth) return;
+    try {
+      await signInWithPopup(auth, new GoogleAuthProvider());
+      setCurrentView('projects');
+    } catch (error) {
+      console.error('Sign in failed', error);
+    }
+  };
+
+  const handleSignOut = async () => {
+    if (!auth) return;
+    await signOut(auth);
+    setCurrentView('dashboard');
+  };
 
   const renderView = () => {
     switch(currentView) {
+      case 'projects': return <ProjectListView onSelect={() => setCurrentView('dashboard')} />;
       case 'dashboard': return <DashboardContent setView={setCurrentView} />;
       case 'validation': return <IdeaValidationView onComplete={() => setCurrentView('blueprint')} />;
       case 'blueprint': return <BlueprintView onComplete={() => setCurrentView('product')} />;
@@ -202,6 +226,7 @@ function MainApp() {
 
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-4 h-4" /> },
+    { id: 'projects', label: 'My Ventures', icon: <Library className="w-4 h-4" /> },
     { id: 'workspace', label: 'Turbo Workspace', icon: <Zap className="w-4 h-4 text-accent" /> },
     { id: 'validation', label: 'Idea Validation', icon: <Lightbulb className="w-4 h-4" /> },
     { id: 'blueprint', label: 'Strategy Blueprint', icon: <Map className="w-4 h-4" /> },
@@ -277,6 +302,29 @@ function MainApp() {
             </SidebarGroupContent>
           </SidebarGroup>
         </SidebarContent>
+        <SidebarFooter className="p-4 border-t border-white/5">
+          {user ? (
+            <div className="flex items-center justify-between gap-2 group-data-[collapsible=icon]:flex-col">
+              <div className="flex items-center gap-2 group-data-[collapsible=icon]:hidden overflow-hidden">
+                <div className="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center shrink-0">
+                  <span className="text-[10px] font-bold text-accent">{user.displayName?.charAt(0)}</span>
+                </div>
+                <div className="flex flex-col truncate">
+                  <span className="text-xs font-bold truncate">{user.displayName}</span>
+                  <span className="text-[10px] text-muted-foreground truncate">Founder</span>
+                </div>
+              </div>
+              <Button variant="ghost" size="icon" onClick={handleSignOut} className="text-muted-foreground hover:text-destructive">
+                <LogOut className="w-4 h-4" />
+              </Button>
+            </div>
+          ) : (
+            <Button onClick={handleSignIn} className="w-full bg-accent text-accent-foreground font-bold gap-2 group-data-[collapsible=icon]:p-0">
+              <LogIn className="w-4 h-4" />
+              <span className="group-data-[collapsible=icon]:hidden">Sign In</span>
+            </Button>
+          )}
+        </SidebarFooter>
       </Sidebar>
       <SidebarInset className="bg-[#16181C]">
         <header className="h-16 border-b border-white/5 flex items-center px-4 sticky top-0 bg-[#16181C]/80 backdrop-blur-md z-10">
