@@ -1,4 +1,3 @@
-
 "use client"
 
 import React, { useState, useMemo } from 'react';
@@ -15,7 +14,7 @@ import {
   Boxes, Milestone, PieChart, Coins, ShieldCheck,
   Zap, ArrowRight, Code2, Copy, Rocket,
   Save, Download, Github, FileSpreadsheet, FileType, Search, Heart, Infinity, Brain,
-  Info
+  Info, HelpCircle
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
