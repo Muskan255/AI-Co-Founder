@@ -225,7 +225,7 @@ function MainApp() {
     { id: 'validation', label: 'Idea Validation', icon: <Lightbulb className="w-4 h-4" /> },
     { id: 'blueprint', label: 'Strategy Blueprint', icon: <Map className="w-4 h-4" /> },
     { id: 'finance', label: 'Financial Plan', icon: <DollarSign className="w-4 h-4 text-emerald-400" /> },
-    { id: 'product', label: 'Product Development', icon: <Code2 className="w-4 h-4" /> },
+    { id: 'product', label: 'Product Dev', icon: <Code2 className="w-4 h-4" /> },
     { id: 'marketing', label: 'Growth Plan', icon: <Rocket className="w-4 h-4" /> },
     { id: 'tasks', label: 'Accountability', icon: <CheckSquare className="w-4 h-4" /> },
     { id: 'simulation', label: 'Simulations', icon: <PlayCircle className="w-4 h-4" /> },
@@ -234,7 +234,46 @@ function MainApp() {
 
   const activeNavItem = useMemo(() => 
     navItems.find(item => item.id === activeWorkspace) || navItems[0], 
-  [activeWorkspace]);
+  [activeWorkspace, navItems]);
+
+  const sidebarSubtitle = useMemo(() => {
+    if (!state.rawIdea && state.stage === 'Idea Stage' && state.role === 'AI Product Manager') {
+      return "Working AI Founder for You";
+    }
+
+    const stageMap: Record<StartupStage, string> = {
+      'Idea Stage': "Helping shape your idea",
+      'Validation Stage': "Validating your idea",
+      'MVP Development': "Building your startup product",
+      'Early Traction': "Driving early user growth",
+      'Growth Stage': "Scaling your startup",
+      'Scaling Stage': "Optimizing operations",
+    };
+
+    const roleMap: Record<StartupRole, string> = {
+      'AI CTO': "AI CTO building tech",
+      'AI CMO': "AI CMO growing brand",
+      'AI CFO': "AI CFO managing finance",
+      'AI Product Manager': "AI PM shaping product",
+      'AI Growth Hacker': "AI Growth Hacker driving growth",
+    };
+
+    const defaultRoles: Record<StartupStage, StartupRole> = {
+      'Idea Stage': 'AI Product Manager',
+      'Validation Stage': 'AI CMO',
+      'MVP Development': 'AI CTO',
+      'Early Traction': 'AI Growth Hacker',
+      'Growth Stage': 'AI CMO',
+      'Scaling Stage': 'AI CFO'
+    };
+
+    // If the role is manually changed from default, emphasize the role's identity
+    if (state.role !== defaultRoles[state.stage]) {
+      return roleMap[state.role];
+    }
+
+    return stageMap[state.stage];
+  }, [state.stage, state.role, state.rawIdea]);
 
   if (!isHydrated) {
     return (
@@ -282,7 +321,11 @@ function MainApp() {
             </div>
             <div className="flex flex-col group-data-[collapsible=icon]:hidden">
               <span className="font-headline font-bold text-lg leading-none uppercase tracking-tighter">AI Founder</span>
-              <span className="text-[10px] text-accent font-bold uppercase tracking-widest mt-1">{state.stage}</span>
+              <div className="mt-1">
+                <Badge variant="outline" className="bg-accent/10 text-accent border-accent/20 text-[8px] px-1.5 py-0 h-4 font-bold uppercase tracking-tight whitespace-nowrap">
+                  {sidebarSubtitle}
+                </Badge>
+              </div>
             </div>
           </div>
         </SidebarHeader>
