@@ -49,6 +49,7 @@ interface StartupContextType {
   loadProject: (project: any) => void;
   reset: () => void;
   isHydrated: boolean;
+  isGuestMode: boolean;
 }
 
 const StartupContext = createContext<StartupContextType | undefined>(undefined);
@@ -75,6 +76,8 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
   const { user } = useUser();
   const firestore = useFirestore();
 
+  const isGuestMode = !user;
+
   // Load from Local Storage on mount
   useEffect(() => {
     const saved = localStorage.getItem('ai-founder-startup-state');
@@ -88,11 +91,12 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
     setIsHydrated(true);
   }, []);
 
-  // Sync to Local Storage and Firestore (Auto-Save)
+  // Sync to Local Storage (Always) and Firestore (Only if authenticated)
   useEffect(() => {
     if (isHydrated) {
       localStorage.setItem('ai-founder-startup-state', JSON.stringify(state));
       
+      // Auto-save to Firestore only for authenticated users
       if (user && state.projectId && firestore) {
         const projectRef = doc(firestore, 'users', user.uid, 'projects', state.projectId);
         
@@ -102,16 +106,14 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
           project_name: state.projectName,
           idea_description: state.rawIdea,
           startup_stage: state.stage,
-          strategy_blueprint: state.blueprint || null,
-          financial_plan: state.financialStrategy || null,
-          product_development: state.productGuidance || null,
-          growth_plan: state.marketing || null,
-          simulations: state.lastSimulation ? [state.lastSimulation] : [],
           last_updated: serverTimestamp(),
           fullState: state
         };
 
-        setDoc(projectRef, projectRecord, { merge: true });
+        // Non-blocking write
+        setDoc(projectRef, projectRecord, { merge: true }).catch(err => {
+          console.error("Firestore sync error:", err);
+        });
       }
     }
   }, [state, isHydrated, user, firestore]);
@@ -151,14 +153,33 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
   };
 
   const setRole = (role: StartupRole) => setState(prev => ({ ...prev, role }));
-  const setValidation = (v: IdeaValidationOutput) => setState(prev => ({ ...prev, validation: v, stage: 'Validation Stage', role: 'AI CMO' }));
+  
+  const setValidation = (v: IdeaValidationOutput) => {
+    setState(prev => {
+      const newState = { ...prev, validation: v, stage: 'Validation Stage' as StartupStage, role: 'AI CMO' as StartupRole };
+      // Ensure we have a project ID if we just started validating
+      if (!newState.projectId) {
+        newState.projectId = crypto.randomUUID();
+      }
+      return newState;
+    });
+  };
+
   const setBlueprint = (b: AiStartupBlueprintGenerationOutput) => setState(prev => ({ ...prev, blueprint: b, stage: 'MVP Development', role: 'AI CTO' }));
   const setProductGuidance = (p: AiProductDevelopmentGuidanceOutput) => setState(prev => ({ ...prev, productGuidance: p, stage: 'Early Traction', role: 'AI Growth Hacker' }));
   const setMarketing = (m: MarketingStrategyGenerationOutput) => setState(prev => ({ ...prev, marketing: m, stage: 'Growth Stage', role: 'AI CMO' }));
   const setFinancialStrategy = (f: FinancialStrategyGenerationOutput) => setState(prev => ({ ...prev, financialStrategy: f }));
   const setTasks = (t: AiTaskMilestoneManagementOutput) => setState(prev => ({ ...prev, tasks: t, stage: 'Scaling Stage', role: 'AI CFO' }));
   const setSimulation = (s: AiStartupSimulationOutput) => setState(prev => ({ ...prev, lastSimulation: s }));
-  const setWorkspace = (w: WorkspaceOutput) => setState(prev => ({ ...prev, workspace: w }));
+  const setWorkspace = (w: WorkspaceOutput) => {
+    setState(prev => {
+      const newState = { ...prev, workspace: w };
+      if (!newState.projectId) {
+        newState.projectId = crypto.randomUUID();
+      }
+      return newState;
+    });
+  };
   
   const loadProject = (projectData: any) => {
     if (projectData.fullState) {
@@ -176,6 +197,7 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
 
   const reset = () => {
     setState(DEFAULT_STATE);
+    localStorage.removeItem('ai-founder-startup-state');
   };
 
   return (
@@ -196,7 +218,8 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
       setWorkspace,
       loadProject,
       reset,
-      isHydrated
+      isHydrated,
+      isGuestMode
     }}>
       {children}
     </StartupContext.Provider>

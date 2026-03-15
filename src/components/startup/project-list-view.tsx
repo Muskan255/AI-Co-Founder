@@ -6,14 +6,19 @@ import { collection, query, orderBy } from 'firebase/firestore';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Briefcase, Clock, ArrowRight, Sparkles, Target } from 'lucide-react';
+import { Plus, Briefcase, Clock, ArrowRight, Sparkles, Target, LogIn, ShieldAlert } from 'lucide-react';
 import { useStartup } from './startup-context';
 import { Progress } from '@/components/ui/progress';
 
-export function ProjectListView({ onSelect }: { onSelect: () => void }) {
+interface ProjectListViewProps {
+  onSelect: () => void;
+  onAuthPrompt: () => void;
+}
+
+export function ProjectListView({ onSelect, onAuthPrompt }: ProjectListViewProps) {
   const { user } = useUser();
   const firestore = useFirestore();
-  const { loadProject, reset } = useStartup();
+  const { loadProject, reset, isGuestMode } = useStartup();
   
   const projectsQuery = useMemo(() => {
     if (!user || !firestore) return null;
@@ -41,6 +46,30 @@ export function ProjectListView({ onSelect }: { onSelect: () => void }) {
     const completed = fields.filter(f => !!state[f]).length;
     return (completed / fields.length) * 100;
   };
+
+  if (isGuestMode) {
+    return (
+      <div className="p-8 max-w-4xl mx-auto flex flex-col items-center justify-center min-h-[70vh] text-center space-y-8 animate-in fade-in slide-in-from-bottom-4">
+        <div className="w-20 h-20 rounded-3xl bg-amber-500/10 flex items-center justify-center text-amber-500 mb-4">
+          <ShieldAlert className="w-10 h-10" />
+        </div>
+        <div className="space-y-4">
+          <h2 className="text-4xl font-headline font-bold">Cloud Storage Disabled</h2>
+          <p className="text-xl text-muted-foreground max-w-md mx-auto">
+            You are currently in Guest Mode. Login to save your ventures and access them from any device.
+          </p>
+        </div>
+        <div className="flex gap-4">
+          <Button onClick={onAuthPrompt} size="lg" className="bg-accent text-accent-foreground font-bold px-8 h-14 gap-2">
+            <LogIn className="w-5 h-5" /> Sign In to Save
+          </Button>
+          <Button onClick={handleNew} variant="outline" size="lg" className="h-14 px-8 border-white/10 hover:bg-white/5">
+            Experiment as Guest
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   if (loading) {
     return (

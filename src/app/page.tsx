@@ -26,7 +26,8 @@ import {
   LogIn,
   LogOut,
   Library,
-  DollarSign
+  DollarSign,
+  ShieldAlert
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -50,7 +51,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 type ViewType = 'projects' | 'dashboard' | 'validation' | 'blueprint' | 'product' | 'marketing' | 'finance' | 'tasks' | 'decisions' | 'simulation' | 'workspace';
 
 function DashboardContent({ setView }: { setView: (v: ViewType) => void }) {
-  const { state, reset, setStage } = useStartup();
+  const { state, reset, setStage, isGuestMode } = useStartup();
+  const [authOpen, setAuthOpen] = useState(false);
   
   const progressItems = [
     { id: 'workspace', label: 'Turbo Workspace', icon: <Zap className="text-accent" />, completed: !!state.workspace, description: 'Generate roadmap, pitch deck & specs in one go.' },
@@ -73,6 +75,19 @@ function DashboardContent({ setView }: { setView: (v: ViewType) => void }) {
 
   return (
     <div className="p-8 space-y-12 max-w-6xl mx-auto">
+      {isGuestMode && (
+        <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 flex items-center justify-between animate-in fade-in slide-in-from-top-2">
+          <div className="flex items-center gap-3">
+            <ShieldAlert className="w-5 h-5 text-amber-500" />
+            <span className="text-sm font-medium text-amber-200">Guest Mode: Login to save and continue your startup projects.</span>
+          </div>
+          <Button variant="ghost" size="sm" onClick={() => setAuthOpen(true)} className="text-amber-500 hover:text-amber-400 hover:bg-amber-500/10">
+            Sign In Now
+          </Button>
+          <AuthModal open={authOpen} onOpenChange={setAuthOpen} />
+        </div>
+      )}
+
       <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div className="space-y-4">
           <div className="flex items-center gap-3">
@@ -143,7 +158,7 @@ function DashboardContent({ setView }: { setView: (v: ViewType) => void }) {
             <Trash2 className="w-6 h-6" />
           </div>
           <h3 className="font-headline font-semibold">Start Fresh</h3>
-          <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest">Clear Local Venture Data</p>
+          <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest">Clear Venture Data</p>
         </div>
       </div>
 
@@ -195,7 +210,7 @@ function MainApp() {
   const auth = useAuth();
   const [activeWorkspace, setActiveWorkspace] = useState<ViewType>(user ? 'projects' : 'dashboard');
   const [authModalOpen, setAuthModalOpen] = useState(false);
-  const { state, setRole } = useStartup();
+  const { state, setRole, isHydrated } = useStartup();
 
   const handleSignOut = async () => {
     if (!auth) return;
@@ -221,9 +236,20 @@ function MainApp() {
     navItems.find(item => item.id === activeWorkspace) || navItems[0], 
   [activeWorkspace]);
 
+  if (!isHydrated) {
+    return (
+      <div className="h-svh w-full flex flex-col items-center justify-center bg-[#16181C] space-y-4">
+        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center animate-pulse">
+          <Rocket className="w-6 h-6 text-white" />
+        </div>
+        <span className="text-xs font-bold uppercase tracking-[0.2em] text-accent animate-pulse">Restoring Workspace...</span>
+      </div>
+    );
+  }
+
   const renderView = () => {
     switch(activeWorkspace) {
-      case 'projects': return <ProjectListView onSelect={() => setActiveWorkspace('dashboard')} />;
+      case 'projects': return <ProjectListView onSelect={() => setActiveWorkspace('dashboard')} onAuthPrompt={() => setAuthModalOpen(true)} />;
       case 'dashboard': return <DashboardContent setView={setActiveWorkspace} />;
       case 'validation': return <IdeaValidationView onComplete={() => setActiveWorkspace('blueprint')} />;
       case 'blueprint': return <BlueprintView onComplete={() => setActiveWorkspace('finance')} />;
