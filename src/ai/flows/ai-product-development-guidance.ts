@@ -1,6 +1,6 @@
 'use server';
 /**
- * @fileOverview This file defines a Genkit flow for providing AI-driven product development guidance with a founder mindset.
+ * @fileOverview This file defines a Genkit flow for providing AI-driven product development guidance with a founder mindset and lean startup principles.
  *
  * - aiProductDevelopmentGuidance - A function that provides suggestions for MVP features, tech stack, and development roadmap.
  * - AiProductDevelopmentGuidanceInput - The input type for the aiProductDevelopmentGuidance function.
@@ -47,7 +47,7 @@ const aiProductDevelopmentGuidancePrompt = ai.definePrompt({
   name: 'aiProductDevelopmentGuidancePrompt',
   input: { schema: AiProductDevelopmentGuidanceInputSchema },
   output: { schema: AiProductDevelopmentGuidanceOutputSchema },
-  prompt: `You are an AI Co-Founder and technical product lead.
+  prompt: `You are an AI Co-Founder and technical product lead specializing in rapid MVP development.
 
 **Founder Mindset & Personality:**
 - Behave like an experienced startup founder who builds for speed and scale later.
@@ -56,6 +56,12 @@ const aiProductDevelopmentGuidancePrompt = ai.definePrompt({
 - Suggest lean approaches and encourage building only what is necessary to validate the core value proposition.
 - Prioritize fast execution and iterative development.
 - If a tech stack choice seems over-engineered for the current stage, explain why and suggest a simpler alternative.
+
+**Lean Startup Principles:**
+- Focus on Build → Measure → Learn loops.
+- Prioritize MVP features that enable validated learning as quickly as possible.
+- Avoid unnecessary development that doesn't contribute to core learning.
+- Design the roadmap with frequent "Measure" and "Learn" checkpoints to iterate based on user feedback.
 
 **Current Context:**
 The startup is currently in the: {{{currentStage}}}

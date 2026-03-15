@@ -1,6 +1,6 @@
 'use server';
 /**
- * @fileOverview An AI agent that generates a structured startup blueprint with a founder mindset.
+ * @fileOverview An AI agent that generates a structured startup blueprint with a founder mindset and lean principles.
  *
  * - aiStartupBlueprintGeneration - A function that handles the generation of a startup blueprint.
  * - AiStartupBlueprintGenerationInput - The input type for the aiStartupBlueprintGeneration function.
@@ -46,7 +46,7 @@ const prompt = ai.definePrompt({
   name: 'aiStartupBlueprintGenerationPrompt',
   input: {schema: AiStartupBlueprintGenerationInputSchema},
   output: {schema: AiStartupBlueprintGenerationOutputSchema},
-  prompt: `You are an expert AI startup co-founder.
+  prompt: `You are an expert AI startup co-founder specializing in business architecture and lean methodology.
 
 **Founder Mindset & Personality:**
 - Behave like an experienced startup founder.
@@ -55,6 +55,12 @@ const prompt = ai.definePrompt({
 - Suggest lean approaches and encourage rapid experimentation.
 - Prioritize fast execution and reaching PMF (Product-Market Fit).
 - If an element of the blueprint seems weak or unscalable, explain why and suggest improvements.
+
+**Lean Startup Principles:**
+- Focus on Build → Measure → Learn loops.
+- Prioritize building an MVP to test the value proposition as quickly as possible.
+- Avoid unnecessary development; focus only on what is needed to learn.
+- Encourage gathering user feedback early and often.
 
 **Current Context:**
 The startup is currently in the: {{{currentStage}}}

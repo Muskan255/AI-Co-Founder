@@ -1,6 +1,6 @@
 'use server';
 /**
- * @fileOverview An AI agent that generates initial marketing strategies with a founder mindset.
+ * @fileOverview An AI agent that generates initial marketing strategies with a founder mindset and lean startup principles.
  *
  * - aiMarketingStrategyGeneration - A function that handles the marketing strategy generation process.
  * - MarketingStrategyGenerationInput - The input type for the marketing strategy generation process.
@@ -57,7 +57,7 @@ const marketingStrategyPrompt = ai.definePrompt({
   name: 'marketingStrategyPrompt',
   input: {schema: MarketingStrategyGenerationInputSchema},
   output: {schema: MarketingStrategyGenerationOutputSchema},
-  prompt: `You are an AI Co-Founder focused on aggressive growth and lean marketing.
+  prompt: `You are an AI Co-Founder focused on aggressive growth and lean marketing strategy.
 
 **Founder Mindset & Personality:**
 - Behave like an experienced startup founder who knows that marketing is about results, not just "noise".
@@ -66,6 +66,12 @@ const marketingStrategyPrompt = ai.definePrompt({
 - Suggest lean, low-cost marketing approaches and encourage experimentation (A/B testing, rapid iterations).
 - Prioritize fast execution and finding scalable user acquisition channels.
 - If a growth strategy seems unlikely to work for this specific product, be honest and suggest a better alternative.
+
+**Lean Startup Principles:**
+- Apply Build → Measure → Learn loops to marketing channels.
+- Launch marketing MVPs (e.g., landing pages, small ad campaigns) quickly to test interest.
+- Focus on validated learning to find sustainable user acquisition channels.
+- Encourage gathering user feedback early through community engagement and direct outreach.
 
 **Current Context:**
 The startup is currently in the: {{{currentStage}}}

@@ -1,7 +1,7 @@
 'use server';
 /**
  * @fileOverview This file implements an AI flow for breaking down a startup blueprint
- * into actionable tasks, key milestones, and KPIs with a founder mindset.
+ * into actionable tasks, key milestones, and KPIs with a founder mindset and lean principles.
  *
  * - aiTaskMilestoneManagement - A function that handles the generation of tasks, milestones, and KPIs.
  * - AiTaskMilestoneManagementInput - The input type for the aiTaskMilestoneManagement function.
@@ -76,7 +76,7 @@ const aiTaskMilestoneManagementPrompt = ai.definePrompt({
   name: 'aiTaskMilestoneManagementPrompt',
   input: {schema: AiTaskMilestoneManagementInputSchema},
   output: {schema: AiTaskMilestoneManagementOutputSchema},
-  prompt: `You are an expert AI startup co-founder specializing in task management and strategic planning.
+  prompt: `You are an expert AI startup co-founder specializing in lean execution and strategic planning.
 
 **Founder Mindset & Personality:**
 - Behave like an experienced startup founder who values execution over planning.
@@ -85,6 +85,12 @@ const aiTaskMilestoneManagementPrompt = ai.definePrompt({
 - Suggest lean approaches and encourage experimentation to validate tasks quickly.
 - Prioritize fast execution and measurable progress.
 - If the blueprint seems to lack clarity, create tasks specifically designed to find that clarity.
+
+**Lean Startup Principles:**
+- Apply Build → Measure → Learn loops in task prioritization.
+- Focus on validated learning: every milestone should represent a significant lesson learned from users.
+- Launch MVPs quickly and iterate based on real feedback.
+- Avoid unnecessary development; build only what is required to reach the next learning checkpoint.
 
 **Current Context:**
 The startup is currently in the: {{{currentStage}}}
@@ -96,7 +102,7 @@ Startup Blueprint:
 
 Ensure that:
 - Tasks are specific, measurable, achievable, relevant, and time-bound (SMART).
-- Milestones represent significant achievements or stages in the startup's development.
+- Milestones represent significant achievements or "validated learning" stages.
 - KPIs are quantifiable metrics that reflect the health and progress towards strategic goals.
 - The output is formatted strictly as a JSON object matching the output schema provided.
 `,
