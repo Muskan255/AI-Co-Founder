@@ -32,11 +32,17 @@ import {
   Brain,
   Info,
   Bell,
-  ArrowRight
+  ArrowRight,
+  ShieldCheck,
+  Heart,
+  Target,
+  TrendingUp,
+  BarChart3
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
 import { IdeaValidationView } from '@/components/startup/idea-validation-view';
 import { BlueprintView } from '@/components/startup/blueprint-view';
 import { ProductGuideView } from '@/components/startup/product-guide-view';
@@ -57,8 +63,76 @@ import { signOut } from 'firebase/auth';
 import { AuthModal } from '@/components/auth/auth-modal';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 
 type ViewType = 'projects' | 'dashboard' | 'validation' | 'blueprint' | 'product' | 'marketing' | 'finance' | 'tasks' | 'decisions' | 'simulation' | 'workspace' | 'persona-workspace' | 'brain';
+
+function HealthScoreCard() {
+  const { state } = useStartup();
+  
+  if (!state.healthScore) return null;
+
+  const { totalScore, breakdown, suggestions, analysis } = state.healthScore;
+
+  return (
+    <Card className="glass-card border-accent/20 bg-accent/5 overflow-hidden">
+      <CardHeader className="pb-2">
+        <div className="flex justify-between items-center">
+          <CardTitle className="flex items-center gap-2 text-xl font-headline">
+            <ShieldCheck className="w-5 h-5 text-accent" />
+            Startup Health Score
+          </CardTitle>
+          <div className="text-3xl font-bold text-accent">
+            {totalScore}<span className="text-sm text-muted-foreground font-normal">/100</span>
+          </div>
+        </div>
+        <Progress value={totalScore} className="h-2 bg-white/5" />
+      </CardHeader>
+      <CardContent className="pt-4 space-y-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="space-y-1">
+            <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest flex items-center gap-1">
+              <Lightbulb className="w-3 h-3" /> Idea
+            </p>
+            <p className="text-sm font-bold">{breakdown.ideaQuality}<span className="text-[10px] text-muted-foreground/60">/25</span></p>
+          </div>
+          <div className="space-y-1">
+            <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest flex items-center gap-1">
+              <Target className="w-3 h-3" /> Market
+            </p>
+            <p className="text-sm font-bold">{breakdown.marketClarity}<span className="text-[10px] text-muted-foreground/60">/25</span></p>
+          </div>
+          <div className="space-y-1">
+            <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest flex items-center gap-1">
+              <Code2 className="w-3 h-3" /> Product
+            </p>
+            <p className="text-sm font-bold">{breakdown.productReadiness}<span className="text-[10px] text-muted-foreground/60">/25</span></p>
+          </div>
+          <div className="space-y-1">
+            <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest flex items-center gap-1">
+              <DollarSign className="w-3 h-3" /> Revenue
+            </p>
+            <p className="text-sm font-bold">{breakdown.revenueModel}<span className="text-[10px] text-muted-foreground/60">/25</span></p>
+          </div>
+        </div>
+
+        <div className="p-4 rounded-xl bg-black/20 border border-white/5 space-y-3">
+          <p className="text-xs text-muted-foreground leading-relaxed italic">"{analysis}"</p>
+          <div className="space-y-2">
+            <p className="text-[10px] font-bold text-accent uppercase tracking-widest">Recommended Improvements</p>
+            <ul className="space-y-1">
+              {suggestions.map((s, i) => (
+                <li key={i} className="text-[11px] text-muted-foreground flex items-center gap-2">
+                  <div className="w-1 h-1 rounded-full bg-accent/50" /> {s}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
 
 function DashboardContent({ setView }: { setView: (v: ViewType) => void }) {
   const { state, reset, setStage, isGuestMode } = useStartup();
@@ -151,67 +225,94 @@ function DashboardContent({ setView }: { setView: (v: ViewType) => void }) {
         </div>
       </header>
 
-      {/* Quick Suggestion Alert */}
-      {state.notifications.filter(n => !n.read).length > 0 && (
-        <div className="glass-card p-6 rounded-2xl border-accent/30 bg-accent/5 flex flex-col md:flex-row items-center justify-between gap-6 animate-in slide-in-from-right-10 duration-500">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-accent/20 flex items-center justify-center text-accent">
-              <Bell className="w-6 h-6 animate-pulse" />
-            </div>
-            <div className="space-y-1">
-              <h3 className="font-headline font-bold text-lg leading-none">Strategic Opportunity Detected</h3>
-              <p className="text-sm text-muted-foreground">{state.notifications.find(n => !n.read)?.title}</p>
-            </div>
-          </div>
-          <Button 
-            onClick={() => setView(state.notifications.find(n => !n.read)?.action.view as ViewType)}
-            className="bg-accent text-accent-foreground font-bold gap-2 px-8"
-          >
-            Explore Suggestion <ArrowRight className="w-4 h-4" />
-          </Button>
-        </div>
-      )}
-
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {progressItems.map((item) => (
-          <div 
-            key={item.id}
-            onClick={() => setView(item.id as ViewType)}
-            className="group glass-card p-6 rounded-xl cursor-pointer hover:border-accent/50 transition-all duration-300 relative overflow-hidden"
-          >
-            <div className="flex justify-between items-start mb-4">
-              <div className="p-3 rounded-lg bg-primary/10 text-accent group-hover:scale-110 transition-transform">
-                {item.icon}
+      <div className="grid lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
+          {state.notifications.filter(n => !n.read).length > 0 && (
+            <div className="glass-card p-6 rounded-2xl border-accent/30 bg-accent/5 flex flex-col md:flex-row items-center justify-between gap-6 animate-in slide-in-from-right-10 duration-500 mb-6">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-2xl bg-accent/20 flex items-center justify-center text-accent">
+                  <Bell className="w-6 h-6 animate-pulse" />
+                </div>
+                <div className="space-y-1">
+                  <h3 className="font-headline font-bold text-lg leading-none">Strategic Opportunity</h3>
+                  <p className="text-sm text-muted-foreground">{state.notifications.find(n => !n.read)?.title}</p>
+                </div>
               </div>
-              {item.completed ? (
-                <div className="bg-emerald-500/20 text-emerald-400 text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-full flex items-center gap-1">
-                  <Sparkles className="w-3 h-3" /> Ready
-                </div>
-              ) : (
-                <div className="bg-white/5 text-muted-foreground text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-full">
-                  Start
-                </div>
-              )}
+              <Button 
+                onClick={() => setView(state.notifications.find(n => !n.read)?.action.view as ViewType)}
+                className="bg-accent text-accent-foreground font-bold gap-2 px-8"
+              >
+                Explore Suggestion <ArrowRight className="w-4 h-4" />
+              </Button>
             </div>
-            <h3 className="text-xl font-headline font-semibold mb-2">{item.label}</h3>
-            <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
-              {item.description}
-            </p>
-            <div className="flex items-center text-accent text-sm font-medium">
-              Enter Section <ChevronRight className="w-4 h-4 ml-1" />
-            </div>
+          )}
+          
+          <div className="grid md:grid-cols-2 gap-6">
+            {progressItems.slice(0, 4).map((item) => (
+              <div 
+                key={item.id}
+                onClick={() => setView(item.id as ViewType)}
+                className="group glass-card p-6 rounded-xl cursor-pointer hover:border-accent/50 transition-all duration-300 relative overflow-hidden"
+              >
+                <div className="flex justify-between items-start mb-4">
+                  <div className="p-3 rounded-lg bg-primary/10 text-accent group-hover:scale-110 transition-transform">
+                    {item.icon}
+                  </div>
+                  {item.completed ? (
+                    <div className="bg-emerald-500/20 text-emerald-400 text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-full flex items-center gap-1">
+                      <Sparkles className="w-3 h-3" /> Ready
+                    </div>
+                  ) : (
+                    <div className="bg-white/5 text-muted-foreground text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-full">
+                      Start
+                    </div>
+                  )}
+                </div>
+                <h3 className="text-xl font-headline font-semibold mb-2">{item.label}</h3>
+                <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
+                  {item.description}
+                </p>
+                <div className="flex items-center text-accent text-sm font-medium">
+                  Enter Section <ChevronRight className="w-4 h-4 ml-1" />
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
-        
-        <div 
-          onClick={reset}
-          className="group glass-card p-6 rounded-xl cursor-pointer hover:border-destructive/50 transition-all duration-300 flex flex-col items-center justify-center text-center space-y-3"
-        >
-          <div className="p-3 rounded-lg bg-destructive/10 text-destructive group-hover:rotate-12 transition-transform">
-            <Trash2 className="w-6 h-6" />
+        </div>
+
+        <div className="space-y-6">
+          <HealthScoreCard />
+          <div className="grid grid-cols-1 gap-6">
+            {progressItems.slice(4).map((item) => (
+              <div 
+                key={item.id}
+                onClick={() => setView(item.id as ViewType)}
+                className="group glass-card p-6 rounded-xl cursor-pointer hover:border-accent/50 transition-all duration-300 relative overflow-hidden"
+              >
+                <div className="flex justify-between items-start mb-4">
+                  <div className="p-3 rounded-lg bg-primary/10 text-accent group-hover:scale-110 transition-transform">
+                    {item.icon}
+                  </div>
+                  {item.completed ? (
+                    <div className="bg-emerald-500/20 text-emerald-400 text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-full flex items-center gap-1">
+                      <Sparkles className="w-3 h-3" /> Ready
+                    </div>
+                  ) : (
+                    <div className="bg-white/5 text-muted-foreground text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-full">
+                      Start
+                    </div>
+                  )}
+                </div>
+                <h4 className="text-lg font-headline font-semibold mb-1">{item.label}</h4>
+                <p className="text-[10px] text-muted-foreground mb-4 leading-relaxed">
+                  {item.description}
+                </p>
+                <div className="flex items-center text-accent text-[10px] font-bold uppercase tracking-widest">
+                  Explore <ChevronRight className="w-3 h-3 ml-1" />
+                </div>
+              </div>
+            ))}
           </div>
-          <h3 className="font-headline font-semibold">Start Fresh</h3>
-          <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest">Clear Venture Data</p>
         </div>
       </div>
 

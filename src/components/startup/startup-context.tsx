@@ -10,6 +10,7 @@ import { AiTaskMilestoneManagementOutput } from '@/ai/flows/ai-task-milestone-ma
 import { AiStartupSimulationOutput } from '@/ai/flows/ai-startup-simulation';
 import { WorkspaceOutput } from '@/ai/flows/ai-workspace-generation';
 import { aiSmartNotifications } from '@/ai/flows/ai-smart-notifications';
+import { aiStartupHealthScore, HealthScoreOutput } from '@/ai/flows/ai-startup-health-score';
 import { useUser, useFirestore } from '@/firebase';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 
@@ -63,6 +64,7 @@ interface StartupState {
   lastSimulation: AiStartupSimulationOutput | null;
   workspace: WorkspaceOutput | null;
   notifications: SmartNotification[];
+  healthScore: HealthScoreOutput | null;
 }
 
 interface StartupContextType {
@@ -83,6 +85,7 @@ interface StartupContextType {
   setWorkspace: (w: WorkspaceOutput) => void;
   loadProject: (project: any) => void;
   refreshSuggestions: () => Promise<void>;
+  refreshHealthScore: () => Promise<void>;
   markNotificationAsRead: (id: string) => void;
   dismissNotification: (id: string) => void;
   reset: () => void;
@@ -107,7 +110,8 @@ const DEFAULT_STATE: StartupState = {
   tasks: null,
   lastSimulation: null,
   workspace: null,
-  notifications: []
+  notifications: [],
+  healthScore: null
 };
 
 export function StartupProvider({ children }: { children: React.ReactNode }) {
@@ -124,20 +128,15 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        // Requirement: Clear on refresh for guest users
-        // Note: 'user' is null during initial load, so we'd normally clear it.
-        // However, to avoid flickering during auth check, we check if it was a Guest session.
         if (parsed.isGuest && !user) {
-          // Keep it temporarily during the session, but the user requirement said "cleared on refresh".
-          // If we want it truly cleared on refresh for guests, we skip this block.
-          // For now, let's keep it in-memory but skip localStorage loading if it's a guest session to satisfy the "cleared on refresh" rule.
           localStorage.removeItem('ai-founder-startup-state');
         } else {
           setState({
             ...DEFAULT_STATE,
             ...parsed,
             brain: parsed.brain || {},
-            notifications: parsed.notifications || []
+            notifications: parsed.notifications || [],
+            healthScore: parsed.healthScore || null
           });
         }
       } catch (error) {
@@ -150,18 +149,15 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
   // Persistence logic: Sync to localStorage and Firestore
   useEffect(() => {
     if (isHydrated) {
-      // Save to localStorage for persistence during active usage
       localStorage.setItem('ai-founder-startup-state', JSON.stringify({
         ...state,
         isGuest: isGuestMode
       }));
       
-      // Cloud Sync / Conversion Logic
       if (user && firestore) {
-        // If logged in but no projectId (e.g. guest just converted), generate one if they have data
         if (!state.projectId && state.rawIdea) {
           setProjectId(crypto.randomUUID());
-          return; // Next render will trigger the sync
+          return;
         }
 
         if (state.projectId) {
@@ -185,6 +181,19 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
       }
     }
   }, [state, isHydrated, user, firestore, isGuestMode]);
+
+  const refreshHealthScore = useCallback(async () => {
+    if (!state.rawIdea) return;
+    try {
+      const response = await aiStartupHealthScore({
+        brain: state.brain as any,
+        currentStage: state.stage
+      });
+      setState(prev => ({ ...prev, healthScore: response }));
+    } catch (error) {
+      console.error('Failed to refresh health score:', error);
+    }
+  }, [state.brain, state.stage, state.rawIdea]);
 
   const refreshSuggestions = useCallback(async () => {
     if (!state.rawIdea) return;
@@ -214,6 +223,14 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
     }
   }, [state.brain, state.stage, state.rawIdea]);
 
+  // Auto-refresh when brain or stage changes
+  useEffect(() => {
+    if (state.rawIdea) {
+      refreshSuggestions();
+      refreshHealthScore();
+    }
+  }, [state.brain, state.stage, state.rawIdea, refreshSuggestions, refreshHealthScore]);
+
   const markNotificationAsRead = (id: string) => {
     setState(prev => ({
       ...prev,
@@ -237,7 +254,6 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
       rawIdea: idea,
       brain: { ...prev.brain, startup_idea: idea } 
     }));
-    refreshSuggestions();
   };
   
   const updateBrain = (update: Partial<StartupBrain>) => {
@@ -245,7 +261,6 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
       ...prev,
       brain: { ...prev.brain, ...update }
     }));
-    refreshSuggestions();
   };
 
   const setStage = (stage: StartupStage) => {
@@ -261,7 +276,6 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
       }
       return { ...prev, stage, role, brain: { ...prev.brain, funding_stage: stage } };
     });
-    refreshSuggestions();
   };
 
   const setRole = (role: StartupRole) => setState(prev => ({ ...prev, role }));
@@ -282,7 +296,6 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
         projectId: prev.projectId || crypto.randomUUID()
       };
     });
-    refreshSuggestions();
   };
 
   const setBlueprint = (b: AiStartupBlueprintGenerationOutput) => {
@@ -300,7 +313,6 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
         brain: { ...prev.brain, ...brainUpdate }
       };
     });
-    refreshSuggestions();
   };
 
   const setProductGuidance = (p: AiProductDevelopmentGuidanceOutput) => {
@@ -317,7 +329,6 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
         brain: { ...prev.brain, ...brainUpdate }
       };
     });
-    refreshSuggestions();
   };
 
   const setMarketing = (m: MarketingStrategyGenerationOutput) => {
@@ -334,7 +345,6 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
         brain: { ...prev.brain, ...brainUpdate }
       };
     });
-    refreshSuggestions();
   };
 
   const setFinancialStrategy = (f: FinancialStrategyGenerationOutput) => {
@@ -349,12 +359,10 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
         brain: { ...prev.brain, ...brainUpdate }
       };
     });
-    refreshSuggestions();
   };
 
   const setTasks = (t: AiTaskMilestoneManagementOutput) => {
     setState(prev => ({ ...prev, tasks: t, stage: 'Scaling Stage', role: 'AI CFO' }));
-    refreshSuggestions();
   }
   const setSimulation = (s: AiStartupSimulationOutput) => setState(prev => ({ ...prev, lastSimulation: s }));
   
@@ -372,7 +380,6 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
         projectId: prev.projectId || crypto.randomUUID()
       };
     });
-    refreshSuggestions();
   };
   
   const loadProject = (projectData: any) => {
@@ -380,7 +387,8 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
       setState({
         ...projectData.fullState,
         brain: projectData.fullState.brain || {},
-        notifications: projectData.fullState.notifications || []
+        notifications: projectData.fullState.notifications || [],
+        healthScore: projectData.fullState.healthScore || null
       });
     } else {
       setState({
@@ -418,6 +426,7 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
       setWorkspace,
       loadProject,
       refreshSuggestions,
+      refreshHealthScore,
       markNotificationAsRead,
       dismissNotification,
       reset,
