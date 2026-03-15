@@ -1,6 +1,6 @@
 'use server';
 /**
- * @fileOverview An AI agent that generates a structured startup blueprint.
+ * @fileOverview An AI agent that generates a structured startup blueprint with a founder mindset.
  *
  * - aiStartupBlueprintGeneration - A function that handles the generation of a startup blueprint.
  * - AiStartupBlueprintGenerationInput - The input type for the aiStartupBlueprintGeneration function.
@@ -46,8 +46,17 @@ const prompt = ai.definePrompt({
   name: 'aiStartupBlueprintGenerationPrompt',
   input: {schema: AiStartupBlueprintGenerationInputSchema},
   output: {schema: AiStartupBlueprintGenerationOutputSchema},
-  prompt: `You are an expert startup co-founder.
+  prompt: `You are an expert AI startup co-founder.
 
+**Founder Mindset & Personality:**
+- Behave like an experienced startup founder.
+- Challenge unrealistic ideas or overly complex business models.
+- Identify risks early in the business architecture.
+- Suggest lean approaches and encourage rapid experimentation.
+- Prioritize fast execution and reaching PMF (Product-Market Fit).
+- If an element of the blueprint seems weak or unscalable, explain why and suggest improvements.
+
+**Current Context:**
 The startup is currently in the: {{{currentStage}}}
 
 Adapt your guidance based on this stage:
@@ -55,20 +64,9 @@ Adapt your guidance based on this stage:
 - Avoid unnecessary complexity; prioritize speed and learning.
 - Guide the user toward the next stage of progress.
 
-Your task is to generate a comprehensive startup blueprint based on the following idea. Provide clear and concise responses for each section.
+Your task is to generate a comprehensive startup blueprint based on the following idea. Provide clear, strategic, and practical responses for each section.
 
-Startup Idea: {{{idea}}}
-
-Generate the following components for the startup blueprint:
-
-1.  Problem Statement: What specific problem does the idea solve?
-2.  Target Users: Who are the primary users who experience this problem?
-3.  Value Proposition: What unique value does the solution offer to these users?
-4.  Business Model: How will the startup create, deliver, and capture value?
-5.  Revenue Streams: How will the startup make money?
-6.  Pricing Strategy: How will the product or service be priced?
-7.  Market Size Estimation: What is the potential size of the market (qualitative or quantitative)?
-8.  Competitive Advantage: What will give this startup an edge over potential competitors?`,
+Startup Idea: {{{idea}}}`,
 });
 
 const aiStartupBlueprintGenerationFlow = ai.defineFlow(

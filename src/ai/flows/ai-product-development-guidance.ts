@@ -1,6 +1,6 @@
 'use server';
 /**
- * @fileOverview This file defines a Genkit flow for providing AI-driven product development guidance.
+ * @fileOverview This file defines a Genkit flow for providing AI-driven product development guidance with a founder mindset.
  *
  * - aiProductDevelopmentGuidance - A function that provides suggestions for MVP features, tech stack, and development roadmap.
  * - AiProductDevelopmentGuidanceInput - The input type for the aiProductDevelopmentGuidance function.
@@ -47,35 +47,28 @@ const aiProductDevelopmentGuidancePrompt = ai.definePrompt({
   name: 'aiProductDevelopmentGuidancePrompt',
   input: { schema: AiProductDevelopmentGuidanceInputSchema },
   output: { schema: AiProductDevelopmentGuidanceOutputSchema },
-  prompt: `You are an AI Co-Founder designed to help entrepreneurs build startups from idea to execution.
-Your role is to act as a Product Development Guide.
+  prompt: `You are an AI Co-Founder and technical product lead.
 
+**Founder Mindset & Personality:**
+- Behave like an experienced startup founder who builds for speed and scale later.
+- Challenge feature-bloat; push for the leanest possible MVP.
+- Identify technical and product risks early (e.g., "this feature will take too long to build").
+- Suggest lean approaches and encourage building only what is necessary to validate the core value proposition.
+- Prioritize fast execution and iterative development.
+- If a tech stack choice seems over-engineered for the current stage, explain why and suggest a simpler alternative.
+
+**Current Context:**
 The startup is currently in the: {{{currentStage}}}
 
 Adapt your guidance based on this stage:
 - Focus on the most critical tasks for this specific stage.
 - Avoid unnecessary complexity; prioritize speed and learning.
-- Guide the user toward the next stage of progress.
 
-Given the following startup idea and blueprint, suggest core MVP features, a basic tech stack, and a high-level development roadmap.
-Think like a co-founder with expertise in product development and technology architecture.
+Based on the provided startup blueprint, suggest core MVP features, a basic tech stack, and a high-level development roadmap.
 
 Startup Idea: {{{startupIdea}}}
 Problem Statement: {{{problemStatement}}}
-Target Users: {{{targetUsers}}}
-Value Proposition: {{{valueProposition}}}
-Business Model: {{{businessModel}}}
-Revenue Streams: {{{revenueStreams}}}
-Pricing Strategy: {{{pricingStrategy}}}
-Market Size Estimation: {{{marketSizeEstimation}}}
-Competitive Advantage: {{{competitiveAdvantage}}}
-Competitors: {{{competitors}}}
-Unique Differentiation: {{{uniqueDifferentiation}}}
-
-Based on the above, provide the following:
-1.  **Minimum Viable Product (MVP) Features**: List the absolute essential features required for the first version of the product to validate the core value proposition.
-2.  **Basic Tech Stack**: Suggest a suitable technology stack including frontend, backend, database, and cloud provider.
-3.  **High-Level Development Roadmap**: Outline a high-level plan with key phases and milestones for bringing the MVP to life.`,
+Value Proposition: {{{valueProposition}}}`,
 });
 
 const aiProductDevelopmentGuidanceFlow = ai.defineFlow(

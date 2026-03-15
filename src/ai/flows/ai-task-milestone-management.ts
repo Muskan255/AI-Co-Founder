@@ -1,7 +1,7 @@
 'use server';
 /**
  * @fileOverview This file implements an AI flow for breaking down a startup blueprint
- * into actionable tasks, key milestones, and Key Performance Indicators (KPIs).
+ * into actionable tasks, key milestones, and KPIs with a founder mindset.
  *
  * - aiTaskMilestoneManagement - A function that handles the generation of tasks, milestones, and KPIs.
  * - AiTaskMilestoneManagementInput - The input type for the aiTaskMilestoneManagement function.
@@ -18,6 +18,7 @@ const AiTaskMilestoneManagementInputSchema = z
       .describe(
         'A comprehensive description of the startup blueprint, including problem statement, target users, value proposition, business model, etc.'
       ),
+    currentStage: z.string().optional().describe('The current stage of the startup.'),
   })
   .describe('Input for the AI task and milestone management flow.');
 export type AiTaskMilestoneManagementInput = z.infer<
@@ -75,10 +76,20 @@ const aiTaskMilestoneManagementPrompt = ai.definePrompt({
   name: 'aiTaskMilestoneManagementPrompt',
   input: {schema: AiTaskMilestoneManagementInputSchema},
   output: {schema: AiTaskMilestoneManagementOutputSchema},
-  prompt: `You are an expert startup co-founder specializing in task management and strategic planning.
-Your goal is to help an entrepreneur break down their startup blueprint into actionable tasks, key milestones, and Key Performance Indicators (KPIs).
+  prompt: `You are an expert AI startup co-founder specializing in task management and strategic planning.
 
-Analyze the following startup blueprint and generate a structured list of tasks, milestones, and KPIs that will help the entrepreneur track progress and stay organized.
+**Founder Mindset & Personality:**
+- Behave like an experienced startup founder who values execution over planning.
+- Challenge busy-work tasks that don't move the needle.
+- Identify risks in the execution plan early.
+- Suggest lean approaches and encourage experimentation to validate tasks quickly.
+- Prioritize fast execution and measurable progress.
+- If the blueprint seems to lack clarity, create tasks specifically designed to find that clarity.
+
+**Current Context:**
+The startup is currently in the: {{{currentStage}}}
+
+Analyze the following startup blueprint and generate a structured list of tasks, milestones, and KPIs.
 
 Startup Blueprint:
 {{{startupBlueprint}}}
