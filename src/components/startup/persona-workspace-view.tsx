@@ -1,4 +1,3 @@
-
 "use client"
 
 import React, { useState, useMemo } from 'react';
@@ -14,7 +13,8 @@ import {
   Target, TrendingUp, Users, Share2, FileText,
   Boxes, Milestone, PieChart, Coins, ShieldCheck,
   Zap, ArrowRight, Code2, Copy, Check, Rocket,
-  Save, Download, Github, FileCode, CheckCircle2
+  Save, Download, Github, FileCode, CheckCircle2,
+  FileSpreadsheet, FileType, Search, Heart, Infinity
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -55,31 +55,36 @@ export function PersonaWorkspaceView() {
         ];
       case 'AI CMO':
         return [
-          { id: 'marketing-plan', name: 'Marketing Plan', description: 'Strategy for launch & growth.', icon: <Target /> },
-          { id: 'social-content', name: 'Social Content', description: 'Copy for Twitter, LinkedIn, etc.', icon: <Share2 /> },
-          { id: 'launch-campaign', name: 'Launch Campaign', description: 'Plan your Product Hunt day.', icon: <Rocket /> },
-          { id: 'brand-position', name: 'Brand Positioning', description: 'Define your unique voice.', icon: <Users /> },
+          { id: 'marketing-plan', name: 'Marketing Strategy', description: 'Comprehensive strategy for launch & growth.', icon: <Target /> },
+          { id: 'launch-campaign', name: 'Launch Campaign', description: 'Plan your Go-To-Market execution.', icon: <Rocket /> },
+          { id: 'social-content', name: 'Social Media Content', description: 'Copy for Twitter, LinkedIn, and Instagram.', icon: <Share2 /> },
+          { id: 'seo-strategy', name: 'SEO Strategy', description: 'Keywords and content cluster planning.', icon: <Search /> },
+          { id: 'brand-positioning', name: 'Brand Positioning', description: 'Define your unique value and voice.', icon: <Heart /> },
+          { id: 'audience-targeting', name: 'Audience Targeting', description: 'Identify and profile primary user segments.', icon: <Users /> },
         ];
       case 'AI CFO':
         return [
-          { id: 'revenue-model', name: 'Revenue Model', description: 'How the startup makes money.', icon: <Coins /> },
-          { id: 'burn-rate', name: 'Burn Rate Calc', description: 'Calculate runway and costs.', icon: <TrendingUp /> },
-          { id: 'fundraising', name: 'Fundraising Plan', description: 'Steps for Seed or Series A.', icon: <Banknote /> },
-          { id: 'pricing', name: 'Pricing Strategy', description: 'Optimized pricing tiers.', icon: <PieChart /> },
+          { id: 'revenue-model', name: 'Revenue Model', description: 'Define how the startup generates sustainable income.', icon: <Coins /> },
+          { id: 'pricing-strategy', name: 'Pricing Strategy', description: 'Optimize your tiers for PMF and LTV.', icon: <Target /> },
+          { id: 'financial-projections', name: 'Financial Forecast', description: '12-24 month revenue and cost outlook.', icon: <TrendingUp /> },
+          { id: 'burn-rate', name: 'Burn Rate Analysis', description: 'Calculate runway and monthly expenses.', icon: <Banknote /> },
+          { id: 'fundraising-plan', name: 'Fundraising Strategy', description: 'Roadmap for Seed, Angel, or VC rounds.', icon: <PieChart /> },
         ];
       case 'AI Product Manager':
         return [
-          { id: 'mvp-features', name: 'MVP Features', description: 'What to build (and what not to).', icon: <Boxes /> },
-          { id: 'roadmap', name: 'Product Roadmap', description: 'The journey to version 1.0.', icon: <Milestone /> },
-          { id: 'user-flow', name: 'User Journey', description: 'Design the ideal UX flow.', icon: <Layout /> },
-          { id: 'prioritization', name: 'Prioritize Backlog', description: 'Focus on high-impact work.', icon: <Zap /> },
+          { id: 'mvp-features', name: 'MVP Feature List', description: 'Prioritized core functionality for V1.', icon: <Boxes /> },
+          { id: 'product-roadmap', name: 'Product Roadmap', description: 'Chronological execution timeline.', icon: <Milestone /> },
+          { id: 'user-journeys', name: 'User Journeys', description: 'Step-by-step UX flow design.', icon: <Layout /> },
+          { id: 'prd-generation', name: 'PRD Generation', description: 'Detailed Product Requirement Documents.', icon: <FileText /> },
+          { id: 'feature-prioritization', name: 'Feature Backlog', description: 'Framework-based prioritization.', icon: <Zap /> },
         ];
       case 'AI Growth Hacker':
         return [
-          { id: 'growth-loops', name: 'Growth Loops', description: 'Design viral mechanics.', icon: <Sparkles /> },
-          { id: 'referral-system', name: 'Referral System', description: 'Turn users into advocates.', icon: <Users /> },
-          { id: 'acquisition', name: 'User Acquisition', description: 'Aggressive growth experiments.', icon: <FastForward /> },
-          { id: 'conversion', name: 'Conversion Audit', description: 'Fix leaks in your signup funnel.', icon: <Zap /> },
+          { id: 'growth-experiments', name: 'Growth Experiments', description: 'High-frequency tests for acquisition.', icon: <FastForward /> },
+          { id: 'referral-system', name: 'Referral System', description: 'Design viral loops and incentives.', icon: <Users /> },
+          { id: 'viral-loops', name: 'Viral Mechanics', description: 'Build product-led growth engines.', icon: <Infinity /> },
+          { id: 'acquisition-strategy', name: 'Acquisition Channels', description: 'Find scalable user acquisition loops.', icon: <Rocket /> },
+          { id: 'retention-strategy', name: 'Retention Strategy', description: 'Fix the leaky bucket and boost stickiness.', icon: <ShieldCheck /> },
         ];
       default:
         return [];
@@ -110,7 +115,7 @@ export function PersonaWorkspaceView() {
   const copyToClipboard = () => {
     if (!result) return;
     navigator.clipboard.writeText(result.content);
-    toast({ title: "Copied", description: "Asset copied to clipboard." });
+    toast({ title: "Copied", description: "Content copied to clipboard." });
   };
 
   const handleSaveToProject = async () => {
@@ -139,19 +144,28 @@ export function PersonaWorkspaceView() {
     }
   };
 
-  const handleExport = () => {
+  const handleExport = (type: 'text' | 'doc' | 'sheet' | 'pdf' = 'text') => {
     if (!result) return;
     const blob = new Blob([result.content], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    const extension = result.language === 'typescript' ? 'ts' : result.language === 'javascript' ? 'js' : 'txt';
+    
+    let extension = 'txt';
+    if (result.format === 'code') {
+      extension = result.language === 'typescript' ? 'ts' : result.language === 'javascript' ? 'js' : 'txt';
+    } else if (type === 'doc') {
+      extension = 'md';
+    } else if (type === 'sheet') {
+      extension = 'csv';
+    }
+
     a.href = url;
     a.download = `${result.title.toLowerCase().replace(/\s+/g, '-')}.${extension}`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    toast({ title: "Export Started", description: "Your file is downloading." });
+    toast({ title: "Export Started", description: `Your ${extension.toUpperCase()} file is downloading.` });
   };
 
   const handlePushToGithub = () => {
@@ -287,7 +301,7 @@ export function PersonaWorkspaceView() {
                           <Button variant="outline" size="sm" onClick={handleSaveToProject} className="gap-2 border-white/10 bg-white/5 hover:bg-accent/10 hover:border-accent/30 text-xs">
                             <Save className="w-3 h-3" /> Save to Project
                           </Button>
-                          <Button variant="outline" size="sm" onClick={handleExport} className="gap-2 border-white/10 bg-white/5 hover:bg-accent/10 hover:border-accent/30 text-xs">
+                          <Button variant="outline" size="sm" onClick={() => handleExport()} className="gap-2 border-white/10 bg-white/5 hover:bg-accent/10 hover:border-accent/30 text-xs">
                             <Download className="w-3 h-3" /> Export Code
                           </Button>
                           <Button variant="outline" size="sm" onClick={handlePushToGithub} className="gap-2 border-white/10 bg-white/5 hover:bg-accent/10 hover:border-accent/30 text-xs">
@@ -300,12 +314,27 @@ export function PersonaWorkspaceView() {
                       </div>
                     ) : (
                       <div className="space-y-6">
-                        <div className="prose prose-invert max-w-none prose-sm whitespace-pre-wrap text-muted-foreground leading-relaxed">
+                        <div className="prose prose-invert max-w-none prose-sm whitespace-pre-wrap text-muted-foreground leading-relaxed border border-white/5 p-6 rounded-xl bg-black/10">
                           {result.content}
                         </div>
-                        <div className="flex gap-3 pt-4 border-t border-white/5">
-                           <Button variant="outline" size="sm" onClick={handleSaveToProject} className="gap-2 border-white/10 bg-white/5 hover:bg-accent/10 hover:border-accent/30 text-xs">
-                            <Save className="w-3 h-3" /> Save Plan
+                        
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-4 border-t border-white/5">
+                          <Button variant="outline" size="sm" onClick={handleSaveToProject} className="gap-2 border-white/10 bg-white/5 hover:bg-accent/10 hover:border-accent/30 text-xs">
+                            <Save className="w-3 h-3" /> Save to Project
+                          </Button>
+                          
+                          {state.role === 'AI CFO' ? (
+                            <Button variant="outline" size="sm" onClick={() => handleExport('sheet')} className="gap-2 border-white/10 bg-white/5 hover:bg-accent/10 hover:border-accent/30 text-xs">
+                              <FileSpreadsheet className="w-3 h-3" /> Export Sheets
+                            </Button>
+                          ) : (
+                            <Button variant="outline" size="sm" onClick={() => handleExport('doc')} className="gap-2 border-white/10 bg-white/5 hover:bg-accent/10 hover:border-accent/30 text-xs">
+                              <FileType className="w-3 h-3" /> Export Doc
+                            </Button>
+                          )}
+
+                          <Button variant="outline" size="sm" onClick={copyToClipboard} className="gap-2 border-white/10 bg-white/5 hover:bg-accent/10 hover:border-accent/30 text-xs">
+                            <Copy className="w-3 h-3" /> Copy Content
                           </Button>
                         </div>
                       </div>
