@@ -1,4 +1,3 @@
-
 "use client"
 
 import React, { useState, useMemo } from 'react';
@@ -125,7 +124,7 @@ export function PersonaWorkspaceView() {
   const copyToClipboard = () => {
     if (!result) return;
     navigator.clipboard.writeText(result.content);
-    toast({ title: "Copied", description: "Content copied to clipboard." });
+    toast({ title: "Copied", description: "Content copied successfully" });
   };
 
   const handleSaveToProject = async () => {
@@ -394,7 +393,7 @@ export function PersonaWorkspaceView() {
                           
                           {state.role === 'AI CFO' ? (
                             <Button variant="outline" size="sm" onClick={() => handleExport('sheet')} className="gap-2 border-white/10 bg-white/5 hover:bg-accent/10 hover:border-accent/30 text-xs">
-                              <FileSpreadsheet className="w-3 h-3" /> Export Sheets
+                              <FileSpreadsheet className="w-3 h-3" /> Export Spreadsheet
                             </Button>
                           ) : (
                             <Button variant="outline" size="sm" onClick={() => handleExport('doc')} className="gap-2 border-white/10 bg-white/5 hover:bg-accent/10 hover:border-accent/30 text-xs">

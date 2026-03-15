@@ -1,4 +1,3 @@
-
 "use client"
 
 import React, { useMemo } from 'react';
@@ -43,8 +42,8 @@ export function ProjectListView({ onSelect, onAuthPrompt }: ProjectListViewProps
 
   const calculateProgress = (project: any) => {
     const fields = ['validation', 'blueprint', 'productGuidance', 'marketing', 'financialStrategy', 'tasks'];
-    const state = project.fullState || {};
-    const completed = fields.filter(f => !!state[f]).length;
+    const stateData = project.fullState || {};
+    const completed = fields.filter(f => !!stateData[f]).length;
     return (completed / fields.length) * 100;
   };
 

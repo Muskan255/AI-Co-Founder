@@ -11,7 +11,7 @@ import { AiStartupSimulationOutput } from '@/ai/flows/ai-startup-simulation';
 import { WorkspaceOutput } from '@/ai/flows/ai-workspace-generation';
 import { aiSmartNotifications } from '@/ai/flows/ai-smart-notifications';
 import { useUser, useFirestore } from '@/firebase';
-import { doc, setDoc, serverTimestamp, getDocs, collection, query, orderBy, limit } from 'firebase/firestore';
+import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 
 export type StartupStage = 'Idea Stage' | 'Validation Stage' | 'MVP Development' | 'Early Traction' | 'Growth Stage' | 'Scaling Stage';
 export type StartupRole = 'AI CTO' | 'AI CMO' | 'AI CFO' | 'AI Product Manager' | 'AI Growth Hacker';
@@ -118,50 +118,76 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
 
   const isGuestMode = !user;
 
+  // Hydration logic: Load from localStorage but clear for guests on refresh if required
   useEffect(() => {
     const saved = localStorage.getItem('ai-founder-startup-state');
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        setState({
-          ...DEFAULT_STATE,
-          ...parsed,
-          brain: parsed.brain || {},
-          notifications: parsed.notifications || []
-        });
+        // Requirement: Clear on refresh for guest users
+        // Note: 'user' is null during initial load, so we'd normally clear it.
+        // However, to avoid flickering during auth check, we check if it was a Guest session.
+        if (parsed.isGuest && !user) {
+          // Keep it temporarily during the session, but the user requirement said "cleared on refresh".
+          // If we want it truly cleared on refresh for guests, we skip this block.
+          // For now, let's keep it in-memory but skip localStorage loading if it's a guest session to satisfy the "cleared on refresh" rule.
+          localStorage.removeItem('ai-founder-startup-state');
+        } else {
+          setState({
+            ...DEFAULT_STATE,
+            ...parsed,
+            brain: parsed.brain || {},
+            notifications: parsed.notifications || []
+          });
+        }
       } catch (error) {
         console.error('Failed to parse saved startup state:', error);
       }
     }
     setIsHydrated(true);
-  }, []);
+  }, [user]);
 
+  // Persistence logic: Sync to localStorage and Firestore
   useEffect(() => {
     if (isHydrated) {
-      localStorage.setItem('ai-founder-startup-state', JSON.stringify(state));
+      // Save to localStorage for persistence during active usage
+      localStorage.setItem('ai-founder-startup-state', JSON.stringify({
+        ...state,
+        isGuest: isGuestMode
+      }));
       
-      if (user && state.projectId && firestore) {
-        const projectRef = doc(firestore, 'users', user.uid, 'projects', state.projectId);
-        
-        const projectRecord = {
-          project_id: state.projectId,
-          user_id: user.uid,
-          project_name: state.projectName,
-          idea_description: state.rawIdea,
-          startup_stage: state.stage,
-          last_updated: serverTimestamp(),
-          startup_brain: state.brain || {},
-          fullState: state
-        };
+      // Cloud Sync / Conversion Logic
+      if (user && firestore) {
+        // If logged in but no projectId (e.g. guest just converted), generate one if they have data
+        if (!state.projectId && state.rawIdea) {
+          setProjectId(crypto.randomUUID());
+          return; // Next render will trigger the sync
+        }
 
-        setDoc(projectRef, projectRecord, { merge: true }).catch(err => {
-          console.error("Firestore sync error:", err);
-        });
+        if (state.projectId) {
+          const projectRef = doc(firestore, 'users', user.uid, 'projects', state.projectId);
+          
+          const projectRecord = {
+            project_id: state.projectId,
+            user_id: user.uid,
+            project_name: state.projectName,
+            idea_description: state.rawIdea,
+            startup_stage: state.stage,
+            last_updated: serverTimestamp(),
+            startup_brain: state.brain || {},
+            fullState: state
+          };
+
+          setDoc(projectRef, projectRecord, { merge: true }).catch(err => {
+            console.error("Firestore sync error:", err);
+          });
+        }
       }
     }
-  }, [state, isHydrated, user, firestore]);
+  }, [state, isHydrated, user, firestore, isGuestMode]);
 
   const refreshSuggestions = useCallback(async () => {
+    if (!state.rawIdea) return;
     try {
       const response = await aiSmartNotifications({
         brain: state.brain as any,
@@ -175,7 +201,6 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
       }));
 
       setState(prev => {
-        // Filter out duplicate suggestions by title
         const existingTitles = new Set(prev.notifications.map(n => n.title));
         const uniqueNew = newNotifications.filter(n => !existingTitles.has(n.title));
         
@@ -187,7 +212,7 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
     } catch (error) {
       console.error('Failed to refresh suggestions:', error);
     }
-  }, [state.brain, state.stage]);
+  }, [state.brain, state.stage, state.rawIdea]);
 
   const markNotificationAsRead = (id: string) => {
     setState(prev => ({

@@ -1,4 +1,3 @@
-
 "use client"
 
 import React, { useState, useMemo } from 'react';
@@ -32,7 +31,8 @@ import {
   Terminal,
   Brain,
   Info,
-  Bell
+  Bell,
+  ArrowRight
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -156,7 +156,7 @@ function DashboardContent({ setView }: { setView: (v: ViewType) => void }) {
         <div className="glass-card p-6 rounded-2xl border-accent/30 bg-accent/5 flex flex-col md:flex-row items-center justify-between gap-6 animate-in slide-in-from-right-10 duration-500">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 rounded-2xl bg-accent/20 flex items-center justify-center text-accent">
-              <Sparkles className="w-6 h-6 animate-pulse" />
+              <Bell className="w-6 h-6 animate-pulse" />
             </div>
             <div className="space-y-1">
               <h3 className="font-headline font-bold text-lg leading-none">Strategic Opportunity Detected</h3>
@@ -289,7 +289,7 @@ function MainApp() {
 
   const activeNavItem = useMemo(() => 
     navItems.find(item => item.id === activeWorkspace) || navItems[0], 
-  [activeWorkspace, navItems]);
+  [activeWorkspace]);
 
   const sidebarSubtitle = useMemo(() => {
     if (!state.rawIdea && state.stage === 'Idea Stage' && state.role === 'AI Product Manager') {
