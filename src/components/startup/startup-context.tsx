@@ -87,7 +87,6 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
     setIsHydrated(true);
   }, []);
 
-  // Sync to Firestore when state changes and project exists
   useEffect(() => {
     if (isHydrated) {
       localStorage.setItem('co-pilot-startup-state', JSON.stringify(state));
@@ -95,7 +94,6 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
       if (user && state.projectId && firestore) {
         const projectRef = doc(firestore, 'users', user.uid, 'projects', state.projectId);
         
-        // Comprehensive record mapping for Startup Memory System
         const projectRecord = {
           project_id: state.projectId,
           project_name: state.projectName,
@@ -123,14 +121,29 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
   const setProjectId = (id: string) => setState(prev => ({ ...prev, projectId: id }));
   const setProjectName = (name: string) => setState(prev => ({ ...prev, projectName: name }));
   const setRawIdea = (idea: string) => setState(prev => ({ ...prev, rawIdea: idea }));
-  const setStage = (stage: StartupStage) => setState(prev => ({ ...prev, stage }));
+  
+  const setStage = (stage: StartupStage) => {
+    setState(prev => {
+      let role: StartupRole = prev.role;
+      switch (stage) {
+        case 'Idea Stage': role = 'AI Product Manager'; break;
+        case 'Validation Stage': role = 'AI CMO'; break;
+        case 'MVP Development': role = 'AI CTO'; break;
+        case 'Early Traction': role = 'AI Growth Hacker'; break;
+        case 'Growth Stage': role = 'AI CMO'; break;
+        case 'Scaling Stage': role = 'AI CFO'; break;
+      }
+      return { ...prev, stage, role };
+    });
+  };
+
   const setRole = (role: StartupRole) => setState(prev => ({ ...prev, role }));
-  const setValidation = (v: IdeaValidationOutput) => setState(prev => ({ ...prev, validation: v, stage: 'Validation Stage' }));
-  const setBlueprint = (b: AiStartupBlueprintGenerationOutput) => setState(prev => ({ ...prev, blueprint: b, stage: 'MVP Development' }));
-  const setProductGuidance = (p: AiProductDevelopmentGuidanceOutput) => setState(prev => ({ ...prev, productGuidance: p, stage: 'Early Traction' }));
-  const setMarketing = (m: MarketingStrategyGenerationOutput) => setState(prev => ({ ...prev, marketing: m, stage: 'Growth Stage' }));
+  const setValidation = (v: IdeaValidationOutput) => setState(prev => ({ ...prev, validation: v, stage: 'Validation Stage', role: 'AI CMO' }));
+  const setBlueprint = (b: AiStartupBlueprintGenerationOutput) => setState(prev => ({ ...prev, blueprint: b, stage: 'MVP Development', role: 'AI CTO' }));
+  const setProductGuidance = (p: AiProductDevelopmentGuidanceOutput) => setState(prev => ({ ...prev, productGuidance: p, stage: 'Early Traction', role: 'AI Growth Hacker' }));
+  const setMarketing = (m: MarketingStrategyGenerationOutput) => setState(prev => ({ ...prev, marketing: m, stage: 'Growth Stage', role: 'AI CMO' }));
   const setFinancialStrategy = (f: FinancialStrategyGenerationOutput) => setState(prev => ({ ...prev, financialStrategy: f }));
-  const setTasks = (t: AiTaskMilestoneManagementOutput) => setState(prev => ({ ...prev, tasks: t, stage: 'Scaling Stage' }));
+  const setTasks = (t: AiTaskMilestoneManagementOutput) => setState(prev => ({ ...prev, tasks: t, stage: 'Scaling Stage', role: 'AI CFO' }));
   const setSimulation = (s: AiStartupSimulationOutput) => setState(prev => ({ ...prev, lastSimulation: s }));
   const setWorkspace = (w: WorkspaceOutput) => setState(prev => ({ ...prev, workspace: w }));
   

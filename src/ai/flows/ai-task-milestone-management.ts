@@ -1,11 +1,6 @@
 'use server';
 /**
- * @fileOverview This file implements an AI flow for breaking down a startup blueprint
- * into actionable tasks, key milestones, and KPIs with a founder mindset and lean principles.
- *
- * - aiTaskMilestoneManagement - A function that handles the generation of tasks, milestones, and KPIs.
- * - AiTaskMilestoneManagementInput - The input type for the aiTaskMilestoneManagement function.
- * - AiTaskMilestoneManagementOutput - The return type for the aiTaskMilestoneManagement function.
+ * @fileOverview AI Founder task and milestone management.
  */
 
 import {ai} from '@/ai/genkit';
@@ -16,12 +11,11 @@ const AiTaskMilestoneManagementInputSchema = z
     startupBlueprint: z
       .string()
       .describe(
-        'A comprehensive description of the startup blueprint, including problem statement, target users, value proposition, business model, etc.'
+        'A comprehensive description of the startup blueprint.'
       ),
     currentStage: z.string().optional().describe('The current stage of the startup.'),
     role: z.string().optional().describe('The specific co-founder role acting on this request.'),
-  })
-  .describe('Input for the AI task and milestone management flow.');
+  });
 export type AiTaskMilestoneManagementInput = z.infer<
   typeof AiTaskMilestoneManagementInputSchema
 >;
@@ -29,41 +23,38 @@ export type AiTaskMilestoneManagementInput = z.infer<
 const AiTaskMilestoneManagementOutputSchema = z
   .object({
     tasks: z
-      .array(z.string().describe('An actionable task to be completed.'))
-      .describe('A list of actionable tasks derived from the startup blueprint.'),
+      .array(z.string().describe('An actionable task.'))
+      .describe('Actionable tasks.'),
     milestones: z
       .array(
         z
           .object({
-            name: z.string().describe('The name of the milestone.'),
+            name: z.string().describe('Name of the milestone.'),
             description: z
               .string()
-              .describe('A detailed description of the milestone.'),
+              .describe('Description of the milestone.'),
             targetDate: z
               .string()
               .optional()
-              .describe('An optional target completion date for the milestone (e.g., YYYY-MM-DD).'),
+              .describe('Optional target completion date.'),
           })
-          .describe('A key milestone with its details.')
       )
-      .describe('A list of key milestones for the startup blueprint.'),
+      .describe('Key milestones.'),
     kpis: z
       .array(
         z
           .object({
-            name: z.string().describe('The name of the KPI.'),
-            description: z.string().describe('A description of what the KPI measures.'),
+            name: z.string().describe('Name of the KPI.'),
+            description: z.string().describe('Description of the KPI.'),
             targetValue: z
               .string()
               .optional()
-              .describe('An optional target value or range for the KPI (e.g., "10% conversion rate", "500 daily active users").'),
+              .describe('Optional target value.'),
           })
-          .describe('A Key Performance Indicator (KPI) with its details.')
       )
-      .describe('A list of Key Performance Indicators (KPIs) to track progress.'),
-    recommendedTools: z.array(z.string()).describe('Productivity and task management tools to accelerate execution (e.g. Jira, Linear, Trello, Zapier).'),
-  })
-  .describe('Output from the AI task and milestone management flow.');
+      .describe('Key Performance Indicators.'),
+    recommendedTools: z.array(z.string()).describe('Productivity tools.'),
+  });
 export type AiTaskMilestoneManagementOutput = z.infer<
   typeof AiTaskMilestoneManagementOutputSchema
 >;
@@ -78,38 +69,21 @@ const aiTaskMilestoneManagementPrompt = ai.definePrompt({
   name: 'aiTaskMilestoneManagementPrompt',
   input: {schema: AiTaskMilestoneManagementInputSchema},
   output: {schema: AiTaskMilestoneManagementOutputSchema},
-  prompt: `You are an expert AI founder specializing in lean execution and strategic planning. You are acting as the {{{role}}}.
+  prompt: `You are the {{{role}}} of an AI Founder venture.
 
-{{#if (eq role "AI Product Manager")}}
-You are the AI Product Manager. Focus on building products users truly need. Break down tasks into specific user-centric milestones and PMF markers.
+**Current Startup Stage: {{{currentStage}}}**
+Priority for this stage:
+{{#if (eq currentStage "Idea Stage")}} Focus on validation, problem definition, and concept.
+{{else if (eq currentStage "Validation Stage")}} Focus on market research and demand testing.
+{{else if (eq currentStage "MVP Development")}} Focus on technical architecture and MVP features.
+{{else if (eq currentStage "Early Traction")}} Focus on user acquisition and rapid iteration.
+{{else if (eq currentStage "Growth Stage")}} Focus on marketing scaling and brand building.
+{{else if (eq currentStage "Scaling Stage")}} Focus on sustainability and operational efficiency.
 {{/if}}
 
-{{#if (eq role "AI Growth Hacker")}}
-You are the AI Growth Hacker. Your responsibility is rapid user growth. 
-Break down tasks into: growth experiments, signup conversion improvements, referral system setups, and viral opportunity identification.
-{{/if}}
+Generate an aggressive, stage-appropriate execution roadmap from your perspective as {{{role}}}.
 
-**Founder Mindset & Personality:**
-- Behave like an experienced startup founder who values execution over planning.
-- Identify risks early and prioritize reaching PMF (Product-Market Fit).
-- Challenge unnecessary complexity; focus on what drives the needle.
-- Prioritize fast execution and measurable progress.
-
-**Lean Startup Principles:**
-- Apply Build → Measure → Learn loops in task prioritization.
-- Focus on validated learning.
-- Suggest tasks that test hypotheses quickly.
-
-**Tool Automation & Acceleration:**
-- Recommend tools that save time and automate manual tasks (e.g., Linear, Trello, Zapier, Make.com).
-
-**Current Context:**
-The startup is currently in the: {{{currentStage}}}
-
-**Startup Blueprint:**
-{{{startupBlueprint}}}
-
-Generate an aggressive, execution-focused roadmap from your perspective as {{{role}}}.`,
+Blueprint: {{{startupBlueprint}}}`,
 });
 
 const aiTaskMilestoneManagementFlow = ai.defineFlow(
@@ -123,9 +97,6 @@ const aiTaskMilestoneManagementFlow = ai.defineFlow(
       ...input,
       role: input.role || 'AI Founder'
     });
-    if (!output) {
-      throw new Error('Failed to generate tasks, milestones, and KPIs.');
-    }
-    return output;
+    return output!;
   }
 );

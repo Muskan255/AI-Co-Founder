@@ -1,8 +1,6 @@
 'use server';
 /**
- * @fileOverview An AI agent that generates marketing strategies with a founder mindset, lean principles, and long-term growth loops.
- * 
- * Specifically adapted for the AI CMO and AI Growth Hacker roles.
+ * @fileOverview AI Founder marketing strategies.
  */
 
 import {ai} from '@/ai/genkit';
@@ -31,20 +29,20 @@ const MarketingStrategyGenerationOutputSchema = z.object({
     .describe('Strategies for growing on social media platforms.'),
   userAcquisition: z
     .array(z.string())
-    .describe('Strategies for acquiring new users organically and via low-cost channels.'),
+    .describe('Strategies for acquiring new users organically.'),
   seoStrategy: z
     .array(z.string())
     .describe('Strategies for Search Engine Optimization.'),
   contentStrategy: z
     .array(z.string())
-    .describe('Strategies for content marketing and distribution.'),
+    .describe('Strategies for content marketing.'),
   viralLoops: z
     .array(z.string())
-    .describe('Strategies for creating viral growth loops and network effects.'),
+    .describe('Strategies for creating viral growth loops.'),
   communityBuilding: z
     .array(z.string())
-    .describe('Strategies for building and engaging a community or influencer network.'),
-  recommendedTools: z.array(z.string()).describe('Marketing and analytics tools to accelerate growth.'),
+    .describe('Strategies for building and engaging a community.'),
+  recommendedTools: z.array(z.string()).describe('Marketing and analytics tools.'),
 });
 export type MarketingStrategyGenerationOutput = z.infer<
   typeof MarketingStrategyGenerationOutputSchema
@@ -60,23 +58,20 @@ const marketingStrategyPrompt = ai.definePrompt({
   name: 'marketingStrategyPrompt',
   input: {schema: MarketingStrategyGenerationInputSchema},
   output: {schema: MarketingStrategyGenerationOutputSchema},
-  prompt: `You are acting as the {{{role}}} of the startup. 
+  prompt: `You are acting as the {{{role}}} of the AI Founder startup.
 
-**Persona Communication Style:**
-{{#if (eq role "AI CMO")}} You are creative and strategic. Focus on branding, positioning, and high-level marketing strategy. {{/if}}
-{{#if (eq role "AI Growth Hacker")}} You are experimental and growth-focused. Focus on viral loops, experiments, and rapid user acquisition. {{/if}}
-
-**Founder Mindset & Long-Term Vision:**
-- Suggest lean, low-cost marketing approaches initially.
-- Always consider: Scalability, Network Effects (Growth Loops), and Global Potential.
+**Current Startup Stage: {{{currentStage}}}**
+Priority for this stage:
+{{#if (eq currentStage "Validation Stage")}} Focus on market research, customer feedback, and testing demand.
+{{else if (eq currentStage "Growth Stage")}} Focus on marketing expansion, scaling channels, and brand building.
+{{else if (eq currentStage "Early Traction")}} Focus on user acquisition and early experiment optimization.
+{{/if}}
 
 **Response Structure (Mandatory for "growthInsight" field):**
-1. **Role Perspective**: Explain the situation from the viewpoint of the active executive ({{{role}}}).
-2. **Strategic Advice**: Provide high-level recommendations.
-3. **Action Plan**: List practical steps the founder should take next.
+1. **Role Perspective**: Viewpoint of the {{{role}}} at the {{{currentStage}}}.
+2. **Strategic Advice**: Growth recommendations for the {{{currentStage}}}.
+3. **Action Plan**: Immediate marketing steps.
 
-**Current Context:**
-The startup is currently in: {{{currentStage}}}
 Product: {{{productDescription}}}`,
 });
 

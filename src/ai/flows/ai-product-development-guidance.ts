@@ -1,8 +1,6 @@
 'use server';
 /**
- * @fileOverview This file defines a Genkit flow for providing AI-driven product development guidance with a focus on MVP speed and long-term scalability.
- * 
- * Specifically adapted for AI CTO, AI Product Manager, and AI Growth Hacker roles.
+ * @fileOverview AI-driven product development guidance.
  */
 
 import {ai} from '@/ai/genkit';
@@ -33,9 +31,9 @@ const AiProductDevelopmentGuidanceOutputSchema = z.object({
     database: z.string().describe('Recommended database.'),
     cloudProvider: z.string().describe('Recommended cloud provider.'),
     otherTools: z.array(z.string()).optional().describe('Other essential tools.'),
-  }).describe('Suggested tech stack for speed and future scalability.'),
-  systemArchitecture: z.string().describe('High-level design of the system architecture.'),
-  developmentRoadmap: z.array(z.string()).describe('Chronological roadmap (Phases/Milestones).'),
+  }).describe('Suggested tech stack.'),
+  systemArchitecture: z.string().describe('High-level system architecture.'),
+  developmentRoadmap: z.array(z.string()).describe('Chronological roadmap.'),
   accelerationTools: z.array(z.string()).describe('Tools specifically chosen to save time.'),
   strategicOverview: z.string().describe('A high-level overview organized into: 1. Role Perspective, 2. Strategic Advice, 3. Action Plan.'),
 });
@@ -49,24 +47,21 @@ const aiProductDevelopmentGuidancePrompt = ai.definePrompt({
   name: 'aiProductDevelopmentGuidancePrompt',
   input: { schema: AiProductDevelopmentGuidanceInputSchema },
   output: { schema: AiProductDevelopmentGuidanceOutputSchema },
-  prompt: `You are acting as the {{{role}}} of the startup.
+  prompt: `You are acting as the {{{role}}} of the AI Founder startup.
 
-**Persona Communication Style:**
-{{#if (eq role "AI CTO")}} You are technical and structured. Focus on architecture, stack selection, and scalability. {{/if}}
-{{#if (eq role "AI Product Manager")}} You are user-focused and practical. Focus on product strategy and roadmap markers. {{/if}}
-{{#if (eq role "AI Growth Hacker")}} You are experimental and growth-focused. Focus on building for virality and growth loops. {{/if}}
-
-**Founder Mindset & Long-Term Vision:**
-- Build for speed now, but architect for Scalability and Global Potential.
-- Prioritize the leanest possible MVP that still allows for a future Moat.
+**Current Startup Stage: {{{currentStage}}}**
+Priority for this stage:
+{{#if (eq currentStage "MVP Development")}} Focus on technical architecture, MVP features, and development roadmap.
+{{else if (eq currentStage "Early Traction")}} Focus on user acquisition and product iteration based on feedback.
+{{else if (eq currentStage "Scaling Stage")}} Focus on infrastructure scaling and operational efficiency.
+{{else}} Focus on validation and core concept.
+{{/if}}
 
 **Response Structure (Mandatory for "strategicOverview" field):**
-1. **Role Perspective**: Explain the situation from the viewpoint of the active executive ({{{role}}}).
-2. **Strategic Advice**: Provide high-level recommendations.
-3. **Action Plan**: List practical steps the founder should take next.
+1. **Role Perspective**: Viewpoint of the {{{role}}} at the {{{currentStage}}}.
+2. **Strategic Advice**: Guidance for the {{{currentStage}}}.
+3. **Action Plan**: Immediate steps for the founder.
 
-**Current Context:**
-The startup is currently in the: {{{currentStage}}}
 Idea: {{{startupIdea}}}`,
 });
 

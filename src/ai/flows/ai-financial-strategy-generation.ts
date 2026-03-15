@@ -1,8 +1,6 @@
 'use server';
 /**
- * @fileOverview An AI agent that generates financial strategies with a founder mindset, focusing on sustainability and fundraising.
- * 
- * Specifically adapted for the AI CFO role.
+ * @fileOverview AI Founder financial strategies.
  */
 
 import {ai} from '@/ai/genkit';
@@ -17,7 +15,7 @@ export type FinancialStrategyGenerationInput = z.infer<typeof FinancialStrategyG
 
 const FinancialStrategyGenerationOutputSchema = z.object({
   strategicInsight: z.string().describe('A high-level financial overview organized into: 1. Role Perspective, 2. Strategic Advice, 3. Action Plan.'),
-  revenueOpportunities: z.array(z.string()).describe('Identified primary and secondary revenue streams.'),
+  revenueOpportunities: z.array(z.string()).describe('Identified revenue streams.'),
   pricingModels: z.array(z.object({
     model: z.string().describe('Name of the pricing model.'),
     description: z.string().describe('Detailed explanation.'),
@@ -29,9 +27,9 @@ const FinancialStrategyGenerationOutputSchema = z.object({
     estimatedMonthlyCost: z.string(),
     priority: z.enum(['High', 'Medium', 'Low']),
   })).describe('Estimated startup costs.'),
-  revenueForecast: z.string().describe('A narrative or structured forecast of revenue growth over the next 12-24 months.'),
-  burnRateAnalysis: z.string().describe('Analysis of the projected burn rate and runway expectations.'),
-  fundingPlan: z.array(z.string()).describe('Specific steps for fundraising (e.g., Angel, Seed, Bootstrapping).'),
+  revenueForecast: z.string().describe('A narrative forecast of revenue growth.'),
+  burnRateAnalysis: z.string().describe('Analysis of projected burn rate and runway.'),
+  fundingPlan: z.array(z.string()).describe('Specific steps for fundraising.'),
   unitEconomics: z.object({
     cac: z.string().describe('Estimated Customer Acquisition Cost.'),
     ltv: z.string().describe('Estimated Lifetime Value.'),
@@ -48,22 +46,20 @@ const financialStrategyPrompt = ai.definePrompt({
   name: 'financialStrategyPrompt',
   input: {schema: FinancialStrategyGenerationInputSchema},
   output: {schema: FinancialStrategyGenerationOutputSchema},
-  prompt: `You are acting as the {{{role}}} of the startup.
+  prompt: `You are acting as the {{{role}}} of the AI Founder startup.
 
-**Persona Communication Style:**
-{{#if (eq role "AI CFO")}} You are analytical and financial. Focus on revenue models, pricing strategies, burn rate, and fundraising planning. {{else}} You are a technical/strategic executive helping with financial planning. {{/if}}
-
-**Founder Mindset & Long-Term Vision:**
-- Think like an experienced venture-backed CFO.
-- Always consider: Scalability, Competitive Moat, Sustainable Revenue, and Global Potential.
+**Current Startup Stage: {{{currentStage}}}**
+Priority for this stage:
+{{#if (eq currentStage "Scaling Stage")}} Focus on financial sustainability, infrastructure scaling, and operational efficiency.
+{{else if (eq currentStage "MVP Development")}} Focus on budget control and bootstrapping.
+{{else}} Focus on revenue model validation.
+{{/if}}
 
 **Response Structure (Mandatory for "strategicInsight" field):**
-1. **Role Perspective**: Explain the situation from the viewpoint of the active executive ({{{role}}}).
-2. **Strategic Advice**: Provide high-level recommendations.
-3. **Action Plan**: List practical steps the founder should take next.
+1. **Role Perspective**: Viewpoint of the {{{role}}} during the {{{currentStage}}}.
+2. **Strategic Advice**: Financial recommendations for the {{{currentStage}}}.
+3. **Action Plan**: Practical financial steps for the founder.
 
-**Current Context:**
-The startup is in: {{{currentStage}}}
 Idea: {{{startupIdea}}}`,
 });
 

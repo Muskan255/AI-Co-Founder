@@ -1,10 +1,6 @@
 'use server';
 /**
- * @fileOverview An AI agent that generates a structured startup blueprint with a founder mindset, lean principles, and long-term vision.
- *
- * - aiStartupBlueprintGeneration - A function that handles the generation of a startup blueprint.
- * - AiStartupBlueprintGenerationInput - The input type for the aiStartupBlueprintGeneration function.
- * - AiStartupBlueprintGenerationOutput - The return type for the aiStartupBlueprintGeneration function.
+ * @fileOverview An AI Founder agent that generates a structured startup blueprint.
  */
 
 import {ai} from '@/ai/genkit';
@@ -33,7 +29,7 @@ const AiStartupBlueprintGenerationOutputSchema = z.object({
   competitiveAdvantage: z
     .string()
     .describe('What makes the startup stand out from competitors (Moat, IP, Network Effects).'),
-  recommendedTools: z.array(z.string()).describe('Business and operational tools to accelerate the venture (e.g. Stripe, Slack, Notion).'),
+  recommendedTools: z.array(z.string()).describe('Business and operational tools to accelerate the venture.'),
 });
 export type AiStartupBlueprintGenerationOutput = z.infer<
   typeof AiStartupBlueprintGenerationOutputSchema
@@ -49,26 +45,22 @@ const prompt = ai.definePrompt({
   name: 'aiStartupBlueprintGenerationPrompt',
   input: {schema: AiStartupBlueprintGenerationInputSchema},
   output: {schema: AiStartupBlueprintGenerationOutputSchema},
-  prompt: `You are acting as the {{{role}}} of the startup. You are an expert founder specializing in business architecture and lean methodology.
+  prompt: `You are acting as the {{{role}}} of the AI Founder venture.
 
-**Persona Communication Style:**
-{{#if (eq role "AI CTO")}} You are technical and structured. Focus on: technical architecture, infrastructure, and scalability. {{/if}}
-{{#if (eq role "AI CMO")}} You are creative and strategic. Focus on: branding, positioning, and user acquisition. {{/if}}
-{{#if (eq role "AI CFO")}} You are analytical and financial. Focus on: revenue models, pricing, and burn rate. {{/if}}
-{{#if (eq role "AI Product Manager")}} You are user-focused and practical. Focus on: features, roadmaps, and PMF. {{/if}}
-{{#if (eq role "AI Growth Hacker")}} You are experimental and growth-focused. Focus on: viral loops, experiments, and conversion. {{/if}}
-
-**Founder Mindset & Long-Term Vision:**
-- Behave like an experienced startup founder.
-- Always consider: Scalability, Network Effects, Competitive Moats, Sustainable Revenue, and Global Potential from your perspective as {{{role}}}.
+**Current Startup Stage: {{{currentStage}}}**
+{{#if (eq currentStage "Idea Stage")}} Priority: Idea validation and concept definition.
+{{else if (eq currentStage "Validation Stage")}} Priority: Market research and customer feedback.
+{{else if (eq currentStage "MVP Development")}} Priority: Technical architecture and MVP roadmap.
+{{else if (eq currentStage "Early Traction")}} Priority: User acquisition and product iteration.
+{{else if (eq currentStage "Growth Stage")}} Priority: Marketing expansion and brand building.
+{{else if (eq currentStage "Scaling Stage")}} Priority: Financial sustainability and infrastructure.
+{{/if}}
 
 **Response Structure (Mandatory for "strategicOverview" field):**
-1. **Role Perspective**: Explain the situation from the viewpoint of the active executive ({{{role}}}).
-2. **Strategic Advice**: Provide high-level recommendations.
-3. **Action Plan**: List practical steps the founder should take next.
+1. **Role Perspective**: Viewpoint of the {{{role}}} during the {{{currentStage}}}.
+2. **Strategic Advice**: Recommendations for the {{{currentStage}}}.
+3. **Action Plan**: Practical steps for the founder.
 
-**Current Context:**
-The startup is currently in the: {{{currentStage}}}
 Idea: {{{idea}}}`,
 });
 
