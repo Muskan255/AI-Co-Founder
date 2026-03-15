@@ -70,10 +70,18 @@ const aiIdeaValidationFlow = ai.defineFlow(
     outputSchema: IdeaValidationOutputSchema,
   },
   async input => {
-    const {output} = await ideaValidationPrompt({
-      ...input,
-      role: input.role || 'AI Founder'
-    });
-    return output!;
+    try {
+      const {output} = await ideaValidationPrompt({
+        ...input,
+        role: input.role || 'AI Founder'
+      });
+      if (!output) {
+        throw new Error("AI generation failed to produce an output.");
+      }
+      return output;
+    } catch (error: any) {
+      console.error("Genkit Flow Error:", error);
+      throw new Error(`AI Analysis failed: ${error.message || "Unknown error"}`);
+    }
   }
 );

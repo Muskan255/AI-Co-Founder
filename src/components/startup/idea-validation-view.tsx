@@ -34,17 +34,23 @@ export function IdeaValidationView({ onComplete }: { onComplete: () => void }) {
         currentStage: state.stage,
         role: state.role
       });
+      
+      if (!result) {
+        throw new Error("AI returned an empty analysis. Please check your GenAI API key.");
+      }
+
       setRawIdea(idea);
       setValidation(result);
       toast({
         title: "Validation Complete",
         description: `Feedback from ${state.role} for ${state.stage}.`,
       });
-    } catch (error) {
+    } catch (error: any) {
+      console.error('AI Idea Validation Error:', error);
       toast({
         variant: "destructive",
-        title: "Validation Failed",
-        description: "Could not process your idea at this time.",
+        title: "Analysis Failed",
+        description: error.message || "Could not process your idea at this time. Check your connection or API configuration.",
       });
     } finally {
       setLoading(false);

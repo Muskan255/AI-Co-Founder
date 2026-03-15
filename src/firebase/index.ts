@@ -12,6 +12,7 @@ export function initializeFirebase(): {
     const isConfigValid = firebaseConfig && firebaseConfig.apiKey && firebaseConfig.apiKey !== 'undefined';
     
     if (!isConfigValid) {
+      console.error('Firebase configuration is missing or invalid.');
       return { firebaseApp: null, firestore: null, auth: null };
     }
 

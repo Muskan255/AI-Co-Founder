@@ -1,4 +1,3 @@
-
 "use client"
 
 import React, { useState } from 'react';
@@ -45,16 +44,28 @@ export function AuthModal({ children, open, onOpenChange }: AuthModalProps) {
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
 
+  const checkInitialization = () => {
+    if (!auth || !firestore) {
+      toast({
+        variant: "destructive",
+        title: "Connection Error",
+        description: "Firebase is not correctly initialized. Please check your configuration.",
+      });
+      return false;
+    }
+    return true;
+  };
+
   const handleGoogleSignIn = async () => {
-    if (!auth || !firestore) return;
+    if (!checkInitialization()) return;
     setLoading(true);
     try {
       const provider = new GoogleAuthProvider();
-      const result = await signInWithPopup(auth, provider);
+      const result = await signInWithPopup(auth!, provider);
       const user = result.user;
 
       // Check if user exists in Firestore
-      const userRef = doc(firestore, 'users', user.uid);
+      const userRef = doc(firestore!, 'users', user.uid);
       const userDoc = await getDoc(userRef);
 
       if (!userDoc.exists()) {
@@ -74,10 +85,11 @@ export function AuthModal({ children, open, onOpenChange }: AuthModalProps) {
       });
       if (onOpenChange) onOpenChange(false);
     } catch (error: any) {
+      console.error('Google Sign-In Error:', error);
       toast({
         variant: "destructive",
         title: "Authentication Failed",
-        description: error.message,
+        description: error.message || "Failed to sign in with Google. Ensure popups are allowed.",
       });
     } finally {
       setLoading(false);
@@ -86,16 +98,16 @@ export function AuthModal({ children, open, onOpenChange }: AuthModalProps) {
 
   const handleEmailSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!auth || !firestore || !email || !password || !name) return;
+    if (!checkInitialization() || !email || !password || !name) return;
     setLoading(true);
     try {
-      const result = await createUserWithEmailAndPassword(auth, email, password);
+      const result = await createUserWithEmailAndPassword(auth!, email, password);
       const user = result.user;
 
       await updateProfile(user, { displayName: name });
 
       // Create profile in Firestore
-      await setDoc(doc(firestore, 'users', user.uid), {
+      await setDoc(doc(firestore!, 'users', user.uid), {
         user_id: user.uid,
         name: name,
         email: email,
@@ -110,6 +122,7 @@ export function AuthModal({ children, open, onOpenChange }: AuthModalProps) {
       });
       if (onOpenChange) onOpenChange(false);
     } catch (error: any) {
+      console.error('Sign-Up Error:', error);
       toast({
         variant: "destructive",
         title: "Sign Up Error",
@@ -122,16 +135,17 @@ export function AuthModal({ children, open, onOpenChange }: AuthModalProps) {
 
   const handleEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!auth || !email || !password) return;
+    if (!checkInitialization() || !email || !password) return;
     setLoading(true);
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      await signInWithEmailAndPassword(auth!, email, password);
       toast({
         title: "Welcome back",
         description: "Logged in successfully.",
       });
       if (onOpenChange) onOpenChange(false);
     } catch (error: any) {
+      console.error('Sign-In Error:', error);
       toast({
         variant: "destructive",
         title: "Sign In Error",
