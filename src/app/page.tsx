@@ -1,3 +1,4 @@
+
 "use client"
 
 import React, { useState, useMemo } from 'react';
@@ -89,7 +90,7 @@ function DashboardContent({ setView }: { setView: (v: ViewType) => void }) {
       )}
 
       <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-        <div className="space-y-4">
+        <div className="space-y-4 flex-1">
           <div className="flex items-center gap-3">
             <Badge variant="outline" className="bg-primary/5 text-accent border-accent/20 px-3 py-1 flex gap-2 items-center">
               <Activity className="w-3 h-3" /> {state.stage}
@@ -101,6 +102,7 @@ function DashboardContent({ setView }: { setView: (v: ViewType) => void }) {
           <h1 className="text-5xl font-headline font-bold gradient-text">
             {state.projectName === 'New Venture' ? 'Welcome back, Founder.' : state.projectName}
           </h1>
+          <p className="text-center text-sm font-medium text-muted-foreground/60 tracking-wider">An AI Partner for Entrepreneurs</p>
           <p className="text-xl text-muted-foreground max-w-2xl">
             {state.rawIdea || "Execution is the only differentiator. Let's build something world-changing."}
           </p>
@@ -267,7 +269,6 @@ function MainApp() {
       'Scaling Stage': 'AI CFO'
     };
 
-    // If the role is manually changed from default, emphasize the role's identity
     if (state.role !== defaultRoles[state.stage]) {
       return roleMap[state.role];
     }
