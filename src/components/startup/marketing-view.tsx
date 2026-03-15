@@ -20,12 +20,13 @@ export function MarketingView({ onComplete }: { onComplete: () => void }) {
     try {
       const result = await aiMarketingStrategyGeneration({ 
         productDescription: state.rawIdea,
-        currentStage: state.stage
+        currentStage: state.stage,
+        role: state.role
       });
       setMarketing(result);
       toast({
         title: "Growth Plan Ready",
-        description: "Strategies for launch and acquisition generated.",
+        description: `Strategies adapted by ${state.role}.`,
       });
     } catch (error) {
       toast({
@@ -53,7 +54,7 @@ export function MarketingView({ onComplete }: { onComplete: () => void }) {
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-3xl font-headline font-bold">Marketing & Growth</h2>
-          <p className="text-muted-foreground">How we'll find our first 1,000 users and beyond.</p>
+          <p className="text-muted-foreground">Strategic planning from your {state.role}.</p>
         </div>
         {!state.marketing && (
           <Button size="lg" disabled={loading} onClick={handleGenerate} className="gap-2 bg-primary">
@@ -65,7 +66,7 @@ export function MarketingView({ onComplete }: { onComplete: () => void }) {
 
       {state.marketing && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <FeatureCard title="Growth Insight" description="Strategic direction" icon={<Zap className="text-accent" />} className="lg:col-span-3">
+          <FeatureCard title="Growth Insight" description={`Strategic direction (${state.role})`} icon={<Zap className="text-accent" />} className="lg:col-span-3">
             <div className="whitespace-pre-wrap text-sm text-muted-foreground leading-relaxed">
               {state.marketing.growthInsight}
             </div>

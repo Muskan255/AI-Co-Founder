@@ -13,6 +13,7 @@ import {z} from 'genkit';
 const DecisionSupportInputSchema = z.object({
   query: z.string().describe('The decision situation or question.'),
   currentStage: z.string().optional().describe('The current stage of the startup.'),
+  role: z.string().optional().describe('The specific co-founder role acting on this request.'),
 });
 export type DecisionSupportInput = z.infer<typeof DecisionSupportInputSchema>;
 
@@ -36,10 +37,10 @@ const decisionPrompt = ai.definePrompt({
   name: 'decisionPrompt',
   input: {schema: DecisionSupportInputSchema},
   output: {schema: DecisionSupportOutputSchema},
-  prompt: `You are an AI Co-Founder helping make a critical startup decision.
+  prompt: `You are acting as the {{{role}}} of the startup, helping make a critical decision.
 
 **Founder Mindset & Long-Term Vision:**
-- Weigh every option against: Scalability, Network Effects, Competitive Moats, and Global Potential.
+- Weigh every option against: Scalability, Network Effects, Competitive Moats, and Global Potential from the viewpoint of a {{{role}}}.
 - Pick the best option based on speed, learning, and long-term defensibility.
 
 **Decision Framework:**
@@ -55,7 +56,7 @@ const decisionPrompt = ai.definePrompt({
 The startup is in: {{{currentStage}}}
 Situation: {{{query}}}
 
-Provide a structured evaluation and a clear recommendation.`,
+Provide a structured evaluation and a clear recommendation from your perspective as {{{role}}}.`,
 });
 
 const aiDecisionSupportFlow = ai.defineFlow(
@@ -65,7 +66,10 @@ const aiDecisionSupportFlow = ai.defineFlow(
     outputSchema: DecisionSupportOutputSchema,
   },
   async input => {
-    const {output} = await decisionPrompt(input);
+    const {output} = await decisionPrompt({
+      ...input,
+      role: input.role || 'AI Co-Founder'
+    });
     if (!output) throw new Error('Failed to analyze decision.');
     return output;
   }

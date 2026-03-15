@@ -30,12 +30,13 @@ export function ProductGuideView({ onComplete }: { onComplete: () => void }) {
         competitiveAdvantage: state.blueprint.competitiveAdvantage,
         competitors: state.validation.competitors,
         uniqueDifferentiation: state.validation.uniqueDifferentiation,
-        currentStage: state.stage
+        currentStage: state.stage,
+        role: state.role
       });
       setProductGuidance(result);
       toast({
         title: "Development Guide Created",
-        description: `Architecture optimized for ${state.stage}.`,
+        description: `Architecture optimized by ${state.role}.`,
       });
     } catch (error) {
       toast({
@@ -64,7 +65,7 @@ export function ProductGuideView({ onComplete }: { onComplete: () => void }) {
         <div className="space-y-2">
           <div className="flex items-center gap-2">
             <h2 className="text-3xl font-headline font-bold">Product Development</h2>
-            <Badge variant="outline" className="border-accent/30 text-accent">{state.stage}</Badge>
+            <Badge variant="outline" className="border-accent/30 text-accent">{state.role}</Badge>
           </div>
           <p className="text-muted-foreground">Architecting your solution with focus on speed and essential features.</p>
         </div>
@@ -89,7 +90,7 @@ export function ProductGuideView({ onComplete }: { onComplete: () => void }) {
             </ul>
           </FeatureCard>
 
-          <FeatureCard title="Recommended Tech Stack" description="Speed meets performance" icon={<Terminal />}>
+          <FeatureCard title="Recommended Tech Stack" description={`Speed meets performance (${state.role})`} icon={<Terminal />}>
             <div className="space-y-4">
               <div className="flex items-center justify-between p-3 rounded bg-white/5 border border-white/5">
                 <div className="flex items-center gap-2">

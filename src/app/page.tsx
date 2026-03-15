@@ -1,8 +1,8 @@
 "use client"
 
 import React, { useState } from 'react';
-import { StartupProvider, useStartup, StartupStage } from '@/components/startup/startup-context';
-import { Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
+import { StartupProvider, useStartup, StartupStage, StartupRole } from '@/components/startup/startup-context';
+import { Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarProvider, SidebarInset, SidebarTrigger, SidebarGroup, SidebarGroupLabel, SidebarGroupContent } from '@/components/ui/sidebar';
 import { 
   Lightbulb, 
   LayoutDashboard, 
@@ -19,7 +19,13 @@ import {
   TrendingUp,
   Activity,
   PlayCircle,
-  Flag
+  Flag,
+  UserCircle2,
+  Cpu,
+  Megaphone,
+  Banknote,
+  Box,
+  FastForward
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -65,7 +71,7 @@ function DashboardContent({ setView }: { setView: (v: ViewType) => void }) {
               <Activity className="w-3 h-3" /> {state.stage}
             </Badge>
             <Badge variant="secondary" className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20 px-3 py-1">
-              Accountability System Active
+              {state.role} Active
             </Badge>
           </div>
           <h1 className="text-5xl font-headline font-bold gradient-text">Welcome back, Founder.</h1>
@@ -169,7 +175,7 @@ function DashboardContent({ setView }: { setView: (v: ViewType) => void }) {
 
 function MainApp() {
   const [currentView, setCurrentView] = useState<ViewType>('dashboard');
-  const { state } = useStartup();
+  const { state, setRole } = useStartup();
 
   const renderView = () => {
     switch(currentView) {
@@ -196,6 +202,14 @@ function MainApp() {
     { id: 'decisions', label: 'Decision Hub', icon: <HelpCircle className="w-4 h-4" /> },
   ];
 
+  const roles: { id: StartupRole; icon: React.ReactNode; label: string }[] = [
+    { id: 'AI CTO', icon: <Cpu className="w-4 h-4" />, label: 'Architect' },
+    { id: 'AI CMO', icon: <Megaphone className="w-4 h-4" />, label: 'Marketer' },
+    { id: 'AI CFO', icon: <Banknote className="w-4 h-4" />, label: 'Analyst' },
+    { id: 'AI Product Manager', icon: <Box className="w-4 h-4" />, label: 'Product Lead' },
+    { id: 'AI Growth Hacker', icon: <FastForward className="w-4 h-4" />, label: 'Growth Hacker' },
+  ];
+
   return (
     <SidebarProvider>
       <Sidebar collapsible="icon" className="border-r border-white/5 bg-[#16181C]">
@@ -211,21 +225,47 @@ function MainApp() {
           </div>
         </SidebarHeader>
         <SidebarContent>
-          <SidebarMenu className="px-2 py-4">
-            {navItems.map((item) => (
-              <SidebarMenuItem key={item.id}>
-                <SidebarMenuButton 
-                  isActive={currentView === item.id}
-                  onClick={() => setCurrentView(item.id as ViewType)}
-                  tooltip={item.label}
-                  className={currentView === item.id ? "bg-primary/10 text-accent" : "hover:bg-white/5"}
-                >
-                  {item.icon}
-                  <span className="font-medium">{item.label}</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
-          </SidebarMenu>
+          <SidebarGroup>
+            <SidebarGroupLabel>Venture Studio</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {navItems.map((item) => (
+                  <SidebarMenuItem key={item.id}>
+                    <SidebarMenuButton 
+                      isActive={currentView === item.id}
+                      onClick={() => setCurrentView(item.id as ViewType)}
+                      tooltip={item.label}
+                      className={currentView === item.id ? "bg-primary/10 text-accent" : "hover:bg-white/5"}
+                    >
+                      {item.icon}
+                      <span className="font-medium">{item.label}</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+
+          <SidebarGroup className="mt-auto">
+            <SidebarGroupLabel>Executive Persona</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {roles.map((role) => (
+                  <SidebarMenuItem key={role.id}>
+                    <SidebarMenuButton 
+                      isActive={state.role === role.id}
+                      onClick={() => setRole(role.id)}
+                      tooltip={role.id}
+                      className={state.role === role.id ? "bg-accent/10 text-accent" : "hover:bg-white/5"}
+                    >
+                      {role.icon}
+                      <span className="font-medium">{role.id}</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
         </SidebarContent>
       </Sidebar>
       <SidebarInset className="bg-[#16181C]">
@@ -235,7 +275,7 @@ function MainApp() {
           <div className="flex-1 flex justify-end items-center gap-4">
             <div className="flex items-center gap-2 text-xs text-muted-foreground font-medium">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              Founder Active
+              {state.role} Active
             </div>
           </div>
         </header>

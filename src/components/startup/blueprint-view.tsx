@@ -20,12 +20,13 @@ export function BlueprintView({ onComplete }: { onComplete: () => void }) {
     try {
       const result = await aiStartupBlueprintGeneration({ 
         idea: state.rawIdea,
-        currentStage: state.stage
+        currentStage: state.stage,
+        role: state.role
       });
       setBlueprint(result);
       toast({
         title: "Blueprint Ready",
-        description: "Your strategic roadmap is now complete.",
+        description: `Strategic roadmap by ${state.role} complete.`,
       });
     } catch (error) {
       toast({
@@ -54,7 +55,7 @@ export function BlueprintView({ onComplete }: { onComplete: () => void }) {
         <div className="space-y-2">
           <div className="flex items-center gap-2">
             <h2 className="text-3xl font-headline font-bold">Startup Blueprint</h2>
-            <Badge variant="secondary" className="bg-primary/10 text-accent border-primary/20">{state.stage}</Badge>
+            <Badge variant="secondary" className="bg-primary/10 text-accent border-primary/20">{state.role}</Badge>
           </div>
           <p className="text-muted-foreground">The foundational architecture of your business, adapted for speed.</p>
         </div>
@@ -68,7 +69,7 @@ export function BlueprintView({ onComplete }: { onComplete: () => void }) {
 
       {state.blueprint && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <FeatureCard title="Strategic Overview" description="Co-founder's breakdown" icon={<ShieldAlert className="text-accent" />} className="lg:col-span-3">
+          <FeatureCard title="Strategic Overview" description={`${state.role}'s breakdown`} icon={<ShieldAlert className="text-accent" />} className="lg:col-span-3">
              <div className="whitespace-pre-wrap text-sm text-muted-foreground leading-relaxed">
               {state.blueprint.strategicOverview}
             </div>

@@ -23,12 +23,13 @@ export function DecisionSupportView() {
     try {
       const result = await aiDecisionSupport({
         query,
-        currentStage: state.stage
+        currentStage: state.stage,
+        role: state.role
       });
       setDecision(result);
       toast({
         title: "Analysis Complete",
-        description: `Framework used: ${result.frameworkUsed}`,
+        description: `Framework: ${result.frameworkUsed} by ${state.role}.`,
       });
     } catch (error) {
       toast({
@@ -45,11 +46,11 @@ export function DecisionSupportView() {
     <div className="p-8 max-w-4xl mx-auto space-y-8">
       <header className="space-y-4 text-center md:text-left">
         <div className="flex items-center justify-center md:justify-start gap-3">
-          <Badge variant="outline" className="bg-primary/5 text-accent border-accent/20">Decision Framework Active</Badge>
+          <Badge variant="outline" className="bg-primary/5 text-accent border-accent/20">{state.role} Perspective</Badge>
         </div>
         <h2 className="text-4xl font-headline font-bold gradient-text">Decision Hub</h2>
         <p className="text-muted-foreground text-lg">
-          Stuck on a tough call? Describe your situation and I'll use proven frameworks to help you choose the best path.
+          Stuck on a tough call? Describe your situation and your {state.role} will use proven frameworks to help you choose the best path.
         </p>
       </header>
 
@@ -62,7 +63,7 @@ export function DecisionSupportView() {
         />
         <Button onClick={handleAsk} disabled={deciding || !query} className="w-full bg-primary h-14 text-lg font-bold gap-2">
           {deciding ? <Sparkles className="animate-spin w-6 h-6" /> : <HelpCircle className="w-6 h-6" />}
-          Run Decision Analysis
+          Ask {state.role}
         </Button>
       </div>
 
@@ -77,7 +78,7 @@ export function DecisionSupportView() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-2xl">
                 <Sparkles className="w-6 h-6 text-accent" />
-                Co-Founder's Recommendation
+                {state.role}&apos;s Recommendation
               </CardTitle>
             </CardHeader>
             <CardContent>

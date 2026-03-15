@@ -13,6 +13,7 @@ import {z} from 'genkit';
 const AiStartupBlueprintGenerationInputSchema = z.object({
   idea: z.string().describe('The startup idea to generate a blueprint for.'),
   currentStage: z.string().optional().describe('The current stage of the startup.'),
+  role: z.string().optional().describe('The specific co-founder role acting on this request.'),
 });
 export type AiStartupBlueprintGenerationInput = z.infer<
   typeof AiStartupBlueprintGenerationInputSchema
@@ -48,11 +49,11 @@ const prompt = ai.definePrompt({
   name: 'aiStartupBlueprintGenerationPrompt',
   input: {schema: AiStartupBlueprintGenerationInputSchema},
   output: {schema: AiStartupBlueprintGenerationOutputSchema},
-  prompt: `You are an expert AI startup co-founder specializing in business architecture and lean methodology.
+  prompt: `You are acting as the {{{role}}} of the startup. You are an expert co-founder specializing in business architecture and lean methodology.
 
 **Founder Mindset & Long-Term Vision:**
 - Behave like an experienced startup founder.
-- Always consider: Scalability, Network Effects, Competitive Moats, Sustainable Revenue, and Global Potential.
+- Always consider: Scalability, Network Effects, Competitive Moats, Sustainable Revenue, and Global Potential from your perspective as {{{role}}}.
 - Identify risks early and prioritize reaching PMF (Product-Market Fit).
 
 **Startup Knowledge Base:**
@@ -62,7 +63,7 @@ Apply these frameworks to the blueprint:
 - **Product-Market Fit**: Architect the business model to reach PMF as quickly as possible.
 
 **Response Structure (Mandatory for "strategicOverview" field):**
-1. **Key Insight**: The most critical thing the founder needs to know right now.
+1. **Key Insight**: The most critical thing the founder needs to know right now, colored by your role as {{{role}}}.
 2. **Strategy**: The high-level approach to validation or growth.
 3. **Recommended Actions**: Specific, actionable steps.
 4. **Tools or Technologies**: Specific tools that will save time.
@@ -80,7 +81,10 @@ const aiStartupBlueprintGenerationFlow = ai.defineFlow(
     outputSchema: AiStartupBlueprintGenerationOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
+    const {output} = await prompt({
+      ...input,
+      role: input.role || 'AI Co-Founder'
+    });
     return output!;
   }
 );

@@ -23,6 +23,7 @@ const AiProductDevelopmentGuidanceInputSchema = z.object({
   competitors: z.string().describe('Main competitors.'),
   uniqueDifferentiation: z.string().describe('Key differentiating factors.'),
   currentStage: z.string().optional().describe('The current stage of the startup.'),
+  role: z.string().optional().describe('The specific co-founder role acting on this request.'),
 });
 export type AiProductDevelopmentGuidanceInput = z.infer<typeof AiProductDevelopmentGuidanceInputSchema>;
 
@@ -48,10 +49,10 @@ const aiProductDevelopmentGuidancePrompt = ai.definePrompt({
   name: 'aiProductDevelopmentGuidancePrompt',
   input: { schema: AiProductDevelopmentGuidanceInputSchema },
   output: { schema: AiProductDevelopmentGuidanceOutputSchema },
-  prompt: `You are an AI Co-Founder and technical product lead specializing in rapid MVP development and long-term scalable architecture.
+  prompt: `You are acting as the {{{role}}} of the startup. You are a technical and product leader specializing in rapid MVP development and long-term scalable architecture.
 
 **Founder Mindset & Long-Term Vision:**
-- Build for speed now, but architect for Scalability, Network Effects, and Global Potential.
+- Build for speed now, but architect for Scalability, Network Effects, and Global Potential from the perspective of a {{{role}}}.
 - Challenge feature-bloat; push for the leanest possible MVP that still allows for a future Moat.
 - Prioritize fast execution and iterative development.
 
@@ -72,7 +73,10 @@ const aiProductDevelopmentGuidanceFlow = ai.defineFlow(
     outputSchema: AiProductDevelopmentGuidanceOutputSchema,
   },
   async (input) => {
-    const {output} = await aiProductDevelopmentGuidancePrompt(input);
+    const {output} = await aiProductDevelopmentGuidancePrompt({
+      ...input,
+      role: input.role || 'AI Co-Founder'
+    });
     return output!;
   }
 );

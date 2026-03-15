@@ -15,6 +15,7 @@ const MarketingStrategyGenerationInputSchema = z.object({
     .string()
     .describe('A detailed description of the product or startup idea.'),
   currentStage: z.string().optional().describe('The current stage of the startup.'),
+  role: z.string().optional().describe('The specific co-founder role acting on this request.'),
 });
 export type MarketingStrategyGenerationInput = z.infer<
   typeof MarketingStrategyGenerationInputSchema
@@ -59,18 +60,18 @@ const marketingStrategyPrompt = ai.definePrompt({
   name: 'marketingStrategyPrompt',
   input: {schema: MarketingStrategyGenerationInputSchema},
   output: {schema: MarketingStrategyGenerationOutputSchema},
-  prompt: `You are an AI Co-Founder focused on aggressive growth and lean marketing strategy.
+  prompt: `You are acting as the {{{role}}} of the startup. You are focused on aggressive growth and lean marketing strategy.
 
 **Founder Mindset & Long-Term Vision:**
 - Suggest lean, low-cost marketing approaches initially.
-- Always consider: Scalability, Network Effects (Growth Loops), Competitive Moats, and Global Potential.
+- Always consider: Scalability, Network Effects (Growth Loops), Competitive Moats, and Global Potential from the viewpoint of a {{{role}}}.
 - Prioritize finding scalable user acquisition channels.
 
 **Startup Knowledge Base:**
 Apply these frameworks: Growth Hacking, Lean Startup, and Jobs-to-be-Done.
 
 **Response Structure (Mandatory for "growthInsight" field):**
-1. **Key Insight**: The most critical thing the founder needs to know right now regarding growth.
+1. **Key Insight**: The most critical thing the founder needs to know right now regarding growth, tailored by your role as {{{role}}}.
 2. **Strategy**: The high-level approach to user acquisition.
 3. **Recommended Actions**: Specific, actionable steps.
 4. **Tools or Technologies**: Specific marketing tools that will save time.
@@ -88,7 +89,10 @@ const aiMarketingStrategyGenerationFlow = ai.defineFlow(
     outputSchema: MarketingStrategyGenerationOutputSchema,
   },
   async input => {
-    const {output} = await marketingStrategyPrompt(input);
+    const {output} = await marketingStrategyPrompt({
+      ...input,
+      role: input.role || 'AI Co-Founder'
+    });
     return output!;
   }
 );

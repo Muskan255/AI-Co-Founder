@@ -22,13 +22,14 @@ export function IdeaValidationView({ onComplete }: { onComplete: () => void }) {
     try {
       const result = await aiIdeaValidation({ 
         startupIdea: idea,
-        currentStage: state.stage 
+        currentStage: state.stage,
+        role: state.role
       });
       setRawIdea(idea);
       setValidation(result);
       toast({
         title: "Validation Complete",
-        description: `Feedback adapted for ${state.stage}.`,
+        description: `Feedback from ${state.role} for ${state.stage}.`,
       });
     } catch (error) {
       toast({
@@ -46,10 +47,10 @@ export function IdeaValidationView({ onComplete }: { onComplete: () => void }) {
       <section className="space-y-4">
         <div className="flex items-center gap-4">
           <h2 className="text-3xl font-headline font-bold">Validate Your Idea</h2>
-          <Badge variant="secondary" className="bg-accent/10 text-accent border-accent/20">{state.stage} Mode</Badge>
+          <Badge variant="secondary" className="bg-accent/10 text-accent border-accent/20">{state.role} Mode</Badge>
         </div>
         <p className="text-muted-foreground">
-          Pitch your idea to your AI co-founder. I'll prioritize speed and critical validation markers for your current stage.
+          Pitch your idea to your {state.role}. I'll prioritize speed and critical validation markers for your current stage.
         </p>
         <div className="relative group">
           <Textarea 
@@ -71,7 +72,7 @@ export function IdeaValidationView({ onComplete }: { onComplete: () => void }) {
 
       {state.validation && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-          <FeatureCard title="Analysis" description="The core concept break down" icon={<Lightbulb />}>
+          <FeatureCard title="Analysis" description={`${state.role}'s core concept break down`} icon={<Lightbulb />}>
             <p className="text-sm text-muted-foreground leading-relaxed">{state.validation.analysis}</p>
           </FeatureCard>
 

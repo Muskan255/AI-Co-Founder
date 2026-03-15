@@ -9,10 +9,12 @@ import { AiTaskMilestoneManagementOutput } from '@/ai/flows/ai-task-milestone-ma
 import { AiStartupSimulationOutput } from '@/ai/flows/ai-startup-simulation';
 
 export type StartupStage = 'Idea Stage' | 'Validation Stage' | 'MVP Development' | 'Early Traction' | 'Growth Stage' | 'Scaling Stage';
+export type StartupRole = 'AI CTO' | 'AI CMO' | 'AI CFO' | 'AI Product Manager' | 'AI Growth Hacker';
 
 interface StartupState {
   rawIdea: string;
   stage: StartupStage;
+  role: StartupRole;
   validation: IdeaValidationOutput | null;
   blueprint: AiStartupBlueprintGenerationOutput | null;
   productGuidance: AiProductDevelopmentGuidanceOutput | null;
@@ -25,6 +27,7 @@ interface StartupContextType {
   state: StartupState;
   setRawIdea: (idea: string) => void;
   setStage: (stage: StartupStage) => void;
+  setRole: (role: StartupRole) => void;
   setValidation: (v: IdeaValidationOutput) => void;
   setBlueprint: (b: AiStartupBlueprintGenerationOutput) => void;
   setProductGuidance: (p: AiProductDevelopmentGuidanceOutput) => void;
@@ -40,6 +43,7 @@ const StartupContext = createContext<StartupContextType | undefined>(undefined);
 const DEFAULT_STATE: StartupState = {
   rawIdea: '',
   stage: 'Idea Stage',
+  role: 'AI Product Manager',
   validation: null,
   blueprint: null,
   productGuidance: null,
@@ -72,6 +76,7 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
 
   const setRawIdea = (idea: string) => setState(prev => ({ ...prev, rawIdea: idea }));
   const setStage = (stage: StartupStage) => setState(prev => ({ ...prev, stage }));
+  const setRole = (role: StartupRole) => setState(prev => ({ ...prev, role }));
   const setValidation = (v: IdeaValidationOutput) => setState(prev => ({ ...prev, validation: v, stage: 'Validation Stage' }));
   const setBlueprint = (b: AiStartupBlueprintGenerationOutput) => setState(prev => ({ ...prev, blueprint: b, stage: 'MVP Development' }));
   const setProductGuidance = (p: AiProductDevelopmentGuidanceOutput) => setState(prev => ({ ...prev, productGuidance: p, stage: 'Early Traction' }));
@@ -88,6 +93,7 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
       state, 
       setRawIdea, 
       setStage,
+      setRole,
       setValidation, 
       setBlueprint, 
       setProductGuidance, 
