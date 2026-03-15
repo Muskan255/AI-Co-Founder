@@ -11,3 +11,4 @@ import '@/ai/flows/ai-startup-simulation.ts';
 import '@/ai/flows/ai-decision-support.ts';
 import '@/ai/flows/ai-workspace-generation.ts';
 import '@/ai/flows/ai-executive-action.ts';
+import '@/ai/flows/ai-smart-notifications.ts';

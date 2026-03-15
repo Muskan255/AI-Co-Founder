@@ -1,7 +1,6 @@
-
 "use client"
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { IdeaValidationOutput } from '@/ai/flows/ai-idea-validation';
 import { AiStartupBlueprintGenerationOutput } from '@/ai/flows/ai-startup-blueprint-generation';
 import { AiProductDevelopmentGuidanceOutput } from '@/ai/flows/ai-product-development-guidance';
@@ -10,6 +9,7 @@ import { FinancialStrategyGenerationOutput } from '@/ai/flows/ai-financial-strat
 import { AiTaskMilestoneManagementOutput } from '@/ai/flows/ai-task-milestone-management';
 import { AiStartupSimulationOutput } from '@/ai/flows/ai-startup-simulation';
 import { WorkspaceOutput } from '@/ai/flows/ai-workspace-generation';
+import { aiSmartNotifications } from '@/ai/flows/ai-smart-notifications';
 import { useUser, useFirestore } from '@/firebase';
 import { doc, setDoc, serverTimestamp, getDocs, collection, query, orderBy, limit } from 'firebase/firestore';
 
@@ -33,6 +33,20 @@ export interface StartupBrain {
   funding_stage?: string;
 }
 
+export interface SmartNotification {
+  id: string;
+  title: string;
+  description: string;
+  type: string;
+  priority: 'low' | 'medium' | 'high';
+  timestamp: number;
+  read: boolean;
+  action: {
+    label: string;
+    view: string;
+  };
+}
+
 interface StartupState {
   projectId: string | null;
   projectName: string;
@@ -48,6 +62,7 @@ interface StartupState {
   tasks: AiTaskMilestoneManagementOutput | null;
   lastSimulation: AiStartupSimulationOutput | null;
   workspace: WorkspaceOutput | null;
+  notifications: SmartNotification[];
 }
 
 interface StartupContextType {
@@ -67,6 +82,9 @@ interface StartupContextType {
   setSimulation: (s: AiStartupSimulationOutput) => void;
   setWorkspace: (w: WorkspaceOutput) => void;
   loadProject: (project: any) => void;
+  refreshSuggestions: () => Promise<void>;
+  markNotificationAsRead: (id: string) => void;
+  dismissNotification: (id: string) => void;
   reset: () => void;
   isHydrated: boolean;
   isGuestMode: boolean;
@@ -88,7 +106,8 @@ const DEFAULT_STATE: StartupState = {
   financialStrategy: null,
   tasks: null,
   lastSimulation: null,
-  workspace: null
+  workspace: null,
+  notifications: []
 };
 
 export function StartupProvider({ children }: { children: React.ReactNode }) {
@@ -107,28 +126,20 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
         setState({
           ...DEFAULT_STATE,
           ...parsed,
-          brain: parsed.brain || {}
+          brain: parsed.brain || {},
+          notifications: parsed.notifications || []
         });
       } catch (error) {
         console.error('Failed to parse saved startup state:', error);
       }
     }
     setIsHydrated(true);
-
-    // Clear session for guests on refresh if that was the intent, 
-    // but typically guests want their session to last while they navigate.
-    // However, the requirement specifically mentioned clearing on refresh for guests.
-    if (!user) {
-      // If we wanted to strictly follow "clear on refresh", we'd do it here.
-      // But we use isHydrated and user detection to manage cloud sync.
-    }
-  }, [user]);
+  }, []);
 
   useEffect(() => {
     if (isHydrated) {
       localStorage.setItem('ai-founder-startup-state', JSON.stringify(state));
       
-      // ONLY sync to Firestore if not in Guest Mode
       if (user && state.projectId && firestore) {
         const projectRef = doc(firestore, 'users', user.uid, 'projects', state.projectId);
         
@@ -150,44 +161,66 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
     }
   }, [state, isHydrated, user, firestore]);
 
-  // Handle Login Conversion: If user was experimenting and then logs in
-  useEffect(() => {
-    if (isHydrated && user && firestore && state.rawIdea && !state.projectId) {
-      // User just logged in and has an active experiment idea but no projectId (guest session)
-      const newProjectId = crypto.randomUUID();
-      setProjectId(newProjectId);
-      // The other useEffect will pick up the projectId change and sync to Firestore
-    }
-  }, [isHydrated, user, firestore, state.rawIdea, state.projectId]);
-
-  useEffect(() => {
-    if (isHydrated && user && firestore && !state.projectId && state.rawIdea === '') {
-      const projectsRef = collection(firestore, 'users', user.uid, 'projects');
-      const q = query(projectsRef, orderBy('last_updated', 'desc'), limit(1));
-      
-      getDocs(q).then((snapshot) => {
-        if (!snapshot.empty) {
-          const latestProject = snapshot.docs[0].data();
-          loadProject(latestProject);
-        }
+  const refreshSuggestions = useCallback(async () => {
+    try {
+      const response = await aiSmartNotifications({
+        brain: state.brain as any,
+        currentStage: state.stage
       });
+
+      const newNotifications: SmartNotification[] = response.suggestions.map(s => ({
+        ...s,
+        timestamp: Date.now(),
+        read: false
+      }));
+
+      setState(prev => {
+        // Filter out duplicate suggestions by title
+        const existingTitles = new Set(prev.notifications.map(n => n.title));
+        const uniqueNew = newNotifications.filter(n => !existingTitles.has(n.title));
+        
+        return {
+          ...prev,
+          notifications: [...uniqueNew, ...prev.notifications].slice(0, 10)
+        };
+      });
+    } catch (error) {
+      console.error('Failed to refresh suggestions:', error);
     }
-  }, [isHydrated, user, firestore, state.projectId, state.rawIdea]);
+  }, [state.brain, state.stage]);
+
+  const markNotificationAsRead = (id: string) => {
+    setState(prev => ({
+      ...prev,
+      notifications: prev.notifications.map(n => n.id === id ? { ...n, read: true } : n)
+    }));
+  };
+
+  const dismissNotification = (id: string) => {
+    setState(prev => ({
+      ...prev,
+      notifications: prev.notifications.filter(n => n.id !== id)
+    }));
+  };
 
   const setProjectId = (id: string) => setState(prev => ({ ...prev, projectId: id }));
   const setProjectName = (name: string) => setState(prev => ({ ...prev, projectName: name }));
   
-  const setRawIdea = (idea: string) => setState(prev => ({ 
-    ...prev, 
-    rawIdea: idea,
-    brain: { ...prev.brain, startup_idea: idea } 
-  }));
+  const setRawIdea = (idea: string) => {
+    setState(prev => ({ 
+      ...prev, 
+      rawIdea: idea,
+      brain: { ...prev.brain, startup_idea: idea } 
+    }));
+    refreshSuggestions();
+  };
   
   const updateBrain = (update: Partial<StartupBrain>) => {
     setState(prev => ({
       ...prev,
       brain: { ...prev.brain, ...update }
     }));
+    refreshSuggestions();
   };
 
   const setStage = (stage: StartupStage) => {
@@ -203,6 +236,7 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
       }
       return { ...prev, stage, role, brain: { ...prev.brain, funding_stage: stage } };
     });
+    refreshSuggestions();
   };
 
   const setRole = (role: StartupRole) => setState(prev => ({ ...prev, role }));
@@ -223,6 +257,7 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
         projectId: prev.projectId || crypto.randomUUID()
       };
     });
+    refreshSuggestions();
   };
 
   const setBlueprint = (b: AiStartupBlueprintGenerationOutput) => {
@@ -240,6 +275,7 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
         brain: { ...prev.brain, ...brainUpdate }
       };
     });
+    refreshSuggestions();
   };
 
   const setProductGuidance = (p: AiProductDevelopmentGuidanceOutput) => {
@@ -256,6 +292,7 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
         brain: { ...prev.brain, ...brainUpdate }
       };
     });
+    refreshSuggestions();
   };
 
   const setMarketing = (m: MarketingStrategyGenerationOutput) => {
@@ -272,6 +309,7 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
         brain: { ...prev.brain, ...brainUpdate }
       };
     });
+    refreshSuggestions();
   };
 
   const setFinancialStrategy = (f: FinancialStrategyGenerationOutput) => {
@@ -286,9 +324,13 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
         brain: { ...prev.brain, ...brainUpdate }
       };
     });
+    refreshSuggestions();
   };
 
-  const setTasks = (t: AiTaskMilestoneManagementOutput) => setState(prev => ({ ...prev, tasks: t, stage: 'Scaling Stage', role: 'AI CFO' }));
+  const setTasks = (t: AiTaskMilestoneManagementOutput) => {
+    setState(prev => ({ ...prev, tasks: t, stage: 'Scaling Stage', role: 'AI CFO' }));
+    refreshSuggestions();
+  }
   const setSimulation = (s: AiStartupSimulationOutput) => setState(prev => ({ ...prev, lastSimulation: s }));
   
   const setWorkspace = (w: WorkspaceOutput) => {
@@ -305,13 +347,15 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
         projectId: prev.projectId || crypto.randomUUID()
       };
     });
+    refreshSuggestions();
   };
   
   const loadProject = (projectData: any) => {
     if (projectData.fullState) {
       setState({
         ...projectData.fullState,
-        brain: projectData.fullState.brain || {}
+        brain: projectData.fullState.brain || {},
+        notifications: projectData.fullState.notifications || []
       });
     } else {
       setState({
@@ -348,6 +392,9 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
       setSimulation,
       setWorkspace,
       loadProject,
+      refreshSuggestions,
+      markNotificationAsRead,
+      dismissNotification,
       reset,
       isHydrated,
       isGuestMode

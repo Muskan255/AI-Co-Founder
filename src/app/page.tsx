@@ -31,7 +31,8 @@ import {
   ShieldAlert,
   Terminal,
   Brain,
-  Info
+  Info,
+  Bell
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -49,6 +50,7 @@ import { ProjectListView } from '@/components/startup/project-list-view';
 import { PersonaWorkspaceView } from '@/components/startup/persona-workspace-view';
 import { StartupBrainView } from '@/components/startup/startup-brain-view';
 import { HelpCenter } from '@/components/startup/help-center';
+import { NotificationCenter } from '@/components/startup/notification-center';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAuth, useUser } from '@/firebase';
 import { signOut } from 'firebase/auth';
@@ -148,6 +150,27 @@ function DashboardContent({ setView }: { setView: (v: ViewType) => void }) {
           </Select>
         </div>
       </header>
+
+      {/* Quick Suggestion Alert */}
+      {state.notifications.filter(n => !n.read).length > 0 && (
+        <div className="glass-card p-6 rounded-2xl border-accent/30 bg-accent/5 flex flex-col md:flex-row items-center justify-between gap-6 animate-in slide-in-from-right-10 duration-500">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-accent/20 flex items-center justify-center text-accent">
+              <Sparkles className="w-6 h-6 animate-pulse" />
+            </div>
+            <div className="space-y-1">
+              <h3 className="font-headline font-bold text-lg leading-none">Strategic Opportunity Detected</h3>
+              <p className="text-sm text-muted-foreground">{state.notifications.find(n => !n.read)?.title}</p>
+            </div>
+          </div>
+          <Button 
+            onClick={() => setView(state.notifications.find(n => !n.read)?.action.view as ViewType)}
+            className="bg-accent text-accent-foreground font-bold gap-2 px-8"
+          >
+            Explore Suggestion <ArrowRight className="w-4 h-4" />
+          </Button>
+        </div>
+      )}
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         {progressItems.map((item) => (
@@ -467,8 +490,9 @@ function MainApp() {
             </span>
           </div>
 
-          <div className="flex-1 flex justify-end items-center gap-4">
-            <div className="flex items-center gap-2 text-xs text-muted-foreground font-medium">
+          <div className="flex-1 flex justify-end items-center gap-2">
+            <NotificationCenter onNavigate={(view) => setActiveWorkspace(view)} />
+            <div className="flex items-center gap-2 text-xs text-muted-foreground font-medium ml-2">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               {state.role} Perspective
             </div>
