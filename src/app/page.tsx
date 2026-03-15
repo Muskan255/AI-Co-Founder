@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { StartupProvider, useStartup, StartupStage, StartupRole } from '@/components/startup/startup-context';
 import { Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarProvider, SidebarInset, SidebarTrigger, SidebarGroup, SidebarGroupLabel, SidebarGroupContent, SidebarFooter } from '@/components/ui/sidebar';
 import { 
@@ -53,11 +53,11 @@ function DashboardContent({ setView }: { setView: (v: ViewType) => void }) {
   const progressItems = [
     { id: 'workspace', label: 'Turbo Workspace', icon: <Zap className="text-accent" />, completed: !!state.workspace, description: 'Generate roadmap, pitch deck & specs in one go.' },
     { id: 'validation', label: 'Idea Validation', icon: <Lightbulb />, completed: !!state.validation, description: 'Challenge and stress-test your core concept.' },
-    { id: 'blueprint', label: 'Startup Blueprint', icon: <Map />, completed: !!state.blueprint, description: 'Build your business model and revenue engine.' },
-    { id: 'finance', label: 'Financial Strategy', icon: <DollarSign className="text-emerald-400" />, completed: !!state.financialStrategy, description: 'Unit economics, burn rate & funding plans.' },
-    { id: 'product', label: 'Product Guidance', icon: <Code2 />, completed: !!state.productGuidance, description: 'MVP specs and architecture recommendations.' },
-    { id: 'marketing', label: 'Marketing Strategy', icon: <Rocket />, completed: !!state.marketing, description: 'Growth loops and acquisition strategy.' },
-    { id: 'tasks', label: 'Accountability & Tasks', icon: <CheckSquare />, completed: !!state.tasks, description: 'Roadmaps, milestones, and daily execution.' },
+    { id: 'blueprint', label: 'Strategy Blueprint', icon: <Map />, completed: !!state.blueprint, description: 'Build your business model and revenue engine.' },
+    { id: 'finance', label: 'Financial Plan', icon: <DollarSign className="text-emerald-400" />, completed: !!state.financialStrategy, description: 'Unit economics, burn rate & funding plans.' },
+    { id: 'product', label: 'Product Development', icon: <Code2 />, completed: !!state.productGuidance, description: 'MVP specs and architecture recommendations.' },
+    { id: 'marketing', label: 'Growth Plan', icon: <Rocket />, completed: !!state.marketing, description: 'Growth loops and acquisition strategy.' },
+    { id: 'tasks', label: 'Accountability', icon: <CheckSquare />, completed: !!state.tasks, description: 'Roadmaps, milestones, and daily execution.' },
   ];
 
   const stages: StartupStage[] = [
@@ -191,14 +191,14 @@ function DashboardContent({ setView }: { setView: (v: ViewType) => void }) {
 function MainApp() {
   const { user } = useUser();
   const auth = useAuth();
-  const [currentView, setCurrentView] = useState<ViewType>(user ? 'projects' : 'dashboard');
+  const [activeWorkspace, setActiveWorkspace] = useState<ViewType>(user ? 'projects' : 'dashboard');
   const { state, setRole } = useStartup();
 
   const handleSignIn = async () => {
     if (!auth) return;
     try {
       await signInWithPopup(auth, new GoogleAuthProvider());
-      setCurrentView('projects');
+      setActiveWorkspace('projects');
     } catch (error) {
       console.error('Sign in failed', error);
     }
@@ -207,24 +207,7 @@ function MainApp() {
   const handleSignOut = async () => {
     if (!auth) return;
     await signOut(auth);
-    setCurrentView('dashboard');
-  };
-
-  const renderView = () => {
-    switch(currentView) {
-      case 'projects': return <ProjectListView onSelect={() => setCurrentView('dashboard')} />;
-      case 'dashboard': return <DashboardContent setView={setCurrentView} />;
-      case 'validation': return <IdeaValidationView onComplete={() => setCurrentView('blueprint')} />;
-      case 'blueprint': return <BlueprintView onComplete={() => setCurrentView('finance')} />;
-      case 'finance': return <FinancialView onComplete={() => setCurrentView('product')} />;
-      case 'product': return <ProductGuideView onComplete={() => setCurrentView('marketing')} />;
-      case 'marketing': return <MarketingView onComplete={() => setCurrentView('tasks')} />;
-      case 'tasks': return <TaskManagerView />;
-      case 'decisions': return <DecisionSupportView />;
-      case 'simulation': return <SimulationView />;
-      case 'workspace': return <WorkspaceView />;
-      default: return <DashboardContent setView={setCurrentView} />;
-    }
+    setActiveWorkspace('dashboard');
   };
 
   const navItems = [
@@ -234,12 +217,33 @@ function MainApp() {
     { id: 'validation', label: 'Idea Validation', icon: <Lightbulb className="w-4 h-4" /> },
     { id: 'blueprint', label: 'Strategy Blueprint', icon: <Map className="w-4 h-4" /> },
     { id: 'finance', label: 'Financial Plan', icon: <DollarSign className="w-4 h-4 text-emerald-400" /> },
-    { id: 'product', label: 'Product Dev', icon: <Code2 className="w-4 h-4" /> },
+    { id: 'product', label: 'Product Development', icon: <Code2 className="w-4 h-4" /> },
     { id: 'marketing', label: 'Growth Plan', icon: <Rocket className="w-4 h-4" /> },
     { id: 'tasks', label: 'Accountability', icon: <CheckSquare className="w-4 h-4" /> },
     { id: 'simulation', label: 'Simulations', icon: <PlayCircle className="w-4 h-4" /> },
     { id: 'decisions', label: 'Decision Hub', icon: <HelpCircle className="w-4 h-4" /> },
   ];
+
+  const activeNavItem = useMemo(() => 
+    navItems.find(item => item.id === activeWorkspace) || navItems[0], 
+  [activeWorkspace]);
+
+  const renderView = () => {
+    switch(activeWorkspace) {
+      case 'projects': return <ProjectListView onSelect={() => setActiveWorkspace('dashboard')} />;
+      case 'dashboard': return <DashboardContent setView={setActiveWorkspace} />;
+      case 'validation': return <IdeaValidationView onComplete={() => setActiveWorkspace('blueprint')} />;
+      case 'blueprint': return <BlueprintView onComplete={() => setActiveWorkspace('finance')} />;
+      case 'finance': return <FinancialView onComplete={() => setActiveWorkspace('product')} />;
+      case 'product': return <ProductGuideView onComplete={() => setActiveWorkspace('marketing')} />;
+      case 'marketing': return <MarketingView onComplete={() => setActiveWorkspace('tasks')} />;
+      case 'tasks': return <TaskManagerView />;
+      case 'decisions': return <DecisionSupportView />;
+      case 'simulation': return <SimulationView />;
+      case 'workspace': return <WorkspaceView />;
+      default: return <DashboardContent setView={setActiveWorkspace} />;
+    }
+  };
 
   const roles: { id: StartupRole; icon: React.ReactNode; label: string }[] = [
     { id: 'AI CTO', icon: <Cpu className="w-4 h-4" />, label: 'Architect' },
@@ -271,10 +275,10 @@ function MainApp() {
                 {navItems.map((item) => (
                   <SidebarMenuItem key={item.id}>
                     <SidebarMenuButton 
-                      isActive={currentView === item.id}
-                      onClick={() => setCurrentView(item.id as ViewType)}
+                      isActive={activeWorkspace === item.id}
+                      onClick={() => setActiveWorkspace(item.id as ViewType)}
                       tooltip={item.label}
-                      className={currentView === item.id ? "bg-primary/10 text-accent" : "hover:bg-white/5"}
+                      className={activeWorkspace === item.id ? "bg-primary/10 text-accent" : "hover:bg-white/5"}
                     >
                       {item.icon}
                       <span className="font-medium">{item.label}</span>
@@ -334,6 +338,16 @@ function MainApp() {
         <header className="h-16 border-b border-white/5 flex items-center px-4 sticky top-0 bg-[#16181C]/80 backdrop-blur-md z-10">
           <SidebarTrigger />
           <Separator orientation="vertical" className="mx-4 h-4 bg-white/10" />
+          
+          <div className="flex items-center gap-2 animate-in fade-in slide-in-from-left-4 duration-300">
+            <div className="text-accent">
+              {activeNavItem.icon}
+            </div>
+            <span className="font-headline font-bold text-sm tracking-tight uppercase">
+              {activeNavItem.label}
+            </span>
+          </div>
+
           <div className="flex-1 flex justify-end items-center gap-4">
             <div className="flex items-center gap-2 text-xs text-muted-foreground font-medium">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
