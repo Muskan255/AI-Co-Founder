@@ -103,7 +103,12 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
     const saved = localStorage.getItem('ai-founder-startup-state');
     if (saved) {
       try {
-        setState(JSON.parse(saved));
+        const parsed = JSON.parse(saved);
+        setState({
+          ...DEFAULT_STATE,
+          ...parsed,
+          brain: parsed.brain || {}
+        });
       } catch (error) {
         console.error('Failed to parse saved startup state:', error);
       }
@@ -125,7 +130,7 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
           idea_description: state.rawIdea,
           startup_stage: state.stage,
           last_updated: serverTimestamp(),
-          startup_brain: state.brain,
+          startup_brain: state.brain || {},
           fullState: state
         };
 
@@ -285,7 +290,10 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
   
   const loadProject = (projectData: any) => {
     if (projectData.fullState) {
-      setState(projectData.fullState);
+      setState({
+        ...projectData.fullState,
+        brain: projectData.fullState.brain || {}
+      });
     } else {
       setState({
         ...DEFAULT_STATE,

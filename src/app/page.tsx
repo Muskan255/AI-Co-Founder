@@ -61,7 +61,7 @@ function DashboardContent({ setView }: { setView: (v: ViewType) => void }) {
   
   const progressItems = [
     { id: 'workspace', label: 'Turbo Workspace', icon: <Zap className="text-accent" />, completed: !!state.workspace, description: 'Generate roadmap, pitch deck & specs in one go.' },
-    { id: 'brain', label: 'Startup Brain', icon: <Brain className="text-accent" />, completed: Object.keys(state.brain).length > 3, description: 'Manage the shared intelligence of your venture.' },
+    { id: 'brain', label: 'Startup Brain', icon: <Brain className="text-accent" />, completed: Object.keys(state.brain || {}).length > 3, description: 'Manage the shared intelligence of your venture.' },
     { id: 'validation', label: 'Idea Validation', icon: <Lightbulb />, completed: !!state.validation, description: 'Challenge and stress-test your core concept.' },
     { id: 'blueprint', label: 'Strategy Blueprint', icon: <Map />, completed: !!state.blueprint, description: 'Build your business model and revenue engine.' },
     { id: 'finance', label: 'Financial Plan', icon: <DollarSign className="text-emerald-400" />, completed: !!state.financialStrategy, description: 'Unit economics, burn rate & funding plans.' },
