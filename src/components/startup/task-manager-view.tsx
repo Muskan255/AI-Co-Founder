@@ -1,13 +1,14 @@
-"use client"
+'use client';
 
 import React, { useState } from 'react';
 import { useStartup } from './startup-context';
 import { aiTaskMilestoneManagement } from '@/ai/flows/ai-task-milestone-management';
 import { Button } from '@/components/ui/button';
 import { FeatureCard } from './feature-card';
-import { CheckSquare, Flag, BarChart, Sparkles, AlertCircle, Circle } from 'lucide-react';
+import { CheckSquare, Flag, BarChart, Sparkles, AlertCircle, Wrench } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Badge } from '@/components/ui/badge';
 
 export function TaskManagerView() {
   const { state, setTasks } = useStartup();
@@ -20,7 +21,10 @@ export function TaskManagerView() {
     try {
       // Serialize blueprint for input
       const blueprintString = JSON.stringify(state.blueprint);
-      const result = await aiTaskMilestoneManagement({ startupBlueprint: blueprintString });
+      const result = await aiTaskMilestoneManagement({ 
+        startupBlueprint: blueprintString,
+        currentStage: state.stage
+      });
       setTasks(result);
       toast({
         title: "Action Plan Created",
@@ -103,6 +107,16 @@ export function TaskManagerView() {
                 ))}
               </div>
             </FeatureCard>
+
+            {state.tasks.recommendedTools && (
+              <FeatureCard title="Execution Tools" description="Automate manual workflows" icon={<Wrench className="text-accent" />}>
+                <div className="flex flex-wrap gap-2">
+                  {state.tasks.recommendedTools.map((tool, idx) => (
+                    <Badge key={idx} variant="outline" className="border-accent/30 text-accent">{tool}</Badge>
+                  ))}
+                </div>
+              </FeatureCard>
+            )}
           </div>
         </div>
       )}

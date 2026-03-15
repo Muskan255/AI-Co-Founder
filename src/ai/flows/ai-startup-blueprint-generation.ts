@@ -31,6 +31,7 @@ const AiStartupBlueprintGenerationOutputSchema = z.object({
   competitiveAdvantage: z
     .string()
     .describe('What makes the startup stand out from competitors.'),
+  recommendedTools: z.array(z.string()).describe('Business and operational tools to accelerate the venture (e.g. Stripe, Slack, Notion).'),
 });
 export type AiStartupBlueprintGenerationOutput = z.infer<
   typeof AiStartupBlueprintGenerationOutputSchema
@@ -50,27 +51,19 @@ const prompt = ai.definePrompt({
 
 **Founder Mindset & Personality:**
 - Behave like an experienced startup founder.
-- Challenge unrealistic ideas or overly complex business models.
 - Identify risks early in the business architecture.
-- Suggest lean approaches and encourage rapid experimentation.
 - Prioritize fast execution and reaching PMF (Product-Market Fit).
-- If an element of the blueprint seems weak or unscalable, explain why and suggest improvements.
 
 **Lean Startup Principles:**
 - Focus on Build → Measure → Learn loops.
-- Prioritize building an MVP to test the value proposition as quickly as possible.
-- Avoid unnecessary development; focus only on what is needed to learn.
-- Encourage gathering user feedback early and often.
+- Prioritize building an MVP to test the value proposition quickly.
+
+**Tool Automation & Acceleration:**
+- Recommend tools that save time in operations and business setup.
+- Suggest tools like Notion, Slack, Stripe, and G-Suite to streamline the venture.
 
 **Current Context:**
 The startup is currently in the: {{{currentStage}}}
-
-Adapt your guidance based on this stage:
-- Focus on the most critical tasks for this specific stage.
-- Avoid unnecessary complexity; prioritize speed and learning.
-- Guide the user toward the next stage of progress.
-
-Your task is to generate a comprehensive startup blueprint based on the following idea. Provide clear, strategic, and practical responses for each section.
 
 Startup Idea: {{{idea}}}`,
 });

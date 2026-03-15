@@ -1,11 +1,11 @@
-"use client"
+'use client';
 
 import React, { useState } from 'react';
 import { useStartup } from './startup-context';
 import { aiStartupBlueprintGeneration } from '@/ai/flows/ai-startup-blueprint-generation';
 import { Button } from '@/components/ui/button';
 import { FeatureCard } from './feature-card';
-import { Map, Briefcase, Coins, Rocket, Trophy, Target, PieChart, Sparkles } from 'lucide-react';
+import { Map, Briefcase, Coins, Rocket, Trophy, Target, PieChart, Sparkles, Wrench, AlertCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 
@@ -92,6 +92,16 @@ export function BlueprintView({ onComplete }: { onComplete: () => void }) {
             <p className="text-sm text-muted-foreground">{state.blueprint.competitiveAdvantage}</p>
           </FeatureCard>
 
+          {state.blueprint.recommendedTools && (
+            <FeatureCard title="Operational Tools" description="Streamlining your setup" icon={<Wrench className="text-accent" />} className="lg:col-span-3">
+              <div className="flex flex-wrap gap-2">
+                {state.blueprint.recommendedTools.map((tool, idx) => (
+                  <Badge key={idx} variant="outline" className="border-accent/30 text-accent">{tool}</Badge>
+                ))}
+              </div>
+            </FeatureCard>
+          )}
+
           <div className="lg:col-span-3 flex justify-center pt-8">
             <Button size="lg" onClick={onComplete} className="bg-accent text-accent-foreground font-bold px-12">
               Next: Product Development Guide
@@ -102,5 +112,3 @@ export function BlueprintView({ onComplete }: { onComplete: () => void }) {
     </div>
   );
 }
-
-import { AlertCircle } from 'lucide-react';

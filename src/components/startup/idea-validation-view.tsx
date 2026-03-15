@@ -1,4 +1,4 @@
-"use client"
+'use client';
 
 import React, { useState } from 'react';
 import { useStartup } from './startup-context';
@@ -6,7 +6,7 @@ import { aiIdeaValidation } from '@/ai/flows/ai-idea-validation';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { FeatureCard } from './feature-card';
-import { Lightbulb, Send, Target, TrendingUp, Users, ShieldCheck, Zap } from 'lucide-react';
+import { Lightbulb, Send, Target, TrendingUp, Users, ShieldCheck, Zap, Wrench } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 
@@ -94,6 +94,16 @@ export function IdeaValidationView({ onComplete }: { onComplete: () => void }) {
           <FeatureCard title="Differentiation" description="Our unfair advantage" icon={<ShieldCheck className="text-emerald-400" />}>
             <p className="text-sm text-muted-foreground leading-relaxed">{state.validation.uniqueDifferentiation}</p>
           </FeatureCard>
+
+          {state.validation.recommendedTools && (
+            <FeatureCard title="Acceleration Tools" description="Tools to save time" icon={<Wrench className="text-accent" />} className="md:col-span-2">
+              <div className="flex flex-wrap gap-2">
+                {state.validation.recommendedTools.map((tool, idx) => (
+                  <Badge key={idx} variant="outline" className="border-accent/30 text-accent">{tool}</Badge>
+                ))}
+              </div>
+            </FeatureCard>
+          )}
 
           <div className="md:col-span-2 flex justify-center pt-8">
             <Button size="lg" onClick={onComplete} className="bg-accent text-accent-foreground font-bold px-12">

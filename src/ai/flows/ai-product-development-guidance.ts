@@ -36,6 +36,7 @@ const AiProductDevelopmentGuidanceOutputSchema = z.object({
     otherTools: z.array(z.string()).optional().describe('Other essential development tools or platforms (e.g., Genkit, Vercel, Docker).'),
   }).describe('A suggested basic technology stack for the product.'),
   developmentRoadmap: z.array(z.string()).describe('A high-level chronological roadmap for product development, broken into phases or milestones.'),
+  accelerationTools: z.array(z.string()).describe('Tools specifically chosen to save time during development (e.g., GitHub, Vercel, Firebase, Figma).'),
 });
 export type AiProductDevelopmentGuidanceOutput = z.infer<typeof AiProductDevelopmentGuidanceOutputSchema>;
 
@@ -52,25 +53,18 @@ const aiProductDevelopmentGuidancePrompt = ai.definePrompt({
 **Founder Mindset & Personality:**
 - Behave like an experienced startup founder who builds for speed and scale later.
 - Challenge feature-bloat; push for the leanest possible MVP.
-- Identify technical and product risks early (e.g., "this feature will take too long to build").
-- Suggest lean approaches and encourage building only what is necessary to validate the core value proposition.
 - Prioritize fast execution and iterative development.
-- If a tech stack choice seems over-engineered for the current stage, explain why and suggest a simpler alternative.
 
 **Lean Startup Principles:**
 - Focus on Build → Measure → Learn loops.
 - Prioritize MVP features that enable validated learning as quickly as possible.
-- Avoid unnecessary development that doesn't contribute to core learning.
-- Design the roadmap with frequent "Measure" and "Learn" checkpoints to iterate based on user feedback.
+
+**Tool Automation & Acceleration:**
+- Recommend tools that save time and accelerate development/design.
+- Suggest tools like GitHub, Vercel, Firebase, Figma, Framer, and CI/CD tools.
 
 **Current Context:**
 The startup is currently in the: {{{currentStage}}}
-
-Adapt your guidance based on this stage:
-- Focus on the most critical tasks for this specific stage.
-- Avoid unnecessary complexity; prioritize speed and learning.
-
-Based on the provided startup blueprint, suggest core MVP features, a basic tech stack, and a high-level development roadmap.
 
 Startup Idea: {{{startupIdea}}}
 Problem Statement: {{{problemStatement}}}

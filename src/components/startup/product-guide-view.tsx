@@ -1,11 +1,11 @@
-"use client"
+'use client';
 
 import React, { useState } from 'react';
 import { useStartup } from './startup-context';
 import { aiProductDevelopmentGuidance } from '@/ai/flows/ai-product-development-guidance';
 import { Button } from '@/components/ui/button';
 import { FeatureCard } from './feature-card';
-import { Code2, Database, Cloud, Terminal, Boxes, Milestone, Laptop, Layout, Sparkles } from 'lucide-react';
+import { Code2, Database, Cloud, Terminal, Boxes, Milestone, Layout, Sparkles, Wrench } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 
@@ -132,6 +132,16 @@ export function ProductGuideView({ onComplete }: { onComplete: () => void }) {
               ))}
             </div>
           </FeatureCard>
+
+          {state.productGuidance.accelerationTools && (
+            <FeatureCard title="Acceleration Tools" description="Accelerate development & design" icon={<Wrench className="text-accent" />} className="lg:col-span-2">
+              <div className="flex flex-wrap gap-2">
+                {state.productGuidance.accelerationTools.map((tool, idx) => (
+                  <Badge key={idx} variant="outline" className="border-accent/30 text-accent">{tool}</Badge>
+                ))}
+              </div>
+            </FeatureCard>
+          )}
 
           <div className="lg:col-span-2 flex justify-center pt-8">
             <Button size="lg" onClick={onComplete} className="bg-accent text-accent-foreground font-bold px-12">

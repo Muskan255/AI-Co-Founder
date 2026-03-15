@@ -1,12 +1,13 @@
-"use client"
+'use client';
 
 import React, { useState } from 'react';
 import { useStartup } from './startup-context';
 import { aiMarketingStrategyGeneration } from '@/ai/flows/ai-marketing-strategy-generation';
 import { Button } from '@/components/ui/button';
 import { FeatureCard } from './feature-card';
-import { Rocket, Share2, Users, Search, FileText, Infinity, Heart, Sparkles } from 'lucide-react';
+import { Rocket, Share2, Users, Search, FileText, Infinity, Heart, Sparkles, Wrench } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { Badge } from '@/components/ui/badge';
 
 export function MarketingView({ onComplete }: { onComplete: () => void }) {
   const { state, setMarketing } = useStartup();
@@ -17,7 +18,10 @@ export function MarketingView({ onComplete }: { onComplete: () => void }) {
     if (!state.rawIdea) return;
     setLoading(true);
     try {
-      const result = await aiMarketingStrategyGeneration({ productDescription: state.rawIdea });
+      const result = await aiMarketingStrategyGeneration({ 
+        productDescription: state.rawIdea,
+        currentStage: state.stage
+      });
       setMarketing(result);
       toast({
         title: "Growth Plan Ready",
@@ -70,6 +74,16 @@ export function MarketingView({ onComplete }: { onComplete: () => void }) {
               </ul>
             </FeatureCard>
           ))}
+
+          {state.marketing.recommendedTools && (
+            <FeatureCard title="Growth & Analytics Tools" description="Automate your marketing stack" icon={<Wrench className="text-accent" />} className="lg:col-span-3">
+              <div className="flex flex-wrap gap-2">
+                {state.marketing.recommendedTools.map((tool, idx) => (
+                  <Badge key={idx} variant="outline" className="border-accent/30 text-accent">{tool}</Badge>
+                ))}
+              </div>
+            </FeatureCard>
+          )}
 
           <div className="lg:col-span-3 flex justify-center pt-8">
             <Button size="lg" onClick={onComplete} className="bg-accent text-accent-foreground font-bold px-12">

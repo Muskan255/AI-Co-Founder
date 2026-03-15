@@ -60,6 +60,7 @@ const AiTaskMilestoneManagementOutputSchema = z
           .describe('A Key Performance Indicator (KPI) with its details.')
       )
       .describe('A list of Key Performance Indicators (KPIs) to track progress.'),
+    recommendedTools: z.array(z.string()).describe('Productivity and task management tools to accelerate execution (e.g. Jira, Linear, Trello, Zapier).'),
   })
   .describe('Output from the AI task and milestone management flow.');
 export type AiTaskMilestoneManagementOutput = z.infer<
@@ -80,32 +81,21 @@ const aiTaskMilestoneManagementPrompt = ai.definePrompt({
 
 **Founder Mindset & Personality:**
 - Behave like an experienced startup founder who values execution over planning.
-- Challenge busy-work tasks that don't move the needle.
-- Identify risks in the execution plan early.
-- Suggest lean approaches and encourage experimentation to validate tasks quickly.
 - Prioritize fast execution and measurable progress.
-- If the blueprint seems to lack clarity, create tasks specifically designed to find that clarity.
 
 **Lean Startup Principles:**
 - Apply Build → Measure → Learn loops in task prioritization.
-- Focus on validated learning: every milestone should represent a significant lesson learned from users.
-- Launch MVPs quickly and iterate based on real feedback.
-- Avoid unnecessary development; build only what is required to reach the next learning checkpoint.
+- Focus on validated learning.
+
+**Tool Automation & Acceleration:**
+- Recommend tools that save time and automate manual tasks.
+- Suggest tools for task management and automation (e.g., Linear, Trello, Zapier, Make.com).
 
 **Current Context:**
 The startup is currently in the: {{{currentStage}}}
 
-Analyze the following startup blueprint and generate a structured list of tasks, milestones, and KPIs.
-
 Startup Blueprint:
-{{{startupBlueprint}}}
-
-Ensure that:
-- Tasks are specific, measurable, achievable, relevant, and time-bound (SMART).
-- Milestones represent significant achievements or "validated learning" stages.
-- KPIs are quantifiable metrics that reflect the health and progress towards strategic goals.
-- The output is formatted strictly as a JSON object matching the output schema provided.
-`,
+{{{startupBlueprint}}}`,
 });
 
 const aiTaskMilestoneManagementFlow = ai.defineFlow(

@@ -30,6 +30,7 @@ const IdeaValidationOutputSchema = z.object({
   uniqueDifferentiation: z
     .string()
     .describe('Proposed unique selling points or differentiation strategies.'),
+  recommendedTools: z.array(z.string()).describe('Tools that can help accelerate the validation process (e.g. Typeform for surveys, Figma for mockups).'),
 });
 export type IdeaValidationOutput = z.infer<typeof IdeaValidationOutputSchema>;
 
@@ -49,27 +50,20 @@ const ideaValidationPrompt = ai.definePrompt({
 - Identify risks early and be vocal about them.
 - Suggest lean approaches and encourage experimentation.
 - Prioritize fast execution and learning over perfection.
-- If an idea is weak, explain exactly why and suggest concrete improvements or pivots.
 
 **Lean Startup Principles:**
 - Apply Build → Measure → Learn loops.
 - Focus on validated learning rather than assumptions.
-- Identify the riskiest assumptions and suggest experiments to test them immediately.
-- Encourage launching an MVP as quickly as possible to get user feedback.
+- Encourage launching an MVP as quickly as possible.
+
+**Tool Automation & Acceleration:**
+- Recommend tools that save time and accelerate progress.
+- Suggest tools for validation (e.g., Typeform, Tally, Figma, Framer, Google Trends).
 
 **Current Context:**
 The startup is currently in the: {{{currentStage}}}
 
-Adapt your guidance based on this stage:
-- Focus on the most critical tasks for this specific stage.
-- Avoid unnecessary complexity; prioritize speed and learning.
-- Guide the user toward the next stage of progress.
-
-Analyze the following startup idea comprehensively, providing structured feedback in JSON format. 
-
-Startup Idea: {{{startupIdea}}}
-
-Think like a critical, strategic, and honest co-founder. Challenge weak points and suggest better alternatives. Provide practical, actionable insights for long-term success.`,
+Analyze the following startup idea comprehensively. Startup Idea: {{{startupIdea}}}`,
 });
 
 const aiIdeaValidationFlow = ai.defineFlow(
