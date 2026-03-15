@@ -1,6 +1,6 @@
 'use server';
 /**
- * @fileOverview An AI agent that simulates real-world startup scenarios with a focus on testing long-term viability.
+ * @fileOverview An AI agent that simulates real-world startup scenarios with a focus on testing long-term viability and visual data projections.
  *
  * - aiStartupSimulation - A function that handles the startup simulation process.
  * - AiStartupSimulationInput - The input type for the aiStartupSimulation function.
@@ -15,6 +15,8 @@ const SimulationTypeSchema = z.enum([
   'Customer Feedback',
   'Market Reaction',
   'Competitor Response',
+  'Growth Projection',
+  'Product Adoption',
 ]);
 
 const AiStartupSimulationInputSchema = z.object({
@@ -34,6 +36,13 @@ const AiStartupSimulationOutputSchema = z.object({
   criticalFeedback: z.string().describe('The most brutal and honest feedback.'),
   strategicAdvice: z.string().describe('Strategic guidance based on the simulation.'),
   recommendedTools: z.array(z.string()).describe('Tools to help address the issues raised.'),
+  visualData: z.object({
+    visualization_type: z.enum(['line_chart', 'bar_chart', 'pie_chart', 'funnel_chart', 'matrix_chart', 'timeline_chart']),
+    title: z.string().describe('The title of the chart.'),
+    x_axis: z.string().optional().describe('Label for the X axis.'),
+    y_axis: z.string().optional().describe('Label for the Y axis.'),
+    data: z.array(z.record(z.any())).describe('The data points for the visualization.'),
+  }).describe('Structured data for rendering graphical outcomes of the simulation.'),
 });
 export type AiStartupSimulationOutput = z.infer<typeof AiStartupSimulationOutputSchema>;
 
@@ -57,6 +66,17 @@ const simulationPrompt = ai.definePrompt({
 **Simulation Type: {{{simulationType}}}**
 **Current Stage: {{{currentStage}}}**
 **Startup Idea: {{{startupIdea}}}**
+
+**Visualization Requirement:**
+For every simulation, you MUST generate a data-driven visual representation of the outcome or the market context.
+- Use 'line_chart' for growth/adoption projections.
+- Use 'bar_chart' for market/competitor comparisons.
+- Use 'pie_chart' for revenue distribution or market share.
+- Use 'funnel_chart' for customer acquisition journeys.
+- Use 'matrix_chart' for competitor positioning maps.
+- Use 'timeline_chart' for product roadmap or milestones.
+
+The 'data' field in 'visualData' should be an array of objects where keys match the axis labels or categories you define.
 
 Run a simulation focusing on the "ruthless truth" about the idea's viability and long-term defensibility.`,
 });
