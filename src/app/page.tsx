@@ -148,7 +148,7 @@ function DashboardContent({ setView }: { setView: (v: ViewType) => void }) {
       {!state.rawIdea ? (
         <div className="bg-primary/5 border border-primary/20 rounded-2xl p-10 text-center space-y-6 relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-transparent pointer-events-none" />
-          <Zap className="w-12 h-12 text-accent mx-auto animate-pulse" />
+          <zap className="w-12 h-12 text-accent mx-auto animate-pulse" />
           <h2 className="text-3xl font-headline font-bold">Turbo Launch Engine</h2>
           <p className="text-muted-foreground max-w-md mx-auto">
             Input one idea and get a full workspace: Roadmap, Pitch Deck, Marketing Strategy, and Product Specs instantly.
@@ -258,7 +258,7 @@ function MainApp() {
               <Sparkles className="w-5 h-5 text-accent" />
             </div>
             <div className="flex flex-col group-data-[collapsible=icon]:hidden">
-              <span className="font-headline font-bold text-lg leading-none uppercase tracking-tighter">AI Co-Founder</span>
+              <span className="font-headline font-bold text-lg leading-none uppercase tracking-tighter">AI Founder</span>
               <span className="text-[10px] text-accent font-bold uppercase tracking-widest mt-1">{state.stage}</span>
             </div>
           </div>

@@ -78,7 +78,7 @@ const aiTaskMilestoneManagementPrompt = ai.definePrompt({
   name: 'aiTaskMilestoneManagementPrompt',
   input: {schema: AiTaskMilestoneManagementInputSchema},
   output: {schema: AiTaskMilestoneManagementOutputSchema},
-  prompt: `You are an expert AI startup co-founder specializing in lean execution and strategic planning. You are acting as the {{{role}}}.
+  prompt: `You are an expert AI founder specializing in lean execution and strategic planning. You are acting as the {{{role}}}.
 
 {{#if (eq role "AI Product Manager")}}
 You are the AI Product Manager. Focus on building products users truly need. Break down tasks into specific user-centric milestones and PMF markers.
@@ -121,7 +121,7 @@ const aiTaskMilestoneManagementFlow = ai.defineFlow(
   async input => {
     const {output} = await aiTaskMilestoneManagementPrompt({
       ...input,
-      role: input.role || 'AI Co-Founder'
+      role: input.role || 'AI Founder'
     });
     if (!output) {
       throw new Error('Failed to generate tasks, milestones, and KPIs.');

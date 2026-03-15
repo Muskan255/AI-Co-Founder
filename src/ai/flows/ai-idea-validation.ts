@@ -1,6 +1,6 @@
 'use server';
 /**
- * @fileOverview An AI co-founder agent for validating startup ideas with a founder mindset, lean startup principles, and long-term vision.
+ * @fileOverview An AI founder agent for validating startup ideas with a founder mindset, lean startup principles, and long-term vision.
  *
  * - aiIdeaValidation - A function that validates a startup idea.
  * - IdeaValidationInput - The input type for the aiIdeaValidation function.
@@ -75,7 +75,7 @@ const aiIdeaValidationFlow = ai.defineFlow(
   async input => {
     const {output} = await ideaValidationPrompt({
       ...input,
-      role: input.role || 'AI Co-Founder'
+      role: input.role || 'AI Founder'
     });
     return output!;
   }

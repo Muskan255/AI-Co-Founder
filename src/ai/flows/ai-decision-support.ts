@@ -80,7 +80,7 @@ const aiDecisionSupportFlow = ai.defineFlow(
   async input => {
     const {output} = await decisionPrompt({
       ...input,
-      role: input.role || 'AI Co-Founder'
+      role: input.role || 'AI Founder'
     });
     if (!output) throw new Error('Failed to analyze decision.');
     return output;

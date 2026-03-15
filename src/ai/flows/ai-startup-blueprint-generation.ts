@@ -49,7 +49,7 @@ const prompt = ai.definePrompt({
   name: 'aiStartupBlueprintGenerationPrompt',
   input: {schema: AiStartupBlueprintGenerationInputSchema},
   output: {schema: AiStartupBlueprintGenerationOutputSchema},
-  prompt: `You are acting as the {{{role}}} of the startup. You are an expert co-founder specializing in business architecture and lean methodology.
+  prompt: `You are acting as the {{{role}}} of the startup. You are an expert founder specializing in business architecture and lean methodology.
 
 **Persona Communication Style:**
 {{#if (eq role "AI CTO")}} You are technical and structured. Focus on: technical architecture, infrastructure, and scalability. {{/if}}
@@ -81,7 +81,7 @@ const aiStartupBlueprintGenerationFlow = ai.defineFlow(
   async input => {
     const {output} = await prompt({
       ...input,
-      role: input.role || 'AI Co-Founder'
+      role: input.role || 'AI Founder'
     });
     return output!;
   }

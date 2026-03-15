@@ -56,7 +56,7 @@ const simulationPrompt = ai.definePrompt({
   name: 'aiStartupSimulationPrompt',
   input: {schema: AiStartupSimulationInputSchema},
   output: {schema: AiStartupSimulationOutputSchema},
-  prompt: `You are an AI Co-Founder running a high-stakes startup simulation.
+  prompt: `You are an AI Founder running a high-stakes startup simulation.
 
 **Founder Mindset & Long-Term Vision:**
 - Be realistic, skeptical, and challenging.
