@@ -6,8 +6,9 @@ import { collection, query, orderBy } from 'firebase/firestore';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Briefcase, Clock, ArrowRight, Sparkles } from 'lucide-react';
+import { Plus, Briefcase, Clock, ArrowRight, Sparkles, Target } from 'lucide-react';
 import { useStartup } from './startup-context';
+import { Progress } from '@/components/ui/progress';
 
 export function ProjectListView({ onSelect }: { onSelect: () => void }) {
   const { user } = useUser();
@@ -34,69 +35,110 @@ export function ProjectListView({ onSelect }: { onSelect: () => void }) {
     onSelect();
   };
 
+  const calculateProgress = (project: any) => {
+    const fields = ['validation', 'blueprint', 'productGuidance', 'marketing', 'financialStrategy', 'tasks'];
+    const state = project.fullState || {};
+    const completed = fields.filter(f => !!state[f]).length;
+    return (completed / fields.length) * 100;
+  };
+
   if (loading) {
     return (
       <div className="p-20 text-center space-y-4">
         <Sparkles className="w-12 h-12 text-accent mx-auto animate-spin" />
-        <h3 className="text-xl font-headline">Loading Ventures...</h3>
+        <h3 className="text-xl font-headline font-bold">Retrieving Your Ventures...</h3>
       </div>
     );
   }
 
   return (
-    <div className="p-8 max-w-5xl mx-auto space-y-8">
-      <header className="flex justify-between items-center">
-        <div>
-          <h2 className="text-4xl font-headline font-bold gradient-text">Your Ventures</h2>
-          <p className="text-muted-foreground">Select a startup project to continue your journey.</p>
+    <div className="p-8 max-w-6xl mx-auto space-y-12">
+      <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+        <div className="space-y-2">
+          <Badge variant="outline" className="bg-primary/5 text-accent border-accent/20 px-3 py-1">Venture Archive</Badge>
+          <h2 className="text-5xl font-headline font-bold gradient-text leading-tight">Your Business Portfolio</h2>
+          <p className="text-muted-foreground text-lg max-w-2xl">
+            Select an active venture to resume execution or start a new high-growth experiment.
+          </p>
         </div>
-        <Button onClick={handleNew} className="bg-primary gap-2">
-          <Plus className="w-4 h-4" /> Start New Venture
+        <Button onClick={handleNew} className="bg-primary hover:bg-primary/90 gap-2 h-14 px-8 text-lg font-bold shadow-lg shadow-primary/20">
+          <Plus className="w-5 h-5" /> New Venture
         </Button>
       </header>
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
         <Card 
           onClick={handleNew}
-          className="glass-card border-dashed border-white/20 hover:border-accent/50 cursor-pointer flex flex-col items-center justify-center p-8 transition-all group"
+          className="glass-card border-dashed border-white/20 hover:border-accent/50 cursor-pointer flex flex-col items-center justify-center p-12 transition-all group min-h-[350px]"
         >
-          <div className="w-12 h-12 rounded-full bg-accent/10 text-accent flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-            <Plus className="w-6 h-6" />
+          <div className="w-16 h-16 rounded-2xl bg-accent/10 text-accent flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-inner">
+            <Plus className="w-8 h-8" />
           </div>
-          <h3 className="font-headline font-bold">New Project</h3>
-          <p className="text-xs text-muted-foreground mt-2">Create a fresh startup blueprint</p>
+          <h3 className="text-2xl font-headline font-bold">Start Fresh</h3>
+          <p className="text-sm text-muted-foreground mt-2 text-center">Architect a new startup blueprint from scratch.</p>
         </Card>
 
-        {projects?.map((project: any) => (
-          <Card 
-            key={project.id}
-            onClick={() => handleSelect(project)}
-            className="glass-card hover:border-accent/50 cursor-pointer transition-all group"
-          >
-            <CardHeader>
-              <div className="flex justify-between items-start mb-2">
-                <Briefcase className="w-5 h-5 text-accent" />
-                <Badge variant="secondary" className="bg-primary/10 text-accent text-[10px]">
-                  {project.progress_status}
+        {projects?.map((project: any) => {
+          const progress = calculateProgress(project);
+          return (
+            <Card 
+              key={project.id}
+              onClick={() => handleSelect(project)}
+              className="glass-card hover:border-accent/50 cursor-pointer transition-all group flex flex-col relative overflow-hidden"
+            >
+              <div className="absolute top-0 right-0 p-4">
+                <Badge variant="secondary" className="bg-accent/10 text-accent border-accent/20">
+                  {project.startup_stage || project.progress_status}
                 </Badge>
               </div>
-              <CardTitle className="text-xl">{project.project_name}</CardTitle>
-              <CardDescription className="line-clamp-2 text-xs">
-                {project.idea_description}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center gap-2 text-[10px] text-muted-foreground mb-4">
-                <Clock className="w-3 h-3" />
-                Last updated: {project.last_updated?.toDate().toLocaleDateString()}
+              
+              <CardHeader className="pt-10">
+                <div className="w-12 h-12 rounded-xl bg-primary/10 text-accent flex items-center justify-center mb-4">
+                  <Briefcase className="w-6 h-6" />
+                </div>
+                <CardTitle className="text-2xl font-headline">{project.project_name}</CardTitle>
+                <CardDescription className="line-clamp-2 text-sm leading-relaxed mt-2">
+                  {project.idea_description}
+                </CardDescription>
+              </CardHeader>
+              
+              <CardContent className="flex-1 space-y-6">
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                    <span>Venture Maturity</span>
+                    <span>{Math.round(progress)}%</span>
+                  </div>
+                  <Progress value={progress} className="h-1.5 bg-white/5" />
+                </div>
+
+                <div className="flex items-center gap-2 text-[10px] text-muted-foreground font-medium bg-white/5 w-fit px-3 py-1 rounded-full">
+                  <Clock className="w-3 h-3" />
+                  Updated: {project.last_updated?.toDate().toLocaleDateString()}
+                </div>
+              </CardContent>
+
+              <div className="p-6 pt-0 mt-auto">
+                <Button className="w-full bg-secondary hover:bg-accent hover:text-accent-foreground group-hover:shadow-lg transition-all justify-between px-6 font-bold">
+                  Resume Building <ArrowRight className="w-4 h-4" />
+                </Button>
               </div>
-              <Button variant="ghost" className="w-full text-accent p-0 justify-between group-hover:px-2 transition-all">
-                Resume Building <ArrowRight className="w-4 h-4" />
-              </Button>
-            </CardContent>
-          </Card>
-        ))}
+            </Card>
+          );
+        })}
       </div>
+
+      {!projects?.length && !loading && (
+        <div className="text-center py-20 bg-white/2 rounded-3xl border border-dashed border-white/10">
+          <Target className="w-16 h-16 text-muted-foreground/30 mx-auto mb-6" />
+          <h3 className="text-xl font-headline font-bold">No ventures found.</h3>
+          <p className="text-muted-foreground max-w-xs mx-auto mt-2">
+            Your startup ideas deserve execution. Start your first one now.
+          </p>
+          <Button onClick={handleNew} variant="outline" className="mt-8 border-accent/20 text-accent">
+            Generate First Idea
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

@@ -11,7 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 
 export function IdeaValidationView({ onComplete }: { onComplete: () => void }) {
-  const { state, setRawIdea, setValidation } = useStartup();
+  const { state, setRawIdea, setValidation, setProjectId, setProjectName } = useStartup();
   const [loading, setLoading] = useState(false);
   const [idea, setIdea] = useState(state.rawIdea || '');
   const { toast } = useToast();
@@ -20,6 +20,15 @@ export function IdeaValidationView({ onComplete }: { onComplete: () => void }) {
     if (!idea.trim()) return;
     setLoading(true);
     try {
+      // Ensure project identity for persistence
+      if (!state.projectId) {
+        const newId = crypto.randomUUID();
+        setProjectId(newId);
+        // Default project name from idea
+        const potentialName = idea.trim().split(' ').slice(0, 3).join(' ') + '...';
+        setProjectName(potentialName);
+      }
+
       const result = await aiIdeaValidation({ 
         startupIdea: idea,
         currentStage: state.stage,

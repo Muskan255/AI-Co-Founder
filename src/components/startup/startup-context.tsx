@@ -10,7 +10,7 @@ import { AiTaskMilestoneManagementOutput } from '@/ai/flows/ai-task-milestone-ma
 import { AiStartupSimulationOutput } from '@/ai/flows/ai-startup-simulation';
 import { WorkspaceOutput } from '@/ai/flows/ai-workspace-generation';
 import { useUser, useFirestore } from '@/firebase';
-import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, setDoc, serverTimestamp, getDocs, collection, query, orderBy, limit } from 'firebase/firestore';
 
 export type StartupStage = 'Idea Stage' | 'Validation Stage' | 'MVP Development' | 'Early Traction' | 'Growth Stage' | 'Scaling Stage';
 export type StartupRole = 'AI CTO' | 'AI CMO' | 'AI CFO' | 'AI Product Manager' | 'AI Growth Hacker';
@@ -75,8 +75,9 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
   const { user } = useUser();
   const firestore = useFirestore();
 
+  // Load from Local Storage on mount
   useEffect(() => {
-    const saved = localStorage.getItem('co-pilot-startup-state');
+    const saved = localStorage.getItem('ai-founder-startup-state');
     if (saved) {
       try {
         setState(JSON.parse(saved));
@@ -87,29 +88,26 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
     setIsHydrated(true);
   }, []);
 
+  // Sync to Local Storage and Firestore (Auto-Save)
   useEffect(() => {
     if (isHydrated) {
-      localStorage.setItem('co-pilot-startup-state', JSON.stringify(state));
+      localStorage.setItem('ai-founder-startup-state', JSON.stringify(state));
       
       if (user && state.projectId && firestore) {
         const projectRef = doc(firestore, 'users', user.uid, 'projects', state.projectId);
         
         const projectRecord = {
           project_id: state.projectId,
+          user_id: user.uid,
           project_name: state.projectName,
           idea_description: state.rawIdea,
-          target_market: state.validation?.targetMarket || '',
-          problem_statement: state.blueprint?.problemStatement || '',
-          value_proposition: state.blueprint?.valueProposition || '',
-          business_model: state.blueprint?.businessModel || '',
-          MVP_features: state.productGuidance?.mvpFeatures || [],
-          tech_stack: state.productGuidance?.techStack || {},
-          marketing_strategy: state.marketing || {},
-          funding_strategy: state.financialStrategy?.fundingPlan?.join(', ') || state.blueprint?.revenueStreams || '',
-          roadmap: state.productGuidance?.developmentRoadmap || [],
-          progress_status: state.stage,
+          startup_stage: state.stage,
+          strategy_blueprint: state.blueprint || null,
+          financial_plan: state.financialStrategy || null,
+          product_development: state.productGuidance || null,
+          growth_plan: state.marketing || null,
+          simulations: state.lastSimulation ? [state.lastSimulation] : [],
           last_updated: serverTimestamp(),
-          userId: user.uid,
           fullState: state
         };
 
@@ -117,6 +115,21 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
       }
     }
   }, [state, isHydrated, user, firestore]);
+
+  // Session Restore: Fetch latest venture on login if local state is empty
+  useEffect(() => {
+    if (isHydrated && user && firestore && !state.projectId && state.rawIdea === '') {
+      const projectsRef = collection(firestore, 'users', user.uid, 'projects');
+      const q = query(projectsRef, orderBy('last_updated', 'desc'), limit(1));
+      
+      getDocs(q).then((snapshot) => {
+        if (!snapshot.empty) {
+          const latestProject = snapshot.docs[0].data();
+          loadProject(latestProject);
+        }
+      });
+    }
+  }, [isHydrated, user, firestore, state.projectId, state.rawIdea]);
 
   const setProjectId = (id: string) => setState(prev => ({ ...prev, projectId: id }));
   const setProjectName = (name: string) => setState(prev => ({ ...prev, projectName: name }));
@@ -153,10 +166,10 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
     } else {
       setState({
         ...DEFAULT_STATE,
-        projectId: projectData.project_id,
-        projectName: projectData.project_name,
-        rawIdea: projectData.idea_description,
-        stage: projectData.progress_status as StartupStage,
+        projectId: projectData.project_id || projectData.id,
+        projectName: projectData.project_name || 'Restored Project',
+        rawIdea: projectData.idea_description || '',
+        stage: (projectData.startup_stage || projectData.progress_status) as StartupStage,
       });
     }
   };
