@@ -5,8 +5,9 @@ import { useStartup } from './startup-context';
 import { aiStartupBlueprintGeneration } from '@/ai/flows/ai-startup-blueprint-generation';
 import { Button } from '@/components/ui/button';
 import { FeatureCard } from './feature-card';
-import { Map, Briefcase, Coins, Users, Rocket, Trophy, Target, PieChart, Sparkles } from 'lucide-react';
+import { Map, Briefcase, Coins, Rocket, Trophy, Target, PieChart, Sparkles } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { Badge } from '@/components/ui/badge';
 
 export function BlueprintView({ onComplete }: { onComplete: () => void }) {
   const { state, setBlueprint } = useStartup();
@@ -17,7 +18,10 @@ export function BlueprintView({ onComplete }: { onComplete: () => void }) {
     if (!state.rawIdea) return;
     setLoading(true);
     try {
-      const result = await aiStartupBlueprintGeneration({ idea: state.rawIdea });
+      const result = await aiStartupBlueprintGeneration({ 
+        idea: state.rawIdea,
+        currentStage: state.stage
+      });
       setBlueprint(result);
       toast({
         title: "Blueprint Ready",
@@ -47,9 +51,12 @@ export function BlueprintView({ onComplete }: { onComplete: () => void }) {
   return (
     <div className="p-8 max-w-6xl mx-auto space-y-8">
       <div className="flex justify-between items-center">
-        <div>
-          <h2 className="text-3xl font-headline font-bold">Startup Blueprint</h2>
-          <p className="text-muted-foreground">The foundational architecture of your business.</p>
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <h2 className="text-3xl font-headline font-bold">Startup Blueprint</h2>
+            <Badge variant="secondary" className="bg-primary/10 text-accent border-primary/20">{state.stage}</Badge>
+          </div>
+          <p className="text-muted-foreground">The foundational architecture of your business, adapted for speed.</p>
         </div>
         {!state.blueprint && (
           <Button size="lg" disabled={loading} onClick={handleGenerate} className="gap-2 bg-primary">

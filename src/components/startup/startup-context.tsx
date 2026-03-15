@@ -7,8 +7,11 @@ import { AiProductDevelopmentGuidanceOutput } from '@/ai/flows/ai-product-develo
 import { MarketingStrategyGenerationOutput } from '@/ai/flows/ai-marketing-strategy-generation';
 import { AiTaskMilestoneManagementOutput } from '@/ai/flows/ai-task-milestone-management';
 
+export type StartupStage = 'Idea Stage' | 'Validation Stage' | 'MVP Development' | 'Early Traction' | 'Growth Stage' | 'Scaling Stage';
+
 interface StartupState {
   rawIdea: string;
+  stage: StartupStage;
   validation: IdeaValidationOutput | null;
   blueprint: AiStartupBlueprintGenerationOutput | null;
   productGuidance: AiProductDevelopmentGuidanceOutput | null;
@@ -19,6 +22,7 @@ interface StartupState {
 interface StartupContextType {
   state: StartupState;
   setRawIdea: (idea: string) => void;
+  setStage: (stage: StartupStage) => void;
   setValidation: (v: IdeaValidationOutput) => void;
   setBlueprint: (b: AiStartupBlueprintGenerationOutput) => void;
   setProductGuidance: (p: AiProductDevelopmentGuidanceOutput) => void;
@@ -35,6 +39,7 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
       const saved = localStorage.getItem('co-pilot-startup-state');
       return saved ? JSON.parse(saved) : {
         rawIdea: '',
+        stage: 'Idea Stage',
         validation: null,
         blueprint: null,
         productGuidance: null,
@@ -44,6 +49,7 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
     }
     return {
       rawIdea: '',
+      stage: 'Idea Stage',
       validation: null,
       blueprint: null,
       productGuidance: null,
@@ -57,14 +63,17 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
   }, [state]);
 
   const setRawIdea = (idea: string) => setState(prev => ({ ...prev, rawIdea: idea }));
-  const setValidation = (v: IdeaValidationOutput) => setState(prev => ({ ...prev, validation: v }));
-  const setBlueprint = (b: AiStartupBlueprintGenerationOutput) => setState(prev => ({ ...prev, blueprint: b }));
-  const setProductGuidance = (p: AiProductDevelopmentGuidanceOutput) => setState(prev => ({ ...prev, productGuidance: p }));
-  const setMarketing = (m: MarketingStrategyGenerationOutput) => setState(prev => ({ ...prev, marketing: m }));
-  const setTasks = (t: AiTaskMilestoneManagementOutput) => setState(prev => ({ ...prev, tasks: t }));
+  const setStage = (stage: StartupStage) => setState(prev => ({ ...prev, stage }));
+  const setValidation = (v: IdeaValidationOutput) => setState(prev => ({ ...prev, validation: v, stage: 'Validation Stage' }));
+  const setBlueprint = (b: AiStartupBlueprintGenerationOutput) => setState(prev => ({ ...prev, blueprint: b, stage: 'MVP Development' }));
+  const setProductGuidance = (p: AiProductDevelopmentGuidanceOutput) => setState(prev => ({ ...prev, productGuidance: p, stage: 'Early Traction' }));
+  const setMarketing = (m: MarketingStrategyGenerationOutput) => setState(prev => ({ ...prev, marketing: m, stage: 'Growth Stage' }));
+  const setTasks = (t: AiTaskMilestoneManagementOutput) => setState(prev => ({ ...prev, tasks: t, stage: 'Scaling Stage' }));
+  
   const reset = () => {
     setState({
       rawIdea: '',
+      stage: 'Idea Stage',
       validation: null,
       blueprint: null,
       productGuidance: null,
@@ -77,6 +86,7 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
     <StartupContext.Provider value={{ 
       state, 
       setRawIdea, 
+      setStage,
       setValidation, 
       setBlueprint, 
       setProductGuidance, 

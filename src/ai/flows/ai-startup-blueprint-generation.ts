@@ -12,6 +12,7 @@ import {z} from 'genkit';
 
 const AiStartupBlueprintGenerationInputSchema = z.object({
   idea: z.string().describe('The startup idea to generate a blueprint for.'),
+  currentStage: z.string().optional().describe('The current stage of the startup.'),
 });
 export type AiStartupBlueprintGenerationInput = z.infer<
   typeof AiStartupBlueprintGenerationInputSchema
@@ -46,6 +47,13 @@ const prompt = ai.definePrompt({
   input: {schema: AiStartupBlueprintGenerationInputSchema},
   output: {schema: AiStartupBlueprintGenerationOutputSchema},
   prompt: `You are an expert startup co-founder.
+
+The startup is currently in the: {{{currentStage}}}
+
+Adapt your guidance based on this stage:
+- Focus on the most critical tasks for this specific stage.
+- Avoid unnecessary complexity; prioritize speed and learning.
+- Guide the user toward the next stage of progress.
 
 Your task is to generate a comprehensive startup blueprint based on the following idea. Provide clear and concise responses for each section.
 

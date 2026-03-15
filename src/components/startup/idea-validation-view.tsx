@@ -6,8 +6,9 @@ import { aiIdeaValidation } from '@/ai/flows/ai-idea-validation';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { FeatureCard } from './feature-card';
-import { Lightbulb, Send, Target, AlertCircle, TrendingUp, Users, ShieldCheck, Zap } from 'lucide-react';
+import { Lightbulb, Send, Target, TrendingUp, Users, ShieldCheck, Zap } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { Badge } from '@/components/ui/badge';
 
 export function IdeaValidationView({ onComplete }: { onComplete: () => void }) {
   const { state, setRawIdea, setValidation } = useStartup();
@@ -19,12 +20,15 @@ export function IdeaValidationView({ onComplete }: { onComplete: () => void }) {
     if (!idea.trim()) return;
     setLoading(true);
     try {
-      const result = await aiIdeaValidation({ startupIdea: idea });
+      const result = await aiIdeaValidation({ 
+        startupIdea: idea,
+        currentStage: state.stage 
+      });
       setRawIdea(idea);
       setValidation(result);
       toast({
         title: "Validation Complete",
-        description: "Your co-founder has analyzed your idea. Check out the feedback below.",
+        description: `Feedback adapted for ${state.stage}.`,
       });
     } catch (error) {
       toast({
@@ -40,9 +44,12 @@ export function IdeaValidationView({ onComplete }: { onComplete: () => void }) {
   return (
     <div className="p-8 max-w-5xl mx-auto space-y-8">
       <section className="space-y-4">
-        <h2 className="text-3xl font-headline font-bold">Validate Your Idea</h2>
+        <div className="flex items-center gap-4">
+          <h2 className="text-3xl font-headline font-bold">Validate Your Idea</h2>
+          <Badge variant="secondary" className="bg-accent/10 text-accent border-accent/20">{state.stage} Mode</Badge>
+        </div>
         <p className="text-muted-foreground">
-          Pitch your idea to your AI co-founder. I'll tear it apart and help you build it back stronger.
+          Pitch your idea to your AI co-founder. I'll prioritize speed and critical validation markers for your current stage.
         </p>
         <div className="relative group">
           <Textarea 

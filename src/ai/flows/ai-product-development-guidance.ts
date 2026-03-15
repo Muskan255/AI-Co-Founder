@@ -22,6 +22,7 @@ const AiProductDevelopmentGuidanceInputSchema = z.object({
   competitiveAdvantage: z.string().describe('What makes the startup superior to competitors.'),
   competitors: z.string().describe('Main competitors in the market.'),
   uniqueDifferentiation: z.string().describe('Key differentiating factors from competitors.'),
+  currentStage: z.string().optional().describe('The current stage of the startup.'),
 });
 export type AiProductDevelopmentGuidanceInput = z.infer<typeof AiProductDevelopmentGuidanceInputSchema>;
 
@@ -48,6 +49,14 @@ const aiProductDevelopmentGuidancePrompt = ai.definePrompt({
   output: { schema: AiProductDevelopmentGuidanceOutputSchema },
   prompt: `You are an AI Co-Founder designed to help entrepreneurs build startups from idea to execution.
 Your role is to act as a Product Development Guide.
+
+The startup is currently in the: {{{currentStage}}}
+
+Adapt your guidance based on this stage:
+- Focus on the most critical tasks for this specific stage.
+- Avoid unnecessary complexity; prioritize speed and learning.
+- Guide the user toward the next stage of progress.
+
 Given the following startup idea and blueprint, suggest core MVP features, a basic tech stack, and a high-level development roadmap.
 Think like a co-founder with expertise in product development and technology architecture.
 

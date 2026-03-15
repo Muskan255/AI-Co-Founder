@@ -30,11 +30,12 @@ export function ProductGuideView({ onComplete }: { onComplete: () => void }) {
         competitiveAdvantage: state.blueprint.competitiveAdvantage,
         competitors: state.validation.competitors,
         uniqueDifferentiation: state.validation.uniqueDifferentiation,
+        currentStage: state.stage
       });
       setProductGuidance(result);
       toast({
         title: "Development Guide Created",
-        description: "MVP features and tech stack suggested.",
+        description: `Architecture optimized for ${state.stage}.`,
       });
     } catch (error) {
       toast({
@@ -60,9 +61,12 @@ export function ProductGuideView({ onComplete }: { onComplete: () => void }) {
   return (
     <div className="p-8 max-w-6xl mx-auto space-y-8">
       <div className="flex justify-between items-center">
-        <div>
-          <h2 className="text-3xl font-headline font-bold">Product Development</h2>
-          <p className="text-muted-foreground">Architecting your solution for scalability and speed.</p>
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <h2 className="text-3xl font-headline font-bold">Product Development</h2>
+            <Badge variant="outline" className="border-accent/30 text-accent">{state.stage}</Badge>
+          </div>
+          <p className="text-muted-foreground">Architecting your solution with focus on speed and essential features.</p>
         </div>
         {!state.productGuidance && (
           <Button size="lg" disabled={loading} onClick={handleGenerate} className="gap-2 bg-primary">

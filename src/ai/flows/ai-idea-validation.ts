@@ -12,6 +12,7 @@ import {z} from 'genkit';
 
 const IdeaValidationInputSchema = z.object({
   startupIdea: z.string().describe('The raw startup idea provided by the entrepreneur.'),
+  currentStage: z.string().optional().describe('The current stage of the startup.'),
 });
 export type IdeaValidationInput = z.infer<typeof IdeaValidationInputSchema>;
 
@@ -41,6 +42,13 @@ const ideaValidationPrompt = ai.definePrompt({
   input: {schema: IdeaValidationInputSchema},
   output: {schema: IdeaValidationOutputSchema},
   prompt: `You are an AI Co-Founder. Your role is to validate startup ideas.
+
+The startup is currently in the: {{{currentStage}}}
+
+Adapt your guidance based on this stage:
+- Focus on the most critical tasks for this specific stage.
+- Avoid unnecessary complexity; prioritize speed and learning.
+- Guide the user toward the next stage of progress.
 
 Analyze the following startup idea comprehensively, providing structured feedback in JSON format. Your evaluation should cover:
 1. Idea Analysis: Provide a general analysis of the idea, its core concept, and potential.

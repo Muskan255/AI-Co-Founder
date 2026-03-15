@@ -3,8 +3,8 @@
  * @fileOverview An AI agent that generates initial marketing strategies for a startup.
  *
  * - aiMarketingStrategyGeneration - A function that handles the marketing strategy generation process.
- * - MarketingStrategyGenerationInput - The input type for the aiMarketingStrategyGeneration function.
- * - MarketingStrategyGenerationOutput - The return type for the aiMarketingStrategyGeneration function.
+ * - MarketingStrategyGenerationInput - The input type for the marketing strategy generation process.
+ * - MarketingStrategyGenerationOutput - The return type for the marketing strategy generation process.
  */
 
 import {ai} from '@/ai/genkit';
@@ -14,6 +14,7 @@ const MarketingStrategyGenerationInputSchema = z.object({
   productDescription: z
     .string()
     .describe('A detailed description of the product or startup idea.'),
+  currentStage: z.string().optional().describe('The current stage of the startup.'),
 });
 export type MarketingStrategyGenerationInput = z.infer<
   typeof MarketingStrategyGenerationInputSchema
@@ -57,6 +58,13 @@ const marketingStrategyPrompt = ai.definePrompt({
   input: {schema: MarketingStrategyGenerationInputSchema},
   output: {schema: MarketingStrategyGenerationOutputSchema},
   prompt: `You are an AI Co-Founder. Your goal is to help entrepreneurs turn their idea into a successful startup.
+
+The startup is currently in the: {{{currentStage}}}
+
+Adapt your guidance based on this stage:
+- Focus on the most critical tasks for this specific stage.
+- Avoid unnecessary complexity; prioritize speed and learning.
+- Guide the user toward the next stage of progress.
 
 As a co-founder, generate initial marketing strategies for the product described below. Focus on product launch and early user acquisition tactics.
 
