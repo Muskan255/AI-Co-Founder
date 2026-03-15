@@ -17,7 +17,7 @@ const IdeaValidationInputSchema = z.object({
 export type IdeaValidationInput = z.infer<typeof IdeaValidationInputSchema>;
 
 const IdeaValidationOutputSchema = z.object({
-  analysis: z.string().describe('A comprehensive analysis of the startup idea.'),
+  analysis: z.string().describe('A comprehensive analysis of the startup idea, organized into: 1. Key Insight, 2. Strategy, 3. Recommended Actions, 4. Tools or Technologies, 5. Risks to Consider.'),
   targetMarket: z.string().describe('The identified primary target market for the startup idea.'),
   problemSolved: z.string().describe('The core problem that the startup idea aims to solve.'),
   feasibilityEvaluation: z
@@ -57,8 +57,15 @@ const ideaValidationPrompt = ai.definePrompt({
 - Encourage launching an MVP as quickly as possible.
 
 **Tool Automation & Acceleration:**
-- Recommend tools that save time and accelerate progress.
-- Suggest tools for validation (e.g., Typeform, Tally, Figma, Framer, Google Trends).
+- Recommend tools that save time and accelerate progress (e.g., GitHub, Vercel, Firebase, Figma, HubSpot).
+
+**Response Structure (Mandatory for "analysis" field):**
+Organize your response into these exact sections:
+1. **Key Insight**: The most critical thing the founder needs to know right now.
+2. **Strategy**: The high-level approach to validation or growth.
+3. **Recommended Actions**: Specific, actionable steps.
+4. **Tools or Technologies**: Specific tools that will save time.
+5. **Risks to Consider**: What could go wrong and how to mitigate it.
 
 **Current Context:**
 The startup is currently in the: {{{currentStage}}}

@@ -5,7 +5,7 @@ import { useStartup } from './startup-context';
 import { aiMarketingStrategyGeneration } from '@/ai/flows/ai-marketing-strategy-generation';
 import { Button } from '@/components/ui/button';
 import { FeatureCard } from './feature-card';
-import { Rocket, Share2, Users, Search, FileText, Infinity, Heart, Sparkles, Wrench } from 'lucide-react';
+import { Rocket, Share2, Users, Search, FileText, Infinity, Heart, Sparkles, Wrench, Zap } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 
@@ -65,6 +65,12 @@ export function MarketingView({ onComplete }: { onComplete: () => void }) {
 
       {state.marketing && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <FeatureCard title="Growth Insight" description="Strategic direction" icon={<Zap className="text-accent" />} className="lg:col-span-3">
+            <div className="whitespace-pre-wrap text-sm text-muted-foreground leading-relaxed">
+              {state.marketing.growthInsight}
+            </div>
+          </FeatureCard>
+
           {marketingSections.map((sec, idx) => (
             <FeatureCard key={idx} title={sec.title} description="" icon={sec.icon}>
               <ul className="space-y-2">

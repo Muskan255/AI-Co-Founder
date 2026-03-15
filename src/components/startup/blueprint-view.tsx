@@ -5,7 +5,7 @@ import { useStartup } from './startup-context';
 import { aiStartupBlueprintGeneration } from '@/ai/flows/ai-startup-blueprint-generation';
 import { Button } from '@/components/ui/button';
 import { FeatureCard } from './feature-card';
-import { Map, Briefcase, Coins, Rocket, Trophy, Target, PieChart, Sparkles, Wrench, AlertCircle } from 'lucide-react';
+import { Map, Briefcase, Coins, Rocket, Trophy, Target, PieChart, Sparkles, Wrench, AlertCircle, ShieldAlert } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 
@@ -68,6 +68,12 @@ export function BlueprintView({ onComplete }: { onComplete: () => void }) {
 
       {state.blueprint && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <FeatureCard title="Strategic Overview" description="Co-founder's breakdown" icon={<ShieldAlert className="text-accent" />} className="lg:col-span-3">
+             <div className="whitespace-pre-wrap text-sm text-muted-foreground leading-relaxed">
+              {state.blueprint.strategicOverview}
+            </div>
+          </FeatureCard>
+
           <FeatureCard title="Value Proposition" description="What makes us special" icon={<Rocket />}>
             <p className="text-sm text-muted-foreground">{state.blueprint.valueProposition}</p>
           </FeatureCard>

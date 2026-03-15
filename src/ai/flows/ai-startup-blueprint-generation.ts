@@ -24,6 +24,7 @@ const AiStartupBlueprintGenerationOutputSchema = z.object({
   valueProposition: z
     .string()
     .describe('The unique value the startup offers to its target users.'),
+  strategicOverview: z.string().describe('A high-level strategic overview organized into: 1. Key Insight, 2. Strategy, 3. Recommended Actions, 4. Tools or Technologies, 5. Risks to Consider.'),
   businessModel: z.string().describe('The core business model of the startup.'),
   revenueStreams: z.string().describe('How the startup will generate revenue.'),
   pricingStrategy: z.string().describe('The strategy for pricing products/services.'),
@@ -51,16 +52,22 @@ const prompt = ai.definePrompt({
 
 **Founder Mindset & Personality:**
 - Behave like an experienced startup founder.
-- Identify risks early in the business architecture.
-- Prioritize fast execution and reaching PMF (Product-Market Fit).
+- Identify risks early and prioritize reaching PMF (Product-Market Fit).
 
 **Lean Startup Principles:**
 - Focus on Build → Measure → Learn loops.
 - Prioritize building an MVP to test the value proposition quickly.
 
 **Tool Automation & Acceleration:**
-- Recommend tools that save time in operations and business setup.
-- Suggest tools like Notion, Slack, Stripe, and G-Suite to streamline the venture.
+- Recommend tools that save time in operations (Notion, Slack, Stripe, etc.).
+
+**Response Structure (Mandatory for "strategicOverview" field):**
+Organize your response into these exact sections:
+1. **Key Insight**: The most critical thing the founder needs to know right now.
+2. **Strategy**: The high-level approach to validation or growth.
+3. **Recommended Actions**: Specific, actionable steps.
+4. **Tools or Technologies**: Specific tools that will save time.
+5. **Risks to Consider**: What could go wrong and how to mitigate it.
 
 **Current Context:**
 The startup is currently in the: {{{currentStage}}}

@@ -21,6 +21,7 @@ export type MarketingStrategyGenerationInput = z.infer<
 >;
 
 const MarketingStrategyGenerationOutputSchema = z.object({
+  growthInsight: z.string().describe('A high-level growth strategy organized into: 1. Key Insight, 2. Strategy, 3. Recommended Actions, 4. Tools or Technologies, 5. Risks to Consider.'),
   productLaunch: z
     .array(z.string())
     .describe('Strategies for launching the product.'),
@@ -70,8 +71,15 @@ const marketingStrategyPrompt = ai.definePrompt({
 - Focus on validated learning to find sustainable user acquisition channels.
 
 **Tool Automation & Acceleration:**
-- Recommend tools that save time and automate marketing.
-- Suggest tools for Marketing/Analytics (e.g., Mailchimp, HubSpot, Google Analytics, Mixpanel, Buffer, Canva).
+- Recommend tools that save time and automate marketing (Mailchimp, HubSpot, etc.).
+
+**Response Structure (Mandatory for "growthInsight" field):**
+Organize your response into these exact sections:
+1. **Key Insight**: The most critical thing the founder needs to know right now regarding growth.
+2. **Strategy**: The high-level approach to user acquisition.
+3. **Recommended Actions**: Specific, actionable steps.
+4. **Tools or Technologies**: Specific marketing tools that will save time.
+5. **Risks to Consider**: What could go wrong (e.g. ad fatigue, platform risk).
 
 **Current Context:**
 The startup is currently in the: {{{currentStage}}}
