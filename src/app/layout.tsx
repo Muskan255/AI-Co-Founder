@@ -2,7 +2,7 @@ import type {Metadata} from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Co-Pilot AI | Your Startup Co-Founder',
+  title: 'AI Co-Founder | Your Startup Partner',
   description: 'AI-powered co-founder to help entrepreneurs build startups from idea to execution.',
 };
 

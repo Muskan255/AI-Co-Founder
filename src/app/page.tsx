@@ -142,7 +142,7 @@ function MainApp() {
             <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
               <Sparkles className="w-5 h-5 text-accent" />
             </div>
-            <span className="font-headline font-bold text-lg group-data-[collapsible=icon]:hidden">Co-Pilot AI</span>
+            <span className="font-headline font-bold text-lg group-data-[collapsible=icon]:hidden">AI Co-Founder</span>
           </div>
         </SidebarHeader>
         <SidebarContent>
