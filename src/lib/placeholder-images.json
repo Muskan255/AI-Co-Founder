@@ -1,3 +1,16 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "hero-startup",
+      "description": "Abstract technological representation of a startup launch.",
+      "imageUrl": "https://picsum.photos/seed/startup1/1200/600",
+      "imageHint": "startup technology"
+    },
+    {
+      "id": "validation-visual",
+      "description": "Graph showing growth and market validation.",
+      "imageUrl": "https://picsum.photos/seed/validation/600/400",
+      "imageHint": "growth data"
+    }
+  ]
 }

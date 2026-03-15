@@ -1,0 +1,100 @@
+"use client"
+
+import React, { useState } from 'react';
+import { useStartup } from './startup-context';
+import { aiIdeaValidation } from '@/ai/flows/ai-idea-validation';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { FeatureCard } from './feature-card';
+import { Lightbulb, Send, Target, AlertCircle, TrendingUp, Users, ShieldCheck, Zap } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+
+export function IdeaValidationView({ onComplete }: { onComplete: () => void }) {
+  const { state, setRawIdea, setValidation } = useStartup();
+  const [loading, setLoading] = useState(false);
+  const [idea, setIdea] = useState(state.rawIdea || '');
+  const { toast } = useToast();
+
+  const handleValidate = async () => {
+    if (!idea.trim()) return;
+    setLoading(true);
+    try {
+      const result = await aiIdeaValidation({ startupIdea: idea });
+      setRawIdea(idea);
+      setValidation(result);
+      toast({
+        title: "Validation Complete",
+        description: "Your co-founder has analyzed your idea. Check out the feedback below.",
+      });
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Validation Failed",
+        description: "Could not process your idea at this time.",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="p-8 max-w-5xl mx-auto space-y-8">
+      <section className="space-y-4">
+        <h2 className="text-3xl font-headline font-bold">Validate Your Idea</h2>
+        <p className="text-muted-foreground">
+          Pitch your idea to your AI co-founder. I'll tear it apart and help you build it back stronger.
+        </p>
+        <div className="relative group">
+          <Textarea 
+            placeholder="I want to build a platform that..."
+            className="min-h-[200px] text-lg bg-card/40 border-white/10 focus:border-accent p-6 rounded-xl resize-none shadow-inner"
+            value={idea}
+            onChange={(e) => setIdea(e.target.value)}
+          />
+          <Button 
+            disabled={loading || !idea.trim()} 
+            onClick={handleValidate}
+            className="absolute bottom-4 right-4 bg-primary hover:bg-primary/90 gap-2"
+          >
+            {loading ? <Zap className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+            Analyze Idea
+          </Button>
+        </div>
+      </section>
+
+      {state.validation && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <FeatureCard title="Analysis" description="The core concept break down" icon={<Lightbulb />}>
+            <p className="text-sm text-muted-foreground leading-relaxed">{state.validation.analysis}</p>
+          </FeatureCard>
+
+          <FeatureCard title="Target Market" description="Who are we building for?" icon={<Users />}>
+            <p className="text-sm text-muted-foreground leading-relaxed">{state.validation.targetMarket}</p>
+          </FeatureCard>
+
+          <FeatureCard title="Problem Solved" description="The pain we're addressing" icon={<Target />}>
+            <p className="text-sm text-muted-foreground leading-relaxed">{state.validation.problemSolved}</p>
+          </FeatureCard>
+
+          <FeatureCard title="Feasibility" description="Can we actually pull this off?" icon={<TrendingUp />}>
+            <p className="text-sm text-muted-foreground leading-relaxed">{state.validation.feasibilityEvaluation}</p>
+          </FeatureCard>
+
+          <FeatureCard title="Suggested Improvements" description="Co-founder recommendations" icon={<Zap className="text-amber-400" />}>
+            <p className="text-sm text-muted-foreground leading-relaxed">{state.validation.improvementsSuggested}</p>
+          </FeatureCard>
+
+          <FeatureCard title="Differentiation" description="Our unfair advantage" icon={<ShieldCheck className="text-emerald-400" />}>
+            <p className="text-sm text-muted-foreground leading-relaxed">{state.validation.uniqueDifferentiation}</p>
+          </FeatureCard>
+
+          <div className="md:col-span-2 flex justify-center pt-8">
+            <Button size="lg" onClick={onComplete} className="bg-accent text-accent-foreground font-bold px-12">
+              Next: Generate Startup Blueprint
+            </Button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
