@@ -1,6 +1,6 @@
 'use server';
 /**
- * @fileOverview An AI agent for structured startup decision making.
+ * @fileOverview An AI agent for structured startup decision making with a long-term vision.
  *
  * - aiDecisionSupport - A function that evaluates startup choices using a structured framework.
  * - DecisionSupportInput - The input type for the decision support function.
@@ -11,20 +11,20 @@ import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const DecisionSupportInputSchema = z.object({
-  query: z.string().describe('The decision situation or question the founder is facing.'),
+  query: z.string().describe('The decision situation or question.'),
   currentStage: z.string().optional().describe('The current stage of the startup.'),
 });
 export type DecisionSupportInput = z.infer<typeof DecisionSupportInputSchema>;
 
 const DecisionSupportOutputSchema = z.object({
-  recommendation: z.string().describe('The AI Co-Founder\'s final recommended course of action.'),
+  recommendation: z.string().describe('The recommended course of action.'),
   options: z.array(z.object({
     title: z.string().describe('The name of the option.'),
-    benefits: z.array(z.string()).describe('List of analyzed benefits.'),
-    risks: z.array(z.string()).describe('List of analyzed risks.'),
-    effort: z.string().describe('Estimated effort required (Low, Medium, High) with brief explanation.'),
-  })).describe('Analysis of the available options.'),
-  frameworkUsed: z.string().describe('The startup framework used to evaluate this decision (e.g., Lean Startup, Design Thinking).'),
+    benefits: z.array(z.string()).describe('Analyzed benefits.'),
+    risks: z.array(z.string()).describe('Analyzed risks.'),
+    effort: z.string().describe('Estimated effort required.'),
+  })).describe('Analysis of the options.'),
+  frameworkUsed: z.string().describe('The framework used (e.g., Lean Startup, JTBD).'),
 });
 export type DecisionSupportOutput = z.infer<typeof DecisionSupportOutputSchema>;
 
@@ -38,20 +38,18 @@ const decisionPrompt = ai.definePrompt({
   output: {schema: DecisionSupportOutputSchema},
   prompt: `You are an AI Co-Founder helping make a critical startup decision.
 
-**Decision Framework:**
-1. **Identify Options**: Brainstorm or clarify the realistic choices.
-2. **Analyze Benefits**: What do we gain?
-3. **Analyze Risks**: What could go wrong?
-4. **Estimate Effort**: How much time/resource does this take?
-5. **Recommend**: Pick the best option based on speed and learning.
+**Founder Mindset & Long-Term Vision:**
+- Weigh every option against: Scalability, Network Effects, Competitive Moats, and Global Potential.
+- Pick the best option based on speed, learning, and long-term defensibility.
 
-**Startup Frameworks Knowledge Base:**
-Apply these when relevant and explain them simply:
-- **Lean Startup**: Build-Measure-Learn, MVP focus.
-- **Design Thinking**: Empathy for the user, iterative prototyping.
-- **Product-Market Fit (PMF)**: Solving a problem for a large enough market.
-- **Growth Hacking**: Scalable, low-cost user acquisition.
-- **Jobs-to-be-Done**: Understanding the underlying "job" users hire your product for.
+**Decision Framework:**
+1. Identify Options
+2. Analyze Benefits
+3. Analyze Risks
+4. Estimate Effort
+5. Recommend
+
+**Startup Frameworks:** Use Lean Startup, Design Thinking, PMF, Jobs-to-be-Done, etc.
 
 **Context:**
 The startup is in: {{{currentStage}}}

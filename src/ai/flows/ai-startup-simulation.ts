@@ -1,6 +1,6 @@
 'use server';
 /**
- * @fileOverview An AI agent that simulates real-world startup scenarios.
+ * @fileOverview An AI agent that simulates real-world startup scenarios with a focus on testing long-term viability.
  *
  * - aiStartupSimulation - A function that handles the startup simulation process.
  * - AiStartupSimulationInput - The input type for the aiStartupSimulation function.
@@ -28,12 +28,12 @@ export type AiStartupSimulationInput = z.infer<typeof AiStartupSimulationInputSc
 const AiStartupSimulationOutputSchema = z.object({
   scenarioDescription: z.string().describe('A detailed description of the simulation setting.'),
   simulationDialog: z.array(z.object({
-    role: z.string().describe('The role speaking (e.g., "Investor", "Customer").'),
-    message: z.string().describe('The specific feedback or questions raised.'),
+    role: z.string().describe('The role speaking.'),
+    message: z.string().describe('The specific feedback or questions.'),
   })).describe('A scripted interaction or set of feedback points.'),
-  criticalFeedback: z.string().describe('The most brutal and honest feedback from the simulation.'),
-  strategicAdvice: z.string().describe('High-level strategic guidance based on the simulation outcome.'),
-  recommendedTools: z.array(z.string()).describe('Tools to help address the issues raised in the simulation.'),
+  criticalFeedback: z.string().describe('The most brutal and honest feedback.'),
+  strategicAdvice: z.string().describe('Strategic guidance based on the simulation.'),
+  recommendedTools: z.array(z.string()).describe('Tools to help address the issues raised.'),
 });
 export type AiStartupSimulationOutput = z.infer<typeof AiStartupSimulationOutputSchema>;
 
@@ -49,18 +49,16 @@ const simulationPrompt = ai.definePrompt({
   output: {schema: AiStartupSimulationOutputSchema},
   prompt: `You are an AI Co-Founder running a high-stakes startup simulation.
 
-**Founder Mindset:**
+**Founder Mindset & Long-Term Vision:**
 - Be realistic, skeptical, and challenging.
-- If it's an Investor Meeting, play the role of a Tier-1 VC who cares about ROI and defensibility.
-- If it's Customer Feedback, play the role of a frustrated or skeptical target user.
-- If it's Competitor Response, play the role of a market leader trying to crush a newcomer.
+- Press the founder on: Scalability, Network Effects, Moats (Defensibility), and Sustainable Revenue.
+- If it's an Investor Meeting, play a Tier-1 VC who demands to see Global Potential and a clear exit path.
 
 **Simulation Type: {{{simulationType}}}**
 **Current Stage: {{{currentStage}}}**
 **Startup Idea: {{{startupIdea}}}**
-**Context/Blueprint: {{{blueprint}}}**
 
-Run a simulation and provide a detailed report. Focus on the most critical risks and the "ruthless truth" about the idea's viability in this specific scenario.`,
+Run a simulation focusing on the "ruthless truth" about the idea's viability and long-term defensibility.`,
 });
 
 const aiStartupSimulationFlow = ai.defineFlow(

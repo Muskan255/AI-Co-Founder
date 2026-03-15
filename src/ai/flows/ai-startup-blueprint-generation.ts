@@ -1,6 +1,6 @@
 'use server';
 /**
- * @fileOverview An AI agent that generates a structured startup blueprint with a founder mindset and lean principles.
+ * @fileOverview An AI agent that generates a structured startup blueprint with a founder mindset, lean principles, and long-term vision.
  *
  * - aiStartupBlueprintGeneration - A function that handles the generation of a startup blueprint.
  * - AiStartupBlueprintGenerationInput - The input type for the aiStartupBlueprintGeneration function.
@@ -31,7 +31,7 @@ const AiStartupBlueprintGenerationOutputSchema = z.object({
   marketSizeEstimation: z.string().describe('An estimation of the potential market size.'),
   competitiveAdvantage: z
     .string()
-    .describe('What makes the startup stand out from competitors.'),
+    .describe('What makes the startup stand out from competitors (Moat, IP, Network Effects).'),
   recommendedTools: z.array(z.string()).describe('Business and operational tools to accelerate the venture (e.g. Stripe, Slack, Notion).'),
 });
 export type AiStartupBlueprintGenerationOutput = z.infer<
@@ -50,15 +50,16 @@ const prompt = ai.definePrompt({
   output: {schema: AiStartupBlueprintGenerationOutputSchema},
   prompt: `You are an expert AI startup co-founder specializing in business architecture and lean methodology.
 
+**Founder Mindset & Long-Term Vision:**
+- Behave like an experienced startup founder.
+- Always consider: Scalability, Network Effects, Competitive Moats, Sustainable Revenue, and Global Potential.
+- Identify risks early and prioritize reaching PMF (Product-Market Fit).
+
 **Startup Knowledge Base:**
 Apply these frameworks to the blueprint:
 - **Lean Startup**: Identify the "Riskiest Assumption" we need to test.
 - **Jobs-to-be-Done**: Define the target users based on the "Job" they are hiring for.
 - **Product-Market Fit**: Architect the business model to reach PMF as quickly as possible.
-
-**Founder Mindset & Personality:**
-- Behave like an experienced startup founder.
-- Identify risks early and prioritize reaching PMF (Product-Market Fit).
 
 **Response Structure (Mandatory for "strategicOverview" field):**
 1. **Key Insight**: The most critical thing the founder needs to know right now.

@@ -1,6 +1,6 @@
 'use server';
 /**
- * @fileOverview An AI agent that generates initial marketing strategies with a founder mindset and lean startup principles.
+ * @fileOverview An AI agent that generates marketing strategies with a founder mindset, lean principles, and long-term growth loops.
  *
  * - aiMarketingStrategyGeneration - A function that handles the marketing strategy generation process.
  * - MarketingStrategyGenerationInput - The input type for the marketing strategy generation process.
@@ -39,11 +39,11 @@ const MarketingStrategyGenerationOutputSchema = z.object({
     .describe('Strategies for content creation and distribution.'),
   viralLoops: z
     .array(z.string())
-    .describe('Strategies for creating viral growth loops.'),
+    .describe('Strategies for creating viral growth loops and network effects.'),
   communityBuilding: z
     .array(z.string())
     .describe('Strategies for building and engaging a community.'),
-  recommendedTools: z.array(z.string()).describe('Marketing and analytics tools to accelerate growth (e.g. Mailchimp, HubSpot, Mixpanel, Google Analytics).'),
+  recommendedTools: z.array(z.string()).describe('Marketing and analytics tools to accelerate growth.'),
 });
 export type MarketingStrategyGenerationOutput = z.infer<
   typeof MarketingStrategyGenerationOutputSchema
@@ -61,15 +61,13 @@ const marketingStrategyPrompt = ai.definePrompt({
   output: {schema: MarketingStrategyGenerationOutputSchema},
   prompt: `You are an AI Co-Founder focused on aggressive growth and lean marketing strategy.
 
-**Startup Knowledge Base:**
-Apply these frameworks to marketing:
-- **Growth Hacking**: Find low-cost acquisition loops.
-- **Lean Startup**: Test marketing channels before scaling.
-- **Jobs-to-be-Done**: Frame messaging around the job users need done.
+**Founder Mindset & Long-Term Vision:**
+- Suggest lean, low-cost marketing approaches initially.
+- Always consider: Scalability, Network Effects (Growth Loops), Competitive Moats, and Global Potential.
+- Prioritize finding scalable user acquisition channels.
 
-**Founder Mindset & Personality:**
-- Suggest lean, low-cost marketing approaches.
-- Prioritize fast execution and finding scalable user acquisition channels.
+**Startup Knowledge Base:**
+Apply these frameworks: Growth Hacking, Lean Startup, and Jobs-to-be-Done.
 
 **Response Structure (Mandatory for "growthInsight" field):**
 1. **Key Insight**: The most critical thing the founder needs to know right now regarding growth.
