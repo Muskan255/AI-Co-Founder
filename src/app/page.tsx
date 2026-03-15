@@ -43,7 +43,9 @@ import { WorkspaceView } from '@/components/startup/workspace-view';
 import { ProjectListView } from '@/components/startup/project-list-view';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAuth, useUser } from '@/firebase';
-import { signInWithPopup, GoogleAuthProvider, signOut } from 'firebase/auth';
+import { signOut } from 'firebase/auth';
+import { AuthModal } from '@/components/auth/auth-modal';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 type ViewType = 'projects' | 'dashboard' | 'validation' | 'blueprint' | 'product' | 'marketing' | 'finance' | 'tasks' | 'decisions' | 'simulation' | 'workspace';
 
@@ -192,17 +194,8 @@ function MainApp() {
   const { user } = useUser();
   const auth = useAuth();
   const [activeWorkspace, setActiveWorkspace] = useState<ViewType>(user ? 'projects' : 'dashboard');
+  const [authModalOpen, setAuthModalOpen] = useState(false);
   const { state, setRole } = useStartup();
-
-  const handleSignIn = async () => {
-    if (!auth) return;
-    try {
-      await signInWithPopup(auth, new GoogleAuthProvider());
-      setActiveWorkspace('projects');
-    } catch (error) {
-      console.error('Sign in failed', error);
-    }
-  };
 
   const handleSignOut = async () => {
     if (!auth) return;
@@ -314,12 +307,15 @@ function MainApp() {
           {user ? (
             <div className="flex items-center justify-between gap-2 group-data-[collapsible=icon]:flex-col">
               <div className="flex items-center gap-2 group-data-[collapsible=icon]:hidden overflow-hidden">
-                <div className="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center shrink-0">
-                  <span className="text-[10px] font-bold text-accent">{user.displayName?.charAt(0)}</span>
-                </div>
+                <Avatar className="w-8 h-8 border border-accent/20">
+                  <AvatarImage src={user.photoURL || undefined} />
+                  <AvatarFallback className="bg-accent/20 text-accent text-[10px] font-bold">
+                    {user.displayName?.charAt(0) || user.email?.charAt(0).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
                 <div className="flex flex-col truncate">
-                  <span className="text-xs font-bold truncate">{user.displayName}</span>
-                  <span className="text-[10px] text-muted-foreground truncate">Founder</span>
+                  <span className="text-xs font-bold truncate">{user.displayName || 'Founder'}</span>
+                  <span className="text-[10px] text-muted-foreground truncate">Venture Lead</span>
                 </div>
               </div>
               <Button variant="ghost" size="icon" onClick={handleSignOut} className="text-muted-foreground hover:text-destructive">
@@ -327,10 +323,13 @@ function MainApp() {
               </Button>
             </div>
           ) : (
-            <Button onClick={handleSignIn} className="w-full bg-accent text-accent-foreground font-bold gap-2 group-data-[collapsible=icon]:p-0">
-              <LogIn className="w-4 h-4" />
-              <span className="group-data-[collapsible=icon]:hidden">Sign In</span>
-            </Button>
+            <>
+              <Button onClick={() => setAuthModalOpen(true)} className="w-full bg-accent text-accent-foreground font-bold gap-2 group-data-[collapsible=icon]:p-0">
+                <LogIn className="w-4 h-4" />
+                <span className="group-data-[collapsible=icon]:hidden">Sign In</span>
+              </Button>
+              <AuthModal open={authModalOpen} onOpenChange={setAuthModalOpen} />
+            </>
           )}
         </SidebarFooter>
       </Sidebar>

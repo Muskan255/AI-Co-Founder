@@ -81,14 +81,36 @@
         "project_name",
         "userId"
       ]
+    },
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Information about the registered founder.",
+      "type": "object",
+      "properties": {
+        "user_id": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "profile_photo": { "type": "string" },
+        "created_at": { "type": "string", "format": "date-time" },
+        "startup_projects": { 
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "required": ["user_id", "email"]
     }
   },
   "auth": {
     "providers": [
-      "google.com"
+      "google.com",
+      "password"
     ]
   },
   "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "Founder profile document."
+    },
     "/users/{userId}/projects/{projectId}": {
       "schema": "StartupProject",
       "description": "The collection of projects owned by a user."
