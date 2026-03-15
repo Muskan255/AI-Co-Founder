@@ -39,7 +39,8 @@ import {
   Target,
   TrendingUp,
   BarChart3,
-  HeartPulse
+  HeartPulse,
+  Database
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -57,6 +58,7 @@ import { WorkspaceView } from '@/components/startup/workspace-view';
 import { ProjectListView } from '@/components/startup/project-list-view';
 import { PersonaWorkspaceView } from '@/components/startup/persona-workspace-view';
 import { StartupBrainView } from '@/components/startup/startup-brain-view';
+import { ProjectAssetsView } from '@/components/startup/project-assets-view';
 import { HelpCenter } from '@/components/startup/help-center';
 import { NotificationCenter } from '@/components/startup/notification-center';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -69,7 +71,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { cn } from '@/lib/utils';
 import { AIFounderLogo } from '@/components/ui/logo';
 
-type ViewType = 'projects' | 'dashboard' | 'validation' | 'blueprint' | 'product' | 'marketing' | 'finance' | 'tasks' | 'decisions' | 'simulation' | 'workspace' | 'persona-workspace' | 'brain' | 'health';
+type ViewType = 'projects' | 'dashboard' | 'validation' | 'blueprint' | 'product' | 'marketing' | 'finance' | 'tasks' | 'decisions' | 'simulation' | 'workspace' | 'persona-workspace' | 'brain' | 'health' | 'assets';
 
 function HealthScoreCard() {
   const { state } = useStartup();
@@ -260,14 +262,12 @@ function DashboardContent({ setView }: { setView: (v: ViewType) => void }) {
   const [authOpen, setAuthOpen] = useState(false);
   
   const progressItems = [
-    { id: 'workspace', label: 'Turbo Workspace', icon: <Zap className="text-accent" />, completed: !!state.workspace, description: 'Generate roadmap, pitch deck & specs in one go.' },
-    { id: 'brain', label: 'Startup Brain', icon: <Brain className="text-accent" />, completed: Object.keys(state.brain || {}).length > 3, description: 'Manage the shared intelligence of your venture.' },
-    { id: 'validation', label: 'Idea Validation', icon: <Lightbulb />, completed: !!state.validation, description: 'Challenge and stress-test your core concept.' },
-    { id: 'blueprint', label: 'Strategy Blueprint', icon: <Map />, completed: !!state.blueprint, description: 'Build your business model and revenue engine.' },
-    { id: 'finance', label: 'Financial Plan', icon: <DollarSign className="text-emerald-400" />, completed: !!state.financialStrategy, description: 'Unit economics, burn rate & funding plans.' },
-    { id: 'product', label: 'Product Development', icon: <Code2 />, completed: !!state.productGuidance, description: 'MVP specs and architecture recommendations.' },
-    { id: 'marketing', label: 'Growth Plan', icon: <Rocket />, completed: !!state.marketing, description: 'Growth loops and acquisition strategy.' },
-    { id: 'tasks', label: 'Accountability', icon: <CheckSquare />, completed: !!state.tasks, description: 'Roadmaps, milestones, and daily execution.' },
+    { id: 'validation', label: '1. Idea Validation', icon: <Lightbulb />, completed: !!state.validation, description: 'Step 1: Challenge and stress-test your core concept.' },
+    { id: 'blueprint', label: '2. Strategy Blueprint', icon: <Map />, completed: !!state.blueprint, description: 'Step 2: Build your business model and revenue engine.' },
+    { id: 'product', label: '3. Product Development', icon: <Code2 />, completed: !!state.productGuidance, description: 'Step 3: MVP specs and architecture recommendations.' },
+    { id: 'marketing', label: '4. Growth Plan', icon: <Rocket />, completed: !!state.marketing, description: 'Step 4: Growth loops and acquisition strategy.' },
+    { id: 'finance', label: '5. Financial Strategy', icon: <DollarSign className="text-emerald-400" />, completed: !!state.financialStrategy, description: 'Step 5: Unit economics, burn rate & funding plans.' },
+    { id: 'tasks', label: '6. Accountability', icon: <CheckSquare />, completed: !!state.tasks, description: 'Step 6: Roadmaps, milestones, and daily execution.' },
   ];
 
   const stages: StartupStage[] = [
@@ -497,16 +497,17 @@ function MainApp() {
 
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-4 h-4" /> },
-    { id: 'projects', label: 'My Ventures', icon: <Library className="w-4 h-4" /> },
+    { id: 'projects', label: 'Venture Archive', icon: <Library className="w-4 h-4" /> },
     { id: 'health', label: 'Venture Health', icon: <ShieldCheck className="w-4 h-4 text-emerald-400" /> },
+    { id: 'assets', label: 'Venture Library', icon: <Database className="w-4 h-4 text-accent" /> },
     { id: 'brain', label: 'Startup Brain', icon: <Brain className="w-4 h-4 text-accent" /> },
-    { id: 'workspace', label: 'Turbo Workspace', icon: <Zap className="w-4 h-4 text-accent" /> },
-    { id: 'validation', label: 'Idea Validation', icon: <Lightbulb className="w-4 h-4" /> },
-    { id: 'blueprint', label: 'Strategy Blueprint', icon: <Map className="w-4 h-4" /> },
-    { id: 'finance', label: 'Financial Plan', icon: <DollarSign className="w-4 h-4 text-emerald-400" /> },
-    { id: 'product', label: 'Product Dev', icon: <Code2 className="w-4 h-4" /> },
-    { id: 'marketing', label: 'Growth Plan', icon: <Rocket className="w-4 h-4" /> },
-    { id: 'tasks', label: 'Accountability', icon: <CheckSquare className="w-4 h-4" /> },
+    { id: 'workspace', label: 'Turbo Engine', icon: <Zap className="w-4 h-4 text-accent" /> },
+    { id: 'validation', label: '1. Idea Validation', icon: <Lightbulb className="w-4 h-4" /> },
+    { id: 'blueprint', label: '2. Strategy Blueprint', icon: <Map className="w-4 h-4" /> },
+    { id: 'product', label: '3. Product Dev', icon: <Code2 className="w-4 h-4" /> },
+    { id: 'marketing', label: '4. Growth Plan', icon: <Rocket className="w-4 h-4" /> },
+    { id: 'finance', label: '5. Financial Plan', icon: <DollarSign className="w-4 h-4 text-emerald-400" /> },
+    { id: 'tasks', label: '6. Accountability', icon: <CheckSquare className="w-4 h-4" /> },
     { id: 'simulation', label: 'Simulations', icon: <PlayCircle className="w-4 h-4" /> },
     { id: 'decisions', label: 'Decision Hub', icon: <HelpCircle className="w-4 h-4" /> },
     { id: 'persona-workspace', label: 'Executive Studio', icon: <Terminal className="w-4 h-4 text-accent" /> },
@@ -570,12 +571,13 @@ function MainApp() {
       case 'projects': return <ProjectListView onSelect={() => setActiveWorkspace('dashboard')} onAuthPrompt={() => setAuthModalOpen(true)} />;
       case 'dashboard': return <DashboardContent setView={setActiveWorkspace} />;
       case 'health': return <HealthScoreView />;
+      case 'assets': return <ProjectAssetsView />;
       case 'brain': return <StartupBrainView />;
       case 'validation': return <IdeaValidationView onComplete={() => setActiveWorkspace('blueprint')} />;
-      case 'blueprint': return <BlueprintView onComplete={() => setActiveWorkspace('finance')} />;
-      case 'finance': return <FinancialView onComplete={() => setActiveWorkspace('product')} />;
+      case 'blueprint': return <BlueprintView onComplete={() => setActiveWorkspace('product')} />;
       case 'product': return <ProductGuideView onComplete={() => setActiveWorkspace('marketing')} />;
-      case 'marketing': return <MarketingView onComplete={() => setActiveWorkspace('tasks')} />;
+      case 'marketing': return <MarketingView onComplete={() => setActiveWorkspace('finance')} />;
+      case 'finance': return <FinancialView onComplete={() => setActiveWorkspace('tasks')} />;
       case 'tasks': return <TaskManagerView />;
       case 'decisions': return <DecisionSupportView />;
       case 'simulation': return <SimulationView />;

@@ -1,6 +1,7 @@
+
 "use client"
 
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { IdeaValidationOutput } from '@/ai/flows/ai-idea-validation';
 import { AiStartupBlueprintGenerationOutput } from '@/ai/flows/ai-startup-blueprint-generation';
 import { AiProductDevelopmentGuidanceOutput } from '@/ai/flows/ai-product-development-guidance';
@@ -119,24 +120,26 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
   const [isHydrated, setIsHydrated] = useState(false);
   const { user } = useUser();
   const firestore = useFirestore();
+  const syncTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const isGuestMode = !user;
 
-  // Hydration logic: Load from localStorage but clear for guests on refresh if required
+  // Hydration logic
   useEffect(() => {
     const saved = localStorage.getItem('ai-founder-startup-state');
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
         if (parsed.isGuest && !user) {
-          localStorage.removeItem('ai-founder-startup-state');
+          // Keep guest data locally for the session
+          setState({
+            ...DEFAULT_STATE,
+            ...parsed,
+          });
         } else {
           setState({
             ...DEFAULT_STATE,
             ...parsed,
-            brain: parsed.brain || {},
-            notifications: parsed.notifications || [],
-            healthScore: parsed.healthScore || null
           });
         }
       } catch (error) {
@@ -148,20 +151,27 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
 
   // Persistence logic: Sync to localStorage and Firestore
   useEffect(() => {
-    if (isHydrated) {
-      localStorage.setItem('ai-founder-startup-state', JSON.stringify({
-        ...state,
-        isGuest: isGuestMode
-      }));
-      
-      if (user && firestore) {
-        if (!state.projectId && state.rawIdea) {
-          setProjectId(crypto.randomUUID());
-          return;
-        }
+    if (!isHydrated) return;
 
-        if (state.projectId) {
-          const projectRef = doc(firestore, 'users', user.uid, 'projects', state.projectId);
+    localStorage.setItem('ai-founder-startup-state', JSON.stringify({
+      ...state,
+      isGuest: isGuestMode
+    }));
+    
+    if (user && firestore) {
+      // If we have an idea but no project ID, generate one
+      if (!state.projectId && state.rawIdea) {
+        const newId = crypto.randomUUID();
+        setState(prev => ({ ...prev, projectId: newId }));
+        return;
+      }
+
+      // Debounced sync to Firestore
+      if (state.projectId) {
+        if (syncTimeoutRef.current) clearTimeout(syncTimeoutRef.current);
+        
+        syncTimeoutRef.current = setTimeout(() => {
+          const projectRef = doc(firestore, 'users', user.uid, 'projects', state.projectId!);
           
           const projectRecord = {
             project_id: state.projectId,
@@ -171,15 +181,19 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
             startup_stage: state.stage,
             last_updated: serverTimestamp(),
             startup_brain: state.brain || {},
-            fullState: state
+            fullState: JSON.parse(JSON.stringify(state)) // Deep copy to strip circular refs if any
           };
 
           setDoc(projectRef, projectRecord, { merge: true }).catch(err => {
             console.error("Firestore sync error:", err);
           });
-        }
+        }, 2000); // 2 second debounce
       }
     }
+
+    return () => {
+      if (syncTimeoutRef.current) clearTimeout(syncTimeoutRef.current);
+    };
   }, [state, isHydrated, user, firestore, isGuestMode]);
 
   const refreshHealthScore = useCallback(async () => {
@@ -225,11 +239,14 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
 
   // Auto-refresh when brain or stage changes
   useEffect(() => {
-    if (state.rawIdea) {
-      refreshSuggestions();
-      refreshHealthScore();
+    if (state.rawIdea && isHydrated) {
+      const timer = setTimeout(() => {
+        refreshSuggestions();
+        refreshHealthScore();
+      }, 3000);
+      return () => clearTimeout(timer);
     }
-  }, [state.brain, state.stage, state.rawIdea, refreshSuggestions, refreshHealthScore]);
+  }, [state.brain, state.stage, state.rawIdea, isHydrated, refreshSuggestions, refreshHealthScore]);
 
   const markNotificationAsRead = (id: string) => {
     setState(prev => ({
@@ -386,9 +403,7 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
     if (projectData.fullState) {
       setState({
         ...projectData.fullState,
-        brain: projectData.fullState.brain || {},
-        notifications: projectData.fullState.notifications || [],
-        healthScore: projectData.fullState.healthScore || null
+        projectId: projectData.project_id || projectData.fullState.projectId,
       });
     } else {
       setState({
