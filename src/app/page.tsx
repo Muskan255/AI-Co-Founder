@@ -28,7 +28,8 @@ import {
   LogOut,
   Library,
   DollarSign,
-  ShieldAlert
+  ShieldAlert,
+  Terminal
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -43,13 +44,14 @@ import { DecisionSupportView } from '@/components/startup/decision-support-view'
 import { SimulationView } from '@/components/startup/simulation-view';
 import { WorkspaceView } from '@/components/startup/workspace-view';
 import { ProjectListView } from '@/components/startup/project-list-view';
+import { PersonaWorkspaceView } from '@/components/startup/persona-workspace-view';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAuth, useUser } from '@/firebase';
 import { signOut } from 'firebase/auth';
 import { AuthModal } from '@/components/auth/auth-modal';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
-type ViewType = 'projects' | 'dashboard' | 'validation' | 'blueprint' | 'product' | 'marketing' | 'finance' | 'tasks' | 'decisions' | 'simulation' | 'workspace';
+type ViewType = 'projects' | 'dashboard' | 'validation' | 'blueprint' | 'product' | 'marketing' | 'finance' | 'tasks' | 'decisions' | 'simulation' | 'workspace' | 'persona-workspace';
 
 function DashboardContent({ setView }: { setView: (v: ViewType) => void }) {
   const { state, reset, setStage, isGuestMode } = useStartup();
@@ -232,6 +234,7 @@ function MainApp() {
     { id: 'tasks', label: 'Accountability', icon: <CheckSquare className="w-4 h-4" /> },
     { id: 'simulation', label: 'Simulations', icon: <PlayCircle className="w-4 h-4" /> },
     { id: 'decisions', label: 'Decision Hub', icon: <HelpCircle className="w-4 h-4" /> },
+    { id: 'persona-workspace', label: 'Executive Studio', icon: <Terminal className="w-4 h-4 text-accent" /> },
   ];
 
   const activeNavItem = useMemo(() => 
@@ -300,6 +303,7 @@ function MainApp() {
       case 'decisions': return <DecisionSupportView />;
       case 'simulation': return <SimulationView />;
       case 'workspace': return <WorkspaceView />;
+      case 'persona-workspace': return <PersonaWorkspaceView />;
       default: return <DashboardContent setView={setActiveWorkspace} />;
     }
   };
@@ -360,7 +364,10 @@ function MainApp() {
                   <SidebarMenuItem key={role.id}>
                     <SidebarMenuButton 
                       isActive={state.role === role.id}
-                      onClick={() => setRole(role.id)}
+                      onClick={() => {
+                        setRole(role.id);
+                        setActiveWorkspace('persona-workspace');
+                      }}
                       tooltip={role.id}
                       className={state.role === role.id ? "bg-accent/10 text-accent" : "hover:bg-white/5"}
                     >
