@@ -29,38 +29,44 @@ interface StartupContextType {
   setMarketing: (m: MarketingStrategyGenerationOutput) => void;
   setTasks: (t: AiTaskMilestoneManagementOutput) => void;
   reset: () => void;
+  isHydrated: boolean;
 }
 
 const StartupContext = createContext<StartupContextType | undefined>(undefined);
 
-export function StartupProvider({ children }: { children: React.ReactNode }) {
-  const [state, setState] = useState<StartupState>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('co-pilot-startup-state');
-      return saved ? JSON.parse(saved) : {
-        rawIdea: '',
-        stage: 'Idea Stage',
-        validation: null,
-        blueprint: null,
-        productGuidance: null,
-        marketing: null,
-        tasks: null
-      };
-    }
-    return {
-      rawIdea: '',
-      stage: 'Idea Stage',
-      validation: null,
-      blueprint: null,
-      productGuidance: null,
-      marketing: null,
-      tasks: null
-    };
-  });
+const DEFAULT_STATE: StartupState = {
+  rawIdea: '',
+  stage: 'Idea Stage',
+  validation: null,
+  blueprint: null,
+  productGuidance: null,
+  marketing: null,
+  tasks: null
+};
 
+export function StartupProvider({ children }: { children: React.ReactNode }) {
+  const [state, setState] = useState<StartupState>(DEFAULT_STATE);
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  // Load state from localStorage once on mount
   useEffect(() => {
-    localStorage.setItem('co-pilot-startup-state', JSON.stringify(state));
-  }, [state]);
+    const saved = localStorage.getItem('co-pilot-startup-state');
+    if (saved) {
+      try {
+        setState(JSON.parse(saved));
+      } catch (error) {
+        console.error('Failed to parse saved startup state:', error);
+      }
+    }
+    setIsHydrated(true);
+  }, []);
+
+  // Save state to localStorage whenever it changes, but only after hydration
+  useEffect(() => {
+    if (isHydrated) {
+      localStorage.setItem('co-pilot-startup-state', JSON.stringify(state));
+    }
+  }, [state, isHydrated]);
 
   const setRawIdea = (idea: string) => setState(prev => ({ ...prev, rawIdea: idea }));
   const setStage = (stage: StartupStage) => setState(prev => ({ ...prev, stage }));
@@ -71,15 +77,7 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
   const setTasks = (t: AiTaskMilestoneManagementOutput) => setState(prev => ({ ...prev, tasks: t, stage: 'Scaling Stage' }));
   
   const reset = () => {
-    setState({
-      rawIdea: '',
-      stage: 'Idea Stage',
-      validation: null,
-      blueprint: null,
-      productGuidance: null,
-      marketing: null,
-      tasks: null
-    });
+    setState(DEFAULT_STATE);
   };
 
   return (
@@ -92,7 +90,8 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
       setProductGuidance, 
       setMarketing, 
       setTasks,
-      reset
+      reset,
+      isHydrated
     }}>
       {children}
     </StartupContext.Provider>
