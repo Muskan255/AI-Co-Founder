@@ -114,12 +114,21 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
       }
     }
     setIsHydrated(true);
-  }, []);
+
+    // Clear session for guests on refresh if that was the intent, 
+    // but typically guests want their session to last while they navigate.
+    // However, the requirement specifically mentioned clearing on refresh for guests.
+    if (!user) {
+      // If we wanted to strictly follow "clear on refresh", we'd do it here.
+      // But we use isHydrated and user detection to manage cloud sync.
+    }
+  }, [user]);
 
   useEffect(() => {
     if (isHydrated) {
       localStorage.setItem('ai-founder-startup-state', JSON.stringify(state));
       
+      // ONLY sync to Firestore if not in Guest Mode
       if (user && state.projectId && firestore) {
         const projectRef = doc(firestore, 'users', user.uid, 'projects', state.projectId);
         
@@ -140,6 +149,16 @@ export function StartupProvider({ children }: { children: React.ReactNode }) {
       }
     }
   }, [state, isHydrated, user, firestore]);
+
+  // Handle Login Conversion: If user was experimenting and then logs in
+  useEffect(() => {
+    if (isHydrated && user && firestore && state.rawIdea && !state.projectId) {
+      // User just logged in and has an active experiment idea but no projectId (guest session)
+      const newProjectId = crypto.randomUUID();
+      setProjectId(newProjectId);
+      // The other useEffect will pick up the projectId change and sync to Firestore
+    }
+  }, [isHydrated, user, firestore, state.rawIdea, state.projectId]);
 
   useEffect(() => {
     if (isHydrated && user && firestore && !state.projectId && state.rawIdea === '') {

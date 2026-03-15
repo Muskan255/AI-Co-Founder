@@ -88,7 +88,7 @@ function DashboardContent({ setView }: { setView: (v: ViewType) => void }) {
         <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 flex items-center justify-between animate-in fade-in slide-in-from-top-2">
           <div className="flex items-center gap-3">
             <ShieldAlert className="w-5 h-5 text-amber-500" />
-            <span className="text-sm font-medium text-amber-200">Guest Mode: Login to save and continue your startup projects.</span>
+            <span className="text-sm font-medium text-amber-200">Experiment Mode: Sign in to save your venture and continue building.</span>
           </div>
           <Button variant="ghost" size="sm" onClick={() => setAuthOpen(true)} className="text-amber-500 hover:text-amber-400 hover:bg-amber-500/10">
             Sign In Now
@@ -98,8 +98,8 @@ function DashboardContent({ setView }: { setView: (v: ViewType) => void }) {
       )}
 
       <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-        <div className="space-y-4 flex-1">
-          <div className="flex items-center gap-3">
+        <div className="space-y-4 flex-1 text-center md:text-left">
+          <div className="flex items-center justify-center md:justify-start gap-3">
             <Badge variant="outline" className="bg-primary/5 text-accent border-accent/20 px-3 py-1 flex gap-2 items-center">
               <Activity className="w-3 h-3" /> {state.stage}
             </Badge>
@@ -121,12 +121,12 @@ function DashboardContent({ setView }: { setView: (v: ViewType) => void }) {
             {state.projectName === 'New Venture' ? 'Welcome back, Founder.' : state.projectName}
           </h1>
           <p className="text-sm font-medium text-muted-foreground/60 tracking-wider">An AI Partner for Entrepreneurs</p>
-          <p className="text-xl text-muted-foreground max-w-2xl">
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto md:mx-0">
             {state.rawIdea || "Execution is the only differentiator. Let's build something world-changing."}
           </p>
         </div>
         
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 items-center md:items-end">
           <div className="flex items-center gap-2">
             <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Startup Stage</label>
             <Tooltip>

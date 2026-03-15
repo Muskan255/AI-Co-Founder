@@ -1,3 +1,4 @@
+
 "use client"
 
 import React, { useMemo } from 'react';
@@ -56,7 +57,7 @@ export function ProjectListView({ onSelect, onAuthPrompt }: ProjectListViewProps
         <div className="space-y-4">
           <h2 className="text-4xl font-headline font-bold">Cloud Storage Disabled</h2>
           <p className="text-xl text-muted-foreground max-w-md mx-auto">
-            You are currently in Guest Mode. Login to save your ventures and access them from any device.
+            You are currently in Experiment Mode. Login to save your ventures and access them from any device.
           </p>
         </div>
         <div className="flex gap-4">

@@ -1,3 +1,4 @@
+
 "use client"
 
 import React, { useState, useMemo } from 'react';
@@ -14,7 +15,7 @@ import {
   Boxes, Milestone, PieChart, Coins, ShieldCheck,
   Zap, ArrowRight, Code2, Copy, Rocket,
   Save, Download, Github, FileSpreadsheet, FileType, Search, Heart, Infinity, Brain,
-  Info, HelpCircle
+  Info, HelpCircle, ShieldAlert
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -22,6 +23,7 @@ import { useFirestore, useUser } from '@/firebase';
 import { doc, setDoc } from 'firebase/firestore';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { AuthModal } from '@/components/auth/auth-modal';
 
 interface Tool {
   id: string;
@@ -31,7 +33,7 @@ interface Tool {
 }
 
 export function PersonaWorkspaceView() {
-  const { state, updateBrain } = useStartup();
+  const { state, updateBrain, isGuestMode } = useStartup();
   const { user } = useUser();
   const firestore = useFirestore();
   const [activeTool, setActiveTool] = useState<string | null>(null);
@@ -42,6 +44,7 @@ export function PersonaWorkspaceView() {
 
   const [githubOpen, setGithubOpen] = useState(false);
   const [githubStep, setGithubStep] = useState<'connect' | 'repo' | 'pushing'>('connect');
+  const [authOpen, setAuthOpen] = useState(false);
 
   const roleTools = useMemo((): Tool[] => {
     switch (state.role) {
@@ -126,8 +129,13 @@ export function PersonaWorkspaceView() {
   };
 
   const handleSaveToProject = async () => {
+    if (isGuestMode) {
+      setAuthOpen(true);
+      return;
+    }
+
     if (!result || !user || !firestore || !state.projectId) {
-      toast({ variant: "destructive", title: "Cannot Save", description: "You must be logged in and have an active project." });
+      toast({ variant: "destructive", title: "Cannot Save", description: "Project context missing." });
       return;
     }
 
@@ -152,6 +160,11 @@ export function PersonaWorkspaceView() {
   };
 
   const handleExport = (type: 'text' | 'doc' | 'sheet' | 'pdf' = 'text') => {
+    if (isGuestMode) {
+      setAuthOpen(true);
+      return;
+    }
+
     if (!result) return;
     const blob = new Blob([result.content], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
@@ -176,6 +189,10 @@ export function PersonaWorkspaceView() {
   };
 
   const handlePushToGithub = () => {
+    if (isGuestMode) {
+      setAuthOpen(true);
+      return;
+    }
     setGithubOpen(true);
     setGithubStep('connect');
   };
@@ -212,6 +229,20 @@ export function PersonaWorkspaceView() {
 
   return (
     <div className="p-8 max-w-6xl mx-auto space-y-10">
+      <AuthModal open={authOpen} onOpenChange={setAuthOpen} />
+      
+      {isGuestMode && (
+        <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 flex items-center justify-between animate-in fade-in slide-in-from-top-2">
+          <div className="flex items-center gap-3">
+            <ShieldAlert className="w-5 h-5 text-amber-500" />
+            <span className="text-sm font-medium text-amber-200">Experiment Mode: Sign in to save your executive outputs and code.</span>
+          </div>
+          <Button variant="ghost" size="sm" onClick={() => setAuthOpen(true)} className="text-amber-500 hover:text-amber-400 hover:bg-amber-500/10">
+            Sign In Now
+          </Button>
+        </div>
+      )}
+
       <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
         <div className="space-y-4">
           <div className="flex items-center gap-3">
