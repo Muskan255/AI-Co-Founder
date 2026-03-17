@@ -1,7 +1,7 @@
 
 "use client"
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { StartupProvider, useStartup, StartupStage, StartupRole } from '@/components/startup/startup-context';
 import { Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarProvider, SidebarInset, SidebarTrigger, SidebarGroup, SidebarGroupLabel, SidebarGroupContent, SidebarFooter } from '@/components/ui/sidebar';
 import { 
@@ -70,8 +70,9 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { AIFounderLogo } from '@/components/ui/logo';
+import { LandingPage } from '@/components/landing/landing-page';
 
-type ViewType = 'projects' | 'dashboard' | 'validation' | 'blueprint' | 'product' | 'marketing' | 'finance' | 'tasks' | 'decisions' | 'simulation' | 'workspace' | 'persona-workspace' | 'brain' | 'health' | 'assets';
+type ViewType = 'landing' | 'projects' | 'dashboard' | 'validation' | 'blueprint' | 'product' | 'marketing' | 'finance' | 'tasks' | 'decisions' | 'simulation' | 'workspace' | 'persona-workspace' | 'brain' | 'health' | 'assets';
 
 function HealthScoreCard() {
   const { state } = useStartup();
@@ -485,14 +486,27 @@ function DashboardContent({ setView }: { setView: (v: ViewType) => void }) {
 function MainApp() {
   const { user } = useUser();
   const auth = useAuth();
-  const [activeWorkspace, setActiveWorkspace] = useState<ViewType>(user ? 'projects' : 'dashboard');
-  const [authModalOpen, setAuthModalOpen] = useState(false);
   const { state, setRole, isHydrated } = useStartup();
+  
+  // Intelligence for landing vs dashboard routing
+  const [activeWorkspace, setActiveWorkspace] = useState<ViewType>('landing');
+
+  useEffect(() => {
+    if (isHydrated) {
+      if (state.rawIdea || user) {
+        setActiveWorkspace(user && !state.rawIdea ? 'projects' : 'dashboard');
+      } else {
+        setActiveWorkspace('landing');
+      }
+    }
+  }, [isHydrated, state.rawIdea, user]);
+
+  const [authModalOpen, setAuthModalOpen] = useState(false);
 
   const handleSignOut = async () => {
     if (!auth) return;
     await signOut(auth);
-    setActiveWorkspace('dashboard');
+    setActiveWorkspace('landing');
   };
 
   const navItems = [
@@ -566,6 +580,11 @@ function MainApp() {
     );
   }
 
+  // Handle Landing Page as an overlay or distinct state
+  if (activeWorkspace === 'landing') {
+    return <LandingPage onStart={() => setActiveWorkspace('dashboard')} />;
+  }
+
   const renderView = () => {
     switch(activeWorkspace) {
       case 'projects': return <ProjectListView onSelect={() => setActiveWorkspace('dashboard')} onAuthPrompt={() => setAuthModalOpen(true)} />;
@@ -598,7 +617,7 @@ function MainApp() {
   return (
     <SidebarProvider>
       <Sidebar collapsible="icon" className="border-r border-white/5 bg-[#16181C]">
-        <SidebarHeader className="p-4">
+        <SidebarHeader className="p-4 cursor-pointer" onClick={() => setActiveWorkspace('landing')}>
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-lg shadow-accent/20">
               <AIFounderLogo className="w-5 h-5 text-white" />
