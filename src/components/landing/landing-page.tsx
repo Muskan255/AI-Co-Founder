@@ -1,6 +1,8 @@
+
 "use client"
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { AIFounderLogo } from '@/components/ui/logo';
 import { 
@@ -14,11 +16,13 @@ import {
   Sparkles, 
   Zap,
   ChevronRight,
-  ShieldAlert
+  ShieldAlert,
+  Network
 } from 'lucide-react';
 import { AuthModal } from '@/components/auth/auth-modal';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 interface LandingPageProps {
   onStart: () => void;
@@ -26,6 +30,8 @@ interface LandingPageProps {
 
 export function LandingPage({ onStart }: LandingPageProps) {
   const [authOpen, setAuthOpen] = useState(false);
+
+  const networkImage = PlaceHolderImages.find(img => img.id === 'agent-network');
 
   const features = [
     {
@@ -136,6 +142,35 @@ export function LandingPage({ onStart }: LandingPageProps) {
 
           <div className="pt-12 text-xs font-bold uppercase tracking-[0.3em] text-muted-foreground animate-pulse">
             Built for founders, students, and innovators
+          </div>
+        </div>
+      </section>
+
+      {/* Synergy Illustration Section */}
+      <section className="relative py-24 px-6 overflow-hidden">
+        <div className="max-w-6xl mx-auto">
+          <div className="glass-card rounded-[3rem] p-1 border-accent/20 bg-accent/5 overflow-hidden">
+            <div className="relative aspect-[16/9] md:aspect-[21/9] w-full rounded-[2.9rem] overflow-hidden">
+              {networkImage && (
+                <Image 
+                  src={networkImage.imageUrl} 
+                  alt={networkImage.description} 
+                  fill 
+                  className="object-cover opacity-60 mix-blend-screen"
+                  data-ai-hint={networkImage.imageHint}
+                />
+              )}
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0A0C10] via-transparent to-transparent" />
+              <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center space-y-4">
+                <div className="p-3 rounded-2xl bg-accent/20 backdrop-blur-xl border border-accent/30 text-accent">
+                  <Network className="w-8 h-8" />
+                </div>
+                <h2 className="text-3xl md:text-5xl font-headline font-bold text-white">The Executive Network</h2>
+                <p className="text-lg text-muted-foreground max-w-2xl">
+                  A multi-agent intelligence layer where specialized co-founders collaborate in real-time to solve your most complex startup challenges.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </section>

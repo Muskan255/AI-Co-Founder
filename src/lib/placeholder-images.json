@@ -11,6 +11,12 @@
       "description": "Graph showing growth and market validation.",
       "imageUrl": "https://picsum.photos/seed/validation/600/400",
       "imageHint": "growth data"
+    },
+    {
+      "id": "agent-network",
+      "description": "A visualization of multiple AI executive agents collaborating in a network.",
+      "imageUrl": "https://picsum.photos/seed/agents/1000/600",
+      "imageHint": "AI agents network"
     }
   ]
 }
