@@ -1,0 +1,30 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper to check if the user is the owner of the document path
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    // User profiles
+    match /users/{userId} {
+      allow read, write: if isOwner(userId);
+
+      // Projects sub-collection
+      match /projects/{projectId} {
+        allow read, write: if isOwner(userId);
+
+        // Assets sub-collection (code, plans, etc.)
+        match /assets/{assetId} {
+          allow read, write: if isOwner(userId);
+        }
+      }
+    }
+
+    // Feedback collection for Help Center
+    match /feedback/{feedbackId} {
+      allow create: if true; // Allow anyone to submit feedback
+      allow read: if false; // Deny all reads (admin only via console)
+    }
+  }
+}

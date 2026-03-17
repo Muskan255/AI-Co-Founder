@@ -10,15 +10,16 @@ export function FirebaseErrorListener() {
 
   useEffect(() => {
     const handlePermissionError = (error: any) => {
-      // In development, this will trigger the Next.js error overlay if unhandled.
-      // We throw it to ensure it's surfaced correctly for debugging.
-      console.error(error.message);
-      
+      // Surface the error to the Next.js development overlay for rapid debugging.
+      // This provides full context about the denied path, method, and auth state.
       toast({
         variant: "destructive",
         title: "Security Rule Denied",
-        description: "Check the console for contextual details about this Firestore request.",
+        description: "Firestore denied this request. Check the error overlay for details.",
       });
+
+      // Throwing ensures the developer sees the specialized FirestorePermissionError context.
+      throw error;
     };
 
     errorEmitter.on('permission-error', handlePermissionError);
