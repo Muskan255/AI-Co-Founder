@@ -1,4 +1,3 @@
-
 "use client"
 
 import React, { useState, useEffect } from 'react';
@@ -611,7 +610,7 @@ export function LandingPage({ onStart }: LandingPageProps) {
           ))}
         </div>
         <div className="max-w-7xl mx-auto pt-20 flex flex-col md:flex-row justify-between items-center gap-6 border-t border-white/5 mt-20">
-          <p className="text-xs text-muted-foreground/50 italic">© 2024 AI Founder Venture Studio. Built for founders, innovators, and creators.</p>
+          <p className="text-xs text-muted-foreground/50 italic">© 2026 AI Founder Venture Studio. Built for founders, innovators, and creators.</p>
           <div className="flex gap-6">
             {["Twitter", "LinkedIn", "GitHub"].map((s, i) => (
               <a key={i} href="#" className="text-xs font-bold text-muted-foreground/50 hover:text-accent transition-colors uppercase tracking-widest">{s}</a>
