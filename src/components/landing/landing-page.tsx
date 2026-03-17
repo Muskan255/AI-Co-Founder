@@ -33,7 +33,8 @@ import {
   Box,
   FastForward,
   Lock,
-  ArrowLeft
+  ArrowLeft,
+  Lightbulb
 } from 'lucide-react';
 import { AuthModal } from '@/components/auth/auth-modal';
 import { Badge } from '@/components/ui/badge';
