@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState } from 'react';
@@ -26,13 +27,13 @@ export function BlueprintView({ onComplete }: { onComplete: () => void }) {
       setBlueprint(result);
       toast({
         title: "Blueprint Ready",
-        description: `Strategic roadmap by ${state.role} complete.`,
+        description: `Strategy by ${state.role} complete.`,
       });
     } catch (error) {
       toast({
         variant: "destructive",
         title: "Generation Failed",
-        description: "Could not create blueprint at this time.",
+        description: "Could not create blueprint.",
       });
     } finally {
       setLoading(false);
@@ -41,26 +42,26 @@ export function BlueprintView({ onComplete }: { onComplete: () => void }) {
 
   if (!state.validation) {
     return (
-      <div className="p-12 text-center space-y-4">
-        <AlertCircle className="w-12 h-12 text-destructive mx-auto" />
-        <h3 className="text-2xl font-headline">Idea Validation Required</h3>
-        <p className="text-muted-foreground">You must validate your idea before we can generate a blueprint.</p>
+      <div className="p-8 sm:p-12 text-center space-y-4">
+        <AlertCircle className="w-10 h-10 sm:w-12 sm:h-12 text-destructive mx-auto" />
+        <h3 className="text-xl sm:text-2xl font-headline">Validation Required</h3>
+        <p className="text-xs sm:text-sm text-muted-foreground">You must validate your idea before we can generate a blueprint.</p>
       </div>
     );
   }
 
   return (
-    <div className="p-8 max-w-6xl mx-auto space-y-8">
-      <div className="flex justify-between items-center">
-        <div className="space-y-2">
+    <div className="p-4 sm:p-8 max-w-6xl mx-auto space-y-6 sm:space-y-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <h2 className="text-3xl font-headline font-bold">Startup Blueprint</h2>
-            <Badge variant="secondary" className="bg-primary/10 text-accent border-primary/20">{state.role}</Badge>
+            <h2 className="text-2xl sm:text-3xl font-headline font-bold">Startup Blueprint</h2>
+            <Badge variant="secondary" className="bg-primary/10 text-accent border-primary/20 text-[9px] sm:text-[10px]">{state.role}</Badge>
           </div>
-          <p className="text-muted-foreground">The foundational architecture of your business, adapted for speed.</p>
+          <p className="text-xs sm:text-sm text-muted-foreground">The foundational architecture of your business.</p>
         </div>
         {!state.blueprint && (
-          <Button size="lg" disabled={loading} onClick={handleGenerate} className="gap-2 bg-primary">
+          <Button size="lg" disabled={loading} onClick={handleGenerate} className="w-full sm:w-auto gap-2 bg-primary h-10 sm:h-11 text-xs sm:text-sm">
             {loading ? <Sparkles className="w-4 h-4 animate-spin" /> : <Map className="w-4 h-4" />}
             Generate Strategy
           </Button>
@@ -68,49 +69,31 @@ export function BlueprintView({ onComplete }: { onComplete: () => void }) {
       </div>
 
       {state.blueprint && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <FeatureCard title="Strategic Overview" description={`${state.role}'s breakdown`} icon={<ShieldAlert className="text-accent" />} className="lg:col-span-3">
-             <div className="whitespace-pre-wrap text-sm text-muted-foreground leading-relaxed">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 pb-10">
+          <FeatureCard title="Strategic Overview" description={`${state.role}'s analysis`} icon={<ShieldAlert className="text-accent" />} className="lg:col-span-3">
+             <div className="whitespace-pre-wrap text-[11px] sm:text-sm text-muted-foreground leading-relaxed">
               {state.blueprint.strategicOverview}
             </div>
           </FeatureCard>
 
-          <FeatureCard title="Value Proposition" description="What makes us special" icon={<Rocket />}>
-            <p className="text-sm text-muted-foreground">{state.blueprint.valueProposition}</p>
+          <FeatureCard title="Value Proposition" description="Unique offering" icon={<Rocket />}>
+            <p className="text-[11px] sm:text-sm text-muted-foreground">{state.blueprint.valueProposition}</p>
           </FeatureCard>
           
-          <FeatureCard title="Business Model" description="Our core engine" icon={<Briefcase />}>
-            <p className="text-sm text-muted-foreground">{state.blueprint.businessModel}</p>
+          <FeatureCard title="Business Model" description="Core engine" icon={<Briefcase />}>
+            <p className="text-[11px] sm:text-sm text-muted-foreground">{state.blueprint.businessModel}</p>
           </FeatureCard>
 
-          <FeatureCard title="Revenue Streams" description="How we make money" icon={<Coins />}>
-            <p className="text-sm text-muted-foreground">{state.blueprint.revenueStreams}</p>
+          <FeatureCard title="Revenue Streams" description="Monetization" icon={<Coins />}>
+            <p className="text-[11px] sm:text-sm text-muted-foreground">{state.blueprint.revenueStreams}</p>
           </FeatureCard>
 
-          <FeatureCard title="Pricing Strategy" description="Market positioning" icon={<Target />}>
-            <p className="text-sm text-muted-foreground">{state.blueprint.pricingStrategy}</p>
+          <FeatureCard title="Competitive Advantage" description="The moat" icon={<Trophy />}>
+            <p className="text-[11px] sm:text-sm text-muted-foreground">{state.blueprint.competitiveAdvantage}</p>
           </FeatureCard>
 
-          <FeatureCard title="Market Size" description="The opportunity" icon={<PieChart />}>
-            <p className="text-sm text-muted-foreground">{state.blueprint.marketSizeEstimation}</p>
-          </FeatureCard>
-
-          <FeatureCard title="Competitive Advantage" description="Our moat" icon={<Trophy />}>
-            <p className="text-sm text-muted-foreground">{state.blueprint.competitiveAdvantage}</p>
-          </FeatureCard>
-
-          {state.blueprint.recommendedTools && (
-            <FeatureCard title="Operational Tools" description="Streamlining your setup" icon={<Wrench className="text-accent" />} className="lg:col-span-3">
-              <div className="flex flex-wrap gap-2">
-                {state.blueprint.recommendedTools.map((tool, idx) => (
-                  <Badge key={idx} variant="outline" className="border-accent/30 text-accent">{tool}</Badge>
-                ))}
-              </div>
-            </FeatureCard>
-          )}
-
-          <div className="lg:col-span-3 flex justify-center pt-8">
-            <Button size="lg" onClick={onComplete} className="bg-accent text-accent-foreground font-bold px-12">
+          <div className="lg:col-span-3 flex justify-center pt-4 sm:pt-8">
+            <Button size="lg" onClick={onComplete} className="w-full sm:w-auto bg-accent text-accent-foreground font-bold px-12 h-12 text-sm">
               Next: Product Development Guide
             </Button>
           </div>

@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState } from 'react';
@@ -26,7 +27,7 @@ export function MarketingView({ onComplete }: { onComplete: () => void }) {
       setMarketing(result);
       toast({
         title: "Growth Plan Ready",
-        description: `Strategies adapted by ${state.role}.`,
+        description: `Strategies by ${state.role}.`,
       });
     } catch (error) {
       toast({
@@ -43,21 +44,18 @@ export function MarketingView({ onComplete }: { onComplete: () => void }) {
     { title: "Product Launch", icon: <Rocket />, strategies: state.marketing.productLaunch },
     { title: "Social Media", icon: <Share2 />, strategies: state.marketing.socialMediaGrowth },
     { title: "User Acquisition", icon: <Users />, strategies: state.marketing.userAcquisition },
-    { title: "SEO Strategy", icon: <Search />, strategies: state.marketing.seoStrategy },
-    { title: "Content Strategy", icon: <FileText />, strategies: state.marketing.contentStrategy },
     { title: "Viral Loops", icon: <Infinity />, strategies: state.marketing.viralLoops },
-    { title: "Community Building", icon: <Heart />, strategies: state.marketing.communityBuilding },
   ] : [];
 
   return (
-    <div className="p-8 max-w-6xl mx-auto space-y-8">
-      <div className="flex justify-between items-center">
-        <div>
-          <h2 className="text-3xl font-headline font-bold">Marketing & Growth</h2>
-          <p className="text-muted-foreground">Strategic planning from your {state.role}.</p>
+    <div className="p-4 sm:p-8 max-w-6xl mx-auto space-y-6 sm:space-y-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="space-y-1">
+          <h2 className="text-2xl sm:text-3xl font-headline font-bold">Marketing & Growth</h2>
+          <p className="text-xs sm:text-sm text-muted-foreground">Strategic planning from your {state.role}.</p>
         </div>
         {!state.marketing && (
-          <Button size="lg" disabled={loading} onClick={handleGenerate} className="gap-2 bg-primary">
+          <Button size="lg" disabled={loading} onClick={handleGenerate} className="w-full sm:w-auto gap-2 bg-primary h-10 sm:h-11 text-xs sm:text-sm">
             {loading ? <Sparkles className="w-4 h-4 animate-spin" /> : <Rocket className="w-4 h-4" />}
             Build Growth Engine
           </Button>
@@ -65,35 +63,25 @@ export function MarketingView({ onComplete }: { onComplete: () => void }) {
       </div>
 
       {state.marketing && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <FeatureCard title="Growth Insight" description={`Strategic direction (${state.role})`} icon={<Zap className="text-accent" />} className="lg:col-span-3">
-            <div className="whitespace-pre-wrap text-sm text-muted-foreground leading-relaxed">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 pb-10">
+          <FeatureCard title="Growth Insight" description={`Strategic direction`} icon={<Zap className="text-accent" />} className="lg:col-span-3">
+            <div className="whitespace-pre-wrap text-[11px] sm:text-sm text-muted-foreground leading-relaxed">
               {state.marketing.growthInsight}
             </div>
           </FeatureCard>
 
           {marketingSections.map((sec, idx) => (
             <FeatureCard key={idx} title={sec.title} description="" icon={sec.icon}>
-              <ul className="space-y-2">
+              <ul className="space-y-1.5 sm:space-y-2">
                 {sec.strategies.map((s, i) => (
-                  <li key={i} className="text-xs text-muted-foreground list-disc ml-4">{s}</li>
+                  <li key={i} className="text-[11px] sm:text-xs text-muted-foreground list-disc ml-4">{s}</li>
                 ))}
               </ul>
             </FeatureCard>
           ))}
 
-          {state.marketing.recommendedTools && (
-            <FeatureCard title="Growth & Analytics Tools" description="Automate your marketing stack" icon={<Wrench className="text-accent" />} className="lg:col-span-3">
-              <div className="flex flex-wrap gap-2">
-                {state.marketing.recommendedTools.map((tool, idx) => (
-                  <Badge key={idx} variant="outline" className="border-accent/30 text-accent">{tool}</Badge>
-                ))}
-              </div>
-            </FeatureCard>
-          )}
-
-          <div className="lg:col-span-3 flex justify-center pt-8">
-            <Button size="lg" onClick={onComplete} className="bg-accent text-accent-foreground font-bold px-12">
+          <div className="lg:col-span-3 flex justify-center pt-4 sm:pt-8">
+            <Button size="lg" onClick={onComplete} className="w-full sm:w-auto bg-accent text-accent-foreground font-bold px-12 h-12 text-sm">
               Next: Tasks & Milestones
             </Button>
           </div>

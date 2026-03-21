@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState } from 'react';
@@ -52,21 +53,15 @@ export function SimulationView() {
   const { toast } = useToast();
 
   const simulationTypes: Array<{ type: AiStartupSimulationInput['simulationType'], icon: React.ReactNode, desc: string }> = [
-    { type: 'Investor Meeting', icon: <TrendingUp />, desc: 'Pitch to a skeptical Tier-1 VC.' },
-    { type: 'Customer Feedback', icon: <Users />, desc: 'Hear brutal truths from target users.' },
-    { type: 'Market Reaction', icon: <Sparkles />, desc: 'Simulate launch day and market buzz.' },
-    { type: 'Competitor Response', icon: <ShieldAlert />, desc: 'How will the big players fight back?' },
-    { type: 'Growth Projection', icon: <LineChart />, desc: 'Project long-term scalability.' },
-    { type: 'Product Adoption', icon: <Filter />, desc: 'Simulate user journey and churn.' },
+    { type: 'Investor Meeting', icon: <TrendingUp className="w-4 h-4" />, desc: 'Pitch to a Tier-1 VC.' },
+    { type: 'Customer Feedback', icon: <Users className="w-4 h-4" />, desc: 'Hear brutal user truths.' },
+    { type: 'Market Reaction', icon: <Sparkles className="w-4 h-4" />, desc: 'Simulate launch day.' },
+    { type: 'Growth Projection', icon: <LineChart className="w-4 h-4" />, desc: 'Project scalability.' },
   ];
 
   const handleStartSimulation = async (type: AiStartupSimulationInput['simulationType']) => {
     if (!state.rawIdea) {
-      toast({
-        variant: "destructive",
-        title: "Simulation Impossible",
-        description: "You need an idea first!",
-      });
+      toast({ variant: "destructive", title: "Idea Required", description: "You need an idea first!" });
       return;
     }
 
@@ -79,16 +74,9 @@ export function SimulationView() {
         blueprint: state.blueprint ? JSON.stringify(state.blueprint) : undefined
       });
       setSimulation(result);
-      toast({
-        title: "Simulation Complete",
-        description: `Scenario: ${type} resolved.`,
-      });
+      toast({ title: "Simulation Complete", description: `${type} resolved.` });
     } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Simulation Failed",
-        description: "The market is too volatile right now. Try again.",
-      });
+      toast({ variant: "destructive", title: "Simulation Failed", description: "The market is too volatile." });
     } finally {
       setLoading(false);
     }
@@ -97,161 +85,65 @@ export function SimulationView() {
   const sim = state.lastSimulation;
 
   const renderChart = (visualData: AiStartupSimulationOutput['visualData']) => {
-    const { visualization_type, data, title, x_axis, y_axis } = visualData;
-    
-    // Get all keys except common ones to identify data series
+    const { visualization_type, data, x_axis } = visualData;
     const keys = data.length > 0 ? Object.keys(data[0]).filter(k => k !== 'name' && k !== 'label' && k !== x_axis) : [];
     const mainKey = keys[0] || 'value';
 
-    const chartConfig = keys.reduce((acc, key, idx) => {
-      acc[key] = {
-        label: key.charAt(0).toUpperCase() + key.slice(1),
-        theme: {
-          light: `hsl(var(--primary))`,
-          dark: `hsl(var(--accent))`
-        }
-      };
+    const chartConfig = keys.reduce((acc, key) => {
+      acc[key] = { label: key.charAt(0).toUpperCase() + key.slice(1), theme: { light: `hsl(var(--primary))`, dark: `hsl(var(--accent))` } };
       return acc;
     }, {} as any);
 
-    switch (visualization_type) {
-      case 'line_chart':
-        return (
-          <ChartContainer config={chartConfig} className="h-[300px] w-full">
-            <RechartsLineChart data={data}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
-              <XAxis 
-                dataKey={x_axis || Object.keys(data[0])[0]} 
-                stroke="hsl(var(--muted-foreground))"
-                fontSize={12}
-                tickLine={false}
-                axisLine={false}
-              />
-              <YAxis 
-                stroke="hsl(var(--muted-foreground))"
-                fontSize={12}
-                tickLine={false}
-                axisLine={false}
-              />
-              <ChartTooltip content={<ChartTooltipContent />} />
-              {keys.map((key, i) => (
-                <Line 
-                  key={key}
-                  type="monotone" 
-                  dataKey={key} 
-                  stroke={`hsl(var(--accent))`} 
-                  strokeWidth={2}
-                  dot={{ fill: 'hsl(var(--accent))' }}
-                />
-              ))}
-            </RechartsLineChart>
-          </ChartContainer>
-        );
-      case 'bar_chart':
-      case 'funnel_chart': // Recharts funnel is similar to horizontal bar
-        return (
-          <ChartContainer config={chartConfig} className="h-[300px] w-full">
-            <RechartsBarChart data={data} layout={visualization_type === 'funnel_chart' ? 'vertical' : 'horizontal'}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
-              {visualization_type === 'funnel_chart' ? (
-                <>
-                  <YAxis dataKey={Object.keys(data[0])[0]} type="category" stroke="hsl(var(--muted-foreground))" fontSize={10} width={100} />
-                  <XAxis type="number" hide />
-                </>
-              ) : (
-                <>
-                  <XAxis dataKey={Object.keys(data[0])[0]} stroke="hsl(var(--muted-foreground))" fontSize={12} />
-                  <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} />
-                </>
-              )}
-              <ChartTooltip content={<ChartTooltipContent />} />
-              <Bar 
-                dataKey={mainKey} 
-                fill="hsl(var(--accent))" 
-                radius={[4, 4, 0, 0]} 
-                barSize={visualization_type === 'funnel_chart' ? 30 : undefined}
-              />
-            </RechartsBarChart>
-          </ChartContainer>
-        );
-      case 'pie_chart':
-        const COLORS = ['hsl(var(--accent))', 'hsl(var(--primary))', 'hsl(217, 91%, 60%)', 'hsl(188, 73%, 42%)'];
-        return (
-          <div className="h-[300px] w-full flex items-center justify-center">
-            <ResponsiveContainer width="100%" height="100%">
-              <RechartsPieChart>
-                <Pie
-                  data={data}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={80}
-                  paddingAngle={5}
-                  dataKey={mainKey}
-                  nameKey={Object.keys(data[0])[0]}
-                >
-                  {data.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip 
-                  contentStyle={{ backgroundColor: 'hsl(var(--card))', borderRadius: 'var(--radius)', border: '1px solid hsl(var(--border))' }}
-                  itemStyle={{ color: 'hsl(var(--foreground))' }}
-                />
-                <Legend />
-              </RechartsPieChart>
-            </ResponsiveContainer>
-          </div>
-        );
-      default:
-        return <div className="p-8 text-center text-muted-foreground border border-dashed rounded-lg">Visualizing data...</div>;
-    }
-  };
-
-  const getVisualIcon = (type: string) => {
-    switch (type) {
-      case 'line_chart': return <LineChart className="w-4 h-4" />;
-      case 'bar_chart': return <BarChart3 className="w-4 h-4" />;
-      case 'pie_chart': return <PieChartIcon className="w-4 h-4" />;
-      case 'funnel_chart': return <Filter className="w-4 h-4" />;
-      case 'matrix_chart': return <LayoutGrid className="w-4 h-4" />;
-      case 'timeline_chart': return <CalendarDays className="w-4 h-4" />;
-      default: return <BarChart3 className="w-4 h-4" />;
-    }
+    return (
+      <ChartContainer config={chartConfig} className="h-[200px] sm:h-[300px] w-full">
+        {visualization_type === 'line_chart' ? (
+          <RechartsLineChart data={data}>
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
+            <XAxis dataKey={x_axis || Object.keys(data[0])[0]} stroke="hsl(var(--muted-foreground))" fontSize={10} tickLine={false} axisLine={false} />
+            <YAxis stroke="hsl(var(--muted-foreground))" fontSize={10} tickLine={false} axisLine={false} />
+            <ChartTooltip content={<ChartTooltipContent />} />
+            <Line type="monotone" dataKey={mainKey} stroke={`hsl(var(--accent))`} strokeWidth={2} dot={{ fill: 'hsl(var(--accent))' }} />
+          </RechartsLineChart>
+        ) : (
+          <RechartsBarChart data={data}>
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
+            <XAxis dataKey={Object.keys(data[0])[0]} stroke="hsl(var(--muted-foreground))" fontSize={10} />
+            <YAxis stroke="hsl(var(--muted-foreground))" fontSize={10} />
+            <ChartTooltip content={<ChartTooltipContent />} />
+            <Bar dataKey={mainKey} fill="hsl(var(--accent))" radius={[4, 4, 0, 0]} />
+          </RechartsBarChart>
+        )}
+      </ChartContainer>
+    );
   };
 
   return (
-    <div className="p-8 max-w-6xl mx-auto space-y-10">
-      <header className="space-y-4">
-        <div className="flex items-center gap-3">
-          <Badge variant="outline" className="bg-primary/5 text-accent border-accent/20">Data-Driven Simulation Engine</Badge>
-        </div>
-        <h2 className="text-4xl font-headline font-bold gradient-text">Simulation Mode</h2>
-        <p className="text-xl text-muted-foreground max-w-2xl">
-          Pressure-test your venture with AI-generated visual projections. Choose a scenario to see the brutal truth in data.
+    <div className="p-4 sm:p-8 max-w-6xl mx-auto space-y-8 sm:space-y-10">
+      <header className="space-y-3">
+        <Badge variant="outline" className="bg-primary/5 text-accent border-accent/20 text-[9px] sm:text-[10px]">Simulation Engine</Badge>
+        <h2 className="text-3xl sm:text-4xl font-headline font-bold gradient-text">Simulation Mode</h2>
+        <p className="text-xs sm:text-lg text-muted-foreground max-w-2xl">
+          Pressure-test your venture with AI-generated visual projections.
         </p>
       </header>
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {simulationTypes.map((item) => (
           <Card 
             key={item.type}
-            className={cn(
-              "glass-card hover:border-accent/50 transition-all cursor-pointer group",
-              loading && "opacity-50 pointer-events-none"
-            )}
+            className={cn("glass-card hover:border-accent/50 transition-all cursor-pointer group", loading && "opacity-50 pointer-events-none")}
             onClick={() => handleStartSimulation(item.type)}
           >
-            <CardHeader className="p-4">
-              <div className="p-2 w-fit rounded-lg bg-primary/10 text-accent group-hover:scale-110 transition-transform mb-2">
+            <CardHeader className="p-3 sm:p-4">
+              <div className="p-1.5 w-fit rounded-lg bg-primary/10 text-accent group-hover:scale-110 transition-transform mb-1 sm:mb-2">
                 {item.icon}
               </div>
-              <CardTitle className="text-sm font-bold">{item.type}</CardTitle>
+              <CardTitle className="text-[11px] sm:text-sm font-bold">{item.type}</CardTitle>
             </CardHeader>
-            <CardContent className="px-4 pb-4">
-              <p className="text-[10px] text-muted-foreground mb-4 leading-tight">{item.desc}</p>
-              <Button variant="ghost" size="sm" className="w-full text-accent p-0 justify-start hover:bg-transparent h-fit text-xs">
-                Run <PlayCircle className="ml-1 w-3 h-3" />
+            <CardContent className="px-3 sm:px-4 pb-3 sm:pb-4">
+              <p className="text-[9px] text-muted-foreground mb-3 leading-tight line-clamp-2">{item.desc}</p>
+              <Button variant="ghost" size="sm" className="w-full text-accent p-0 justify-start hover:bg-transparent h-fit text-[10px]">
+                Run <PlayCircle className="ml-1 w-2.5 h-2.5" />
               </Button>
             </CardContent>
           </Card>
@@ -259,106 +151,72 @@ export function SimulationView() {
       </div>
 
       {loading && (
-        <div className="flex flex-col items-center justify-center p-20 space-y-4 glass-card rounded-2xl">
-          <Sparkles className="w-12 h-12 text-accent animate-spin" />
-          <h3 className="text-2xl font-headline font-bold">Processing Scenarios...</h3>
-          <p className="text-muted-foreground">Generating data-driven projections and stakeholder feedback.</p>
+        <div className="flex flex-col items-center justify-center p-12 sm:p-20 space-y-4 glass-card rounded-2xl">
+          <Sparkles className="w-10 h-10 sm:w-12 sm:h-12 text-accent animate-spin" />
+          <h3 className="text-lg sm:text-2xl font-headline font-bold">Simulating...</h3>
         </div>
       )}
 
       {sim && !loading && (
-        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-6 duration-700">
-          <div className="grid lg:grid-cols-3 gap-8">
-            <section className="lg:col-span-2 space-y-8">
-               {/* Strategic Visualization */}
+        <div className="space-y-6 sm:space-y-8 animate-in fade-in slide-in-from-bottom-6 duration-700 pb-10">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
+            <section className="lg:col-span-2 space-y-6 sm:space-y-8">
               <Card className="glass-card border-accent/20">
-                <CardHeader>
+                <CardHeader className="p-4 sm:p-6">
                   <div className="flex justify-between items-center">
-                    <div>
-                      <CardTitle className="flex items-center gap-2">
-                        {getVisualIcon(sim.visualData.visualization_type)}
-                        {sim.visualData.title}
-                      </CardTitle>
-                      <CardDescription>Strategic projection based on simulation outcomes.</CardDescription>
-                    </div>
-                    <Badge variant="secondary" className="bg-accent/10 text-accent">AI Projection</Badge>
+                    <CardTitle className="text-base sm:text-xl flex items-center gap-2">
+                      <BarChart3 className="w-4 h-4 sm:w-5 sm:h-5 text-accent" /> {sim.visualData.title}
+                    </CardTitle>
+                    <Badge variant="secondary" className="bg-accent/10 text-accent text-[8px] sm:text-[9px]">AI Projection</Badge>
                   </div>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="p-4 sm:p-6 pt-0">
                   {renderChart(sim.visualData)}
-                  <div className="mt-6 p-4 rounded-xl bg-accent/5 border border-accent/10">
-                    <h4 className="text-xs font-bold text-accent uppercase tracking-widest mb-2 flex items-center gap-2">
-                      <Lightbulb className="w-3 h-3" /> Data Insight
-                    </h4>
-                    <p className="text-sm text-muted-foreground leading-relaxed italic">
-                      This {sim.visualData.visualization_type.replace('_', ' ')} illustrates the potential {sim.visualData.title.toLowerCase()} trends. 
-                      Notice how the {sim.visualData.y_axis || 'outcome'} correlates with our strategic assumptions.
-                    </p>
-                  </div>
                 </CardContent>
               </Card>
 
-              <section className="glass-card p-8 rounded-2xl border-white/5 bg-white/2">
-                <div className="flex items-start gap-4 mb-6">
-                  <div className="p-3 rounded-full bg-accent/20 text-accent">
-                    <MessageSquare className="w-6 h-6" />
+              <section className="glass-card p-5 sm:p-8 rounded-2xl border-white/5 bg-white/2">
+                <div className="flex items-start gap-3 sm:gap-4 mb-6">
+                  <div className="p-2 sm:p-3 rounded-full bg-accent/20 text-accent shrink-0">
+                    <MessageSquare className="w-5 h-5 sm:w-6 sm:h-6" />
                   </div>
                   <div>
-                    <h3 className="text-2xl font-headline font-bold">The Scripted Reality</h3>
-                    <p className="text-muted-foreground">{sim.scenarioDescription}</p>
+                    <h3 className="text-lg sm:text-2xl font-headline font-bold">The Reality Script</h3>
+                    <p className="text-xs sm:text-sm text-muted-foreground">{sim.scenarioDescription}</p>
                   </div>
                 </div>
                 
-                <div className="space-y-4">
+                <div className="space-y-3 sm:space-y-4">
                   {sim.simulationDialog.map((msg, i) => (
-                    <div key={i} className="flex gap-4 p-4 rounded-xl bg-background/40 border border-white/5 group hover:border-accent/20 transition-colors">
-                      <Badge variant="outline" className="h-fit py-1 shrink-0 border-accent/30 text-accent">{msg.role}</Badge>
-                      <p className="text-sm leading-relaxed italic">"{msg.message}"</p>
+                    <div key={i} className="flex gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl bg-background/40 border border-white/5 group">
+                      <Badge variant="outline" className="h-fit py-0.5 sm:py-1 shrink-0 border-accent/30 text-accent text-[8px] sm:text-[10px]">{msg.role}</Badge>
+                      <p className="text-[11px] sm:text-sm leading-relaxed italic">"{msg.message}"</p>
                     </div>
                   ))}
                 </div>
               </section>
             </section>
 
-            <aside className="space-y-8">
+            <aside className="space-y-6 sm:space-y-8">
               <Card className="border-destructive/30 bg-destructive/5">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-destructive">
-                    <AlertTriangle className="w-5 h-5" /> Ruthless Truth
+                <CardHeader className="p-4 sm:p-6 pb-2">
+                  <CardTitle className="text-sm sm:text-base flex items-center gap-2 text-destructive">
+                    <AlertTriangle className="w-4 h-4" /> Ruthless Truth
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <p className="text-sm leading-relaxed text-destructive-foreground/90 font-medium">
-                    {sim.criticalFeedback}
-                  </p>
+                <CardContent className="p-4 sm:p-6 pt-0">
+                  <p className="text-[11px] sm:text-sm leading-relaxed text-destructive-foreground/90 font-medium">{sim.criticalFeedback}</p>
                 </CardContent>
               </Card>
 
               <Card className="border-emerald-500/30 bg-emerald-500/5">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-emerald-400">
-                    <Lightbulb className="w-5 h-5" /> Strategic Pivot
+                <CardHeader className="p-4 sm:p-6 pb-2">
+                  <CardTitle className="text-sm sm:text-base flex items-center gap-2 text-emerald-400">
+                    <Lightbulb className="w-4 h-4" /> Strategic Pivot
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <p className="text-sm leading-relaxed text-emerald-100/90">
-                    {sim.strategicAdvice}
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card className="glass-card">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-sm">
-                    <Wrench className="w-4 h-4 text-accent" /> Recommended Stack
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex flex-wrap gap-2">
-                    {sim.recommendedTools.map((tool, idx) => (
-                      <Badge key={idx} variant="outline" className="border-accent/30 text-accent text-[10px]">{tool}</Badge>
-                    ))}
-                  </div>
+                <CardContent className="p-4 sm:p-6 pt-0">
+                  <p className="text-[11px] sm:text-sm leading-relaxed text-emerald-100/90">{sim.strategicAdvice}</p>
                 </CardContent>
               </Card>
             </aside>

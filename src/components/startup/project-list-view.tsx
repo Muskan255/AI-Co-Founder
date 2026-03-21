@@ -1,3 +1,4 @@
+
 "use client"
 
 import React, { useMemo } from 'react';
@@ -22,26 +23,13 @@ export function ProjectListView({ onSelect, onAuthPrompt }: ProjectListViewProps
   
   const projectsQuery = useMemo(() => {
     if (!user || !firestore) return null;
-    return query(
-      collection(firestore, 'users', user.uid, 'projects'),
-      orderBy('last_updated', 'desc')
-    );
+    return query(collection(firestore, 'users', user.uid, 'projects'), orderBy('last_updated', 'desc'));
   }, [user, firestore]);
 
   const { data: projects, loading } = useCollection(projectsQuery);
 
-  const handleSelect = (project: any) => {
-    loadProject(project);
-    onSelect();
-  };
-
-  const handleNew = () => {
-    reset();
-    onSelect();
-  };
-
   const calculateProgress = (project: any) => {
-    const fields = ['validation', 'blueprint', 'productGuidance', 'marketing', 'financialStrategy', 'tasks'];
+    const fields = ['validation', 'blueprint', 'productGuidance', 'marketing'];
     const stateData = project.fullState || {};
     const completed = fields.filter(f => !!stateData[f]).length;
     return (completed / fields.length) * 100;
@@ -49,21 +37,19 @@ export function ProjectListView({ onSelect, onAuthPrompt }: ProjectListViewProps
 
   if (isGuestMode) {
     return (
-      <div className="p-8 max-w-4xl mx-auto flex flex-col items-center justify-center min-h-[70vh] text-center space-y-8 animate-in fade-in slide-in-from-bottom-4">
-        <div className="w-20 h-20 rounded-3xl bg-amber-500/10 flex items-center justify-center text-amber-500 mb-4">
-          <ShieldAlert className="w-10 h-10" />
+      <div className="p-4 sm:p-8 max-w-4xl mx-auto flex flex-col items-center justify-center min-h-[60vh] sm:min-h-[70vh] text-center space-y-6 sm:space-y-8">
+        <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-3xl bg-amber-500/10 flex items-center justify-center text-amber-500">
+          <ShieldAlert className="w-8 h-8 sm:w-10 sm:h-10" />
         </div>
-        <div className="space-y-4">
-          <h2 className="text-4xl font-headline font-bold">Cloud Storage Disabled</h2>
-          <p className="text-xl text-muted-foreground max-w-md mx-auto">
-            You are currently in Experiment Mode. Login to save your ventures and access them from any device.
-          </p>
+        <div className="space-y-3 sm:space-y-4">
+          <h2 className="text-2xl sm:text-4xl font-headline font-bold">Cloud Storage Disabled</h2>
+          <p className="text-sm sm:text-xl text-muted-foreground max-w-md mx-auto">Login to save your ventures and access them anywhere.</p>
         </div>
-        <div className="flex gap-4">
-          <Button onClick={onAuthPrompt} size="lg" className="bg-accent text-accent-foreground font-bold px-8 h-14 gap-2">
-            <LogIn className="w-5 h-5" /> Sign In to Save
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto">
+          <Button onClick={onAuthPrompt} size="lg" className="w-full sm:w-auto bg-accent text-accent-foreground font-bold px-8 h-12 sm:h-14 gap-2 text-sm">
+            <LogIn className="w-4 h-4 sm:w-5 sm:h-5" /> Sign In to Save
           </Button>
-          <Button onClick={handleNew} variant="outline" size="lg" className="h-14 px-8 border-white/10 hover:bg-white/5">
+          <Button onClick={() => { reset(); onSelect(); }} variant="outline" size="lg" className="w-full sm:w-auto h-12 sm:h-14 px-8 border-white/10 text-sm">
             Experiment as Guest
           </Button>
         </div>
@@ -74,100 +60,64 @@ export function ProjectListView({ onSelect, onAuthPrompt }: ProjectListViewProps
   if (loading) {
     return (
       <div className="p-20 text-center space-y-4">
-        <Sparkles className="w-12 h-12 text-accent mx-auto animate-spin" />
-        <h3 className="text-xl font-headline font-bold">Retrieving Your Ventures...</h3>
+        <Sparkles className="w-10 h-10 sm:w-12 sm:h-12 text-accent mx-auto animate-spin" />
+        <h3 className="text-base sm:text-xl font-headline font-bold">Retrieving Ventures...</h3>
       </div>
     );
   }
 
   return (
-    <div className="p-8 max-w-6xl mx-auto space-y-12">
+    <div className="p-4 sm:p-8 max-w-6xl mx-auto space-y-8 sm:space-y-12">
       <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
         <div className="space-y-2">
-          <Badge variant="outline" className="bg-primary/5 text-accent border-accent/20 px-3 py-1">Venture Archive</Badge>
-          <h2 className="text-5xl font-headline font-bold gradient-text leading-tight">Your Business Portfolio</h2>
-          <p className="text-muted-foreground text-lg max-w-2xl">
-            Select an active venture to resume execution or start a new high-growth experiment.
-          </p>
+          <Badge variant="outline" className="bg-primary/5 text-accent border-accent/20 px-2 py-0.5 text-[9px] sm:text-[10px]">Venture Archive</Badge>
+          <h2 className="text-3xl sm:text-5xl font-headline font-bold gradient-text">Portfolio</h2>
+          <p className="text-xs sm:text-lg text-muted-foreground max-w-2xl">Resume execution or start a new experiment.</p>
         </div>
-        <Button onClick={handleNew} className="bg-primary hover:bg-primary/90 gap-2 h-14 px-8 text-lg font-bold shadow-lg shadow-primary/20">
-          <Plus className="w-5 h-5" /> New Venture
+        <Button onClick={() => { reset(); onSelect(); }} className="w-full sm:w-auto bg-primary h-12 sm:h-14 px-8 text-sm sm:text-lg font-bold">
+          <Plus className="w-4 h-4 sm:w-5 sm:h-5" /> New Venture
         </Button>
       </header>
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-        <Card 
-          onClick={handleNew}
-          className="glass-card border-dashed border-white/20 hover:border-accent/50 cursor-pointer flex flex-col items-center justify-center p-12 transition-all group min-h-[350px]"
-        >
-          <div className="w-16 h-16 rounded-2xl bg-accent/10 text-accent flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-inner">
-            <Plus className="w-8 h-8" />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8 pb-10">
+        <Card onClick={() => { reset(); onSelect(); }} className="glass-card border-dashed border-white/20 hover:border-accent/50 cursor-pointer flex flex-col items-center justify-center p-8 sm:p-12 transition-all group min-h-[250px] sm:min-h-[350px]">
+          <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-accent/10 text-accent flex items-center justify-center mb-4 sm:mb-6 group-hover:scale-110 transition-transform">
+            <Plus className="w-6 h-6 sm:w-8 sm:h-8" />
           </div>
-          <h3 className="text-2xl font-headline font-bold">Start Fresh</h3>
-          <p className="text-sm text-muted-foreground mt-2 text-center">Architect a new startup blueprint from scratch.</p>
+          <h3 className="text-lg sm:text-2xl font-headline font-bold">Start Fresh</h3>
         </Card>
 
         {projects?.map((project: any) => {
           const progress = calculateProgress(project);
           return (
-            <Card 
-              key={project.id}
-              onClick={() => handleSelect(project)}
-              className="glass-card hover:border-accent/50 cursor-pointer transition-all group flex flex-col relative overflow-hidden"
-            >
-              <div className="absolute top-0 right-0 p-4">
-                <Badge variant="secondary" className="bg-accent/10 text-accent border-accent/20">
-                  {project.startup_stage || project.progress_status}
-                </Badge>
+            <Card key={project.id} onClick={() => { loadProject(project); onSelect(); }} className="glass-card hover:border-accent/50 cursor-pointer transition-all flex flex-col relative overflow-hidden">
+              <div className="absolute top-0 right-0 p-3 sm:p-4">
+                <Badge variant="secondary" className="bg-accent/10 text-accent border-accent/20 text-[8px] sm:text-[9px]">{project.startup_stage}</Badge>
               </div>
-              
-              <CardHeader className="pt-10">
-                <div className="w-12 h-12 rounded-xl bg-primary/10 text-accent flex items-center justify-center mb-4">
-                  <Briefcase className="w-6 h-6" />
-                </div>
-                <CardTitle className="text-2xl font-headline">{project.project_name}</CardTitle>
-                <CardDescription className="line-clamp-2 text-sm leading-relaxed mt-2">
-                  {project.idea_description}
-                </CardDescription>
+              <CardHeader className="pt-8 sm:pt-10">
+                <Briefcase className="w-5 h-5 sm:w-6 sm:h-6 text-accent mb-3 sm:mb-4" />
+                <CardTitle className="text-xl sm:text-2xl font-headline truncate">{project.project_name}</CardTitle>
+                <CardDescription className="line-clamp-2 text-[11px] sm:text-sm mt-1 sm:mt-2">{project.idea_description}</CardDescription>
               </CardHeader>
-              
-              <CardContent className="flex-1 space-y-6">
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                    <span>Venture Maturity</span>
+              <CardContent className="flex-1 space-y-4">
+                <div className="space-y-1.5">
+                  <div className="flex justify-between items-center text-[8px] sm:text-[9px] font-bold uppercase tracking-widest text-muted-foreground">
+                    <span>Maturity</span>
                     <span>{Math.round(progress)}%</span>
                   </div>
-                  <Progress value={progress} className="h-1.5 bg-white/5" />
+                  <Progress value={progress} className="h-1 bg-white/5" />
                 </div>
-
-                <div className="flex items-center gap-2 text-[10px] text-muted-foreground font-medium bg-white/5 w-fit px-3 py-1 rounded-full">
-                  <Clock className="w-3 h-3" />
-                  Updated: {project.last_updated?.toDate().toLocaleDateString()}
+                <div className="flex items-center gap-1.5 text-[8px] sm:text-[9px] text-muted-foreground bg-white/5 w-fit px-2 py-0.5 rounded-full">
+                  <Clock className="w-2.5 h-2.5" /> Updated: {project.last_updated?.toDate().toLocaleDateString()}
                 </div>
               </CardContent>
-
-              <div className="p-6 pt-0 mt-auto">
-                <Button className="w-full bg-secondary hover:bg-accent hover:text-accent-foreground group-hover:shadow-lg transition-all justify-between px-6 font-bold">
-                  Resume Building <ArrowRight className="w-4 h-4" />
-                </Button>
+              <div className="p-4 sm:p-6 pt-0 mt-auto">
+                <Button className="w-full bg-secondary h-9 sm:h-10 text-[11px] sm:text-xs font-bold justify-between">Resume <ArrowRight className="w-3.5 h-3.5" /></Button>
               </div>
             </Card>
           );
         })}
       </div>
-
-      {!projects?.length && !loading && (
-        <div className="text-center py-20 bg-white/2 rounded-3xl border border-dashed border-white/10">
-          <Target className="w-16 h-16 text-muted-foreground/30 mx-auto mb-6" />
-          <h3 className="text-xl font-headline font-bold">No ventures found.</h3>
-          <p className="text-muted-foreground max-w-xs mx-auto mt-2">
-            Your startup ideas deserve execution. Start your first one now.
-          </p>
-          <Button onClick={handleNew} variant="outline" className="mt-8 border-accent/20 text-accent">
-            Generate First Idea
-          </Button>
-        </div>
-      )}
     </div>
   );
 }
