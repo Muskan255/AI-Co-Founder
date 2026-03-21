@@ -27,10 +27,6 @@ export function TaskManagerView() {
         currentStage: state.stage
       });
       setTasks(result);
-      toast({
-        title: "Roadmap Active",
-        description: "Execution plan live.",
-      });
     } catch (error) {
       toast({
         variant: "destructive",

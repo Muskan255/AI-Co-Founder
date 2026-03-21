@@ -74,7 +74,6 @@ export function SimulationView() {
         blueprint: state.blueprint ? JSON.stringify(state.blueprint) : undefined
       });
       setSimulation(result);
-      toast({ title: "Simulation Complete", description: `${type} resolved.` });
     } catch (error) {
       toast({ variant: "destructive", title: "Simulation Failed", description: "The market is too volatile." });
     } finally {

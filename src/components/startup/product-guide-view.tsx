@@ -35,10 +35,6 @@ export function ProductGuideView({ onComplete }: { onComplete: () => void }) {
         role: state.role
       });
       setProductGuidance(result);
-      toast({
-        title: "Guide Created",
-        description: `Architecture optimized by ${state.role}.`,
-      });
     } catch (error) {
       toast({
         variant: "destructive",

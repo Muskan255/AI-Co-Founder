@@ -25,10 +25,6 @@ export function MarketingView({ onComplete }: { onComplete: () => void }) {
         role: state.role
       });
       setMarketing(result);
-      toast({
-        title: "Growth Plan Ready",
-        description: `Strategies by ${state.role}.`,
-      });
     } catch (error) {
       toast({
         variant: "destructive",

@@ -65,7 +65,6 @@ export function AuthModal({ children, open, onOpenChange }: AuthModalProps) {
       const result = await signInWithPopup(auth!, provider);
       const user = result.user;
 
-      // Check if user exists in Firestore
       const userRef = doc(firestore!, 'users', user.uid);
       const userDoc = await getDoc(userRef);
 
@@ -80,13 +79,8 @@ export function AuthModal({ children, open, onOpenChange }: AuthModalProps) {
         });
       }
 
-      toast({
-        title: "Welcome, Founder",
-        description: `Logged in as ${user.displayName || user.email}`,
-      });
       if (onOpenChange) onOpenChange(false);
     } catch (error: any) {
-      console.error('Google Sign-In Error:', error);
       toast({
         variant: "destructive",
         title: "Authentication Failed",
@@ -107,7 +101,6 @@ export function AuthModal({ children, open, onOpenChange }: AuthModalProps) {
 
       await updateProfile(user, { displayName: name });
 
-      // Create profile in Firestore
       await setDoc(doc(firestore!, 'users', user.uid), {
         user_id: user.uid,
         name: name,
@@ -117,13 +110,8 @@ export function AuthModal({ children, open, onOpenChange }: AuthModalProps) {
         startup_projects: []
       });
 
-      toast({
-        title: "Account Created",
-        description: "Welcome to AI Co-Founder.",
-      });
       if (onOpenChange) onOpenChange(false);
     } catch (error: any) {
-      console.error('Sign-Up Error:', error);
       toast({
         variant: "destructive",
         title: "Sign Up Error",
@@ -140,17 +128,16 @@ export function AuthModal({ children, open, onOpenChange }: AuthModalProps) {
     setLoading(true);
     try {
       await signInWithEmailAndPassword(auth!, email, password);
-      toast({
-        title: "Welcome back",
-        description: "Logged in successfully.",
-      });
       if (onOpenChange) onOpenChange(false);
     } catch (error: any) {
-      console.error('Sign-In Error:', error);
+      let message = error.message;
+      if (error.code === 'auth/invalid-credential') {
+        message = "Invalid email or password. Please verify your credentials and try again.";
+      }
       toast({
         variant: "destructive",
         title: "Sign In Error",
-        description: error.message,
+        description: message,
       });
     } finally {
       setLoading(false);

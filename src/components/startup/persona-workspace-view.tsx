@@ -80,7 +80,6 @@ export function PersonaWorkspaceView() {
       });
       setResult(response);
       if (response.brainUpdate) updateBrain(response.brainUpdate);
-      toast({ title: "Task Complete", description: "Asset delivered." });
     } catch (error) {
       toast({ variant: "destructive", title: "Task Failed", description: "Try again." });
     } finally {
@@ -103,7 +102,6 @@ export function PersonaWorkspaceView() {
         role: state.role,
         created_at: new Date().toISOString()
       });
-      toast({ title: "Asset Saved", description: "Added to Library." });
     } catch (error) {
       toast({ variant: "destructive", title: "Save Failed", description: "Error saving asset." });
     }

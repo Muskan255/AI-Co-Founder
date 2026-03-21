@@ -38,10 +38,6 @@ export function IdeaValidationView({ onComplete }: { onComplete: () => void }) {
 
       setRawIdea(idea);
       setValidation(result);
-      toast({
-        title: "Validation Complete",
-        description: `Feedback from ${state.role}.`,
-      });
     } catch (error: any) {
       toast({
         variant: "destructive",

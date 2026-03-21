@@ -26,10 +26,6 @@ export function FinancialView({ onComplete }: { onComplete?: () => void }) {
         role: state.role
       });
       setFinancialStrategy(result);
-      toast({
-        title: "Financial Plan Ready",
-        description: `Optimized by ${state.role}.`,
-      });
     } catch (error) {
       toast({
         variant: "destructive",

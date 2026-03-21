@@ -25,7 +25,6 @@ export function WorkspaceView() {
       const result = await aiWorkspaceGeneration({ idea, role: state.role, stage: state.stage });
       setRawIdea(idea);
       setWorkspace(result);
-      toast({ title: "Workspace Ready", description: "Venture assets generated." });
     } catch (error) {
       toast({ variant: "destructive", title: "Error", description: "Failed to build workspace." });
     } finally {

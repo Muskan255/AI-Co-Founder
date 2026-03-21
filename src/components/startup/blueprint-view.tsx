@@ -25,10 +25,6 @@ export function BlueprintView({ onComplete }: { onComplete: () => void }) {
         role: state.role
       });
       setBlueprint(result);
-      toast({
-        title: "Blueprint Ready",
-        description: `Strategy by ${state.role} complete.`,
-      });
     } catch (error) {
       toast({
         variant: "destructive",
