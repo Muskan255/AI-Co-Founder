@@ -33,7 +33,8 @@ import {
   Lock,
   Lightbulb,
   Heart,
-  Info
+  Info,
+  Map
 } from 'lucide-react';
 import { AuthModal } from '@/components/auth/auth-modal';
 import { Badge } from '@/components/ui/badge';
