@@ -1,3 +1,4 @@
+
 "use client"
 
 import React, { useState, useEffect } from 'react';
@@ -6,7 +7,7 @@ import { motion } from 'framer-motion';
 import { 
   Users2, Brain, Wrench, PlayCircle, ShieldCheck, 
   Menu, Code2, Lightbulb, Map, Lock,
-  Cpu, Megaphone, Banknote, Box
+  Cpu, Megaphone, Banknote, Box, Heart, Zap, Target, Share2, Send, MessageSquare, Bug
 } from 'lucide-react';
 import { AuthModal } from '@/components/auth/auth-modal';
 import { useFirestore, useUser } from '@/firebase';
@@ -89,7 +90,7 @@ export function LandingPage({ onStart }: LandingPageProps) {
   );
 
   return (
-    <div className="min-h-screen bg-transparent text-[#ede8ff] overflow-x-hidden font-body selection:bg-primary selection:text-white">
+    <div className="min-h-screen bg-transparent text-[#ede8ff] overflow-x-hidden font-body selection:bg-primary selection:text-white relative">
       <div className="noise-overlay" />
       <ParticleSphere />
       <CustomCursor />
@@ -102,7 +103,7 @@ export function LandingPage({ onStart }: LandingPageProps) {
       )}>
         <div className="flex items-center gap-3 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
           <div className="w-2 h-2 rounded-full bg-primary animate-pulse-dot" />
-          <span className="font-headline font-extrabold text-[1.05rem] tracking-[0.04em] uppercase text-white">AI Founder</span>
+          <span className="font-headline font-extrabold text-[1.05rem] tracking-[0.04em] uppercase text-white">AI Co-Founder</span>
         </div>
         
         <div className="hidden lg:flex items-center gap-9">
@@ -128,7 +129,7 @@ export function LandingPage({ onStart }: LandingPageProps) {
                 <SheetHeader className="text-left">
                   <SheetTitle className="text-white flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full bg-primary" />
-                    AI Founder
+                    AI Co-Founder
                   </SheetTitle>
                 </SheetHeader>
                 <div className="flex flex-col gap-6 mt-8">
@@ -195,22 +196,22 @@ export function LandingPage({ onStart }: LandingPageProps) {
       </section>
 
       {/* About Section */}
-      <section id="about" className="relative py-24 px-6 lg:px-14 z-10 bg-[#060411]/80 backdrop-blur-sm">
+      <section id="about" className="relative py-24 px-6 lg:px-14 z-10 bg-[#060411]/80 backdrop-blur-md">
         <div className="max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
           <motion.div {...fadeIn} className="space-y-6">
-            <p className="font-mono text-primary text-[0.65rem] tracking-[0.22em] uppercase">// What is AI Founder</p>
+            <p className="font-mono text-primary text-[0.65rem] tracking-[0.22em] uppercase">// What is AI Co-Founder</p>
             <h2 className="text-[clamp(2rem,4vw,3.6rem)] font-headline font-extrabold leading-[1.05] uppercase">
               An <span className="text-accent italic">AI Partner</span><br />for Entrepreneurs
             </h2>
             <p className="font-mono text-[0.85rem] leading-[1.9] text-[#7166a0] max-w-[480px]">
-              AI Founder is an AI-powered co-founder system designed to help you build startups step by step. It combines strategy, product development, marketing, and financial planning into one intelligent workspace.
+              AI Co-Founder is an AI-powered co-founder system designed to help you build startups step by step. It combines strategy, product development, marketing, and financial planning into one intelligent workspace.
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-12">
               {[
                 { title: "Our Mission", content: "Make startup building accessible to everyone, regardless of background, by providing intelligent tools that simulate a full executive team." },
                 { title: "Our Vision", content: "Become the operating system for future entrepreneurs — where building a startup is no longer limited by knowledge or technical skills." }
               ].map((item, i) => (
-                <div key={i} className="p-7 glass-card relative overflow-hidden group hover:border-white/10 transition-colors">
+                <div key={i} className="p-7 bg-white/[0.03] backdrop-blur-md border border-white/[0.06] relative overflow-hidden group hover:border-white/10 transition-colors">
                   <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-secondary to-primary" />
                   <h4 className="font-mono text-secondary text-[0.75rem] tracking-[0.18em] uppercase mb-3 font-bold">{item.title}</h4>
                   <p className="font-mono text-[0.76rem] leading-[1.75] text-[#7166a0]">{item.content}</p>
@@ -232,7 +233,7 @@ export function LandingPage({ onStart }: LandingPageProps) {
       </section>
 
       {/* Capabilities */}
-      <section id="capabilities" className="relative py-24 px-6 lg:px-14 z-10 bg-[#09071a]/85 backdrop-blur-sm">
+      <section id="capabilities" className="relative py-24 px-6 lg:px-14 z-10 bg-[#09071a]/85 backdrop-blur-md">
         <div className="max-w-[1200px] mx-auto">
           <motion.p {...fadeIn} className="font-mono text-primary text-[0.65rem] tracking-[0.22em] uppercase">// Platform Capabilities</motion.p>
           <motion.h2 {...fadeIn} className="text-[clamp(2rem,4vw,3.6rem)] font-headline font-extrabold leading-[1.05] uppercase mt-4">
@@ -274,7 +275,7 @@ export function LandingPage({ onStart }: LandingPageProps) {
             <div className="absolute left-7 top-0 bottom-0 w-[1px] bg-gradient-to-b from-primary via-secondary to-transparent" />
             <div className="space-y-0">
               {[
-                { step: "01", title: "Enter Your Idea", desc: "Pitch your core concept. No detail is too small — AI Founder listens and understands." },
+                { step: "01", title: "Enter Your Idea", desc: "Pitch your core concept. No detail is too small — AI Co-Founder listens and understands." },
                 { step: "02", title: "AI Analyzes and Stores It", desc: "Your idea is integrated into the Startup Brain memory layer, ready for the full executive team." },
                 { step: "03", title: "Personas Generate Strategies", desc: "Your CTO, CMO, and CFO deliver custom roadmaps and financial models tailored to your venture." },
                 { step: "04", title: "Build and Execute", desc: "Use the generated assets to build your MVP and growth loops. Code, copy, and strategy in one place." },
@@ -298,7 +299,7 @@ export function LandingPage({ onStart }: LandingPageProps) {
       </section>
 
       {/* Pricing Section */}
-      <section id="pricing" className="relative py-24 px-6 lg:px-14 z-10 bg-[#09071a]/85 backdrop-blur-sm">
+      <section id="pricing" className="relative py-24 px-6 lg:px-14 z-10 bg-[#09071a]/85 backdrop-blur-md">
         <div className="max-w-[1200px] mx-auto">
           <motion.p {...fadeIn} className="font-mono text-primary text-[0.65rem] tracking-[0.22em] uppercase">// Venture Access</motion.p>
           <motion.h2 {...fadeIn} className="text-[clamp(2rem,4vw,3.6rem)] font-headline font-extrabold leading-[1.05] uppercase mt-4">
@@ -347,7 +348,7 @@ export function LandingPage({ onStart }: LandingPageProps) {
       </section>
 
       {/* Agentic Section */}
-      <section id="agentic" className="relative py-24 px-6 lg:px-14 z-10 bg-[#09071a]/85 backdrop-blur-sm">
+      <section id="agentic" className="relative py-24 px-6 lg:px-14 z-10 bg-[#09071a]/85 backdrop-blur-md">
         <div className="max-w-[1200px] mx-auto">
           <motion.p {...fadeIn} className="font-mono text-primary text-[0.65rem] tracking-[0.22em] uppercase">// How Our Agentic AI Works</motion.p>
           <motion.h2 {...fadeIn} className="text-[clamp(2rem,4vw,3.6rem)] font-headline font-extrabold leading-[1.05] uppercase mt-4">
@@ -356,7 +357,7 @@ export function LandingPage({ onStart }: LandingPageProps) {
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center mt-16">
             <motion.div {...fadeIn} className="font-mono text-[0.82rem] leading-[1.95] text-[#7166a0] space-y-6">
-              <p>AI Founder is powered by an agentic AI system where multiple specialized agents collaborate to execute tasks like a real startup team. Each agent is responsible for a specific function — product planning, technical development, marketing strategy, or financial analysis.</p>
+              <p>AI Co-Founder is powered by an agentic AI system where multiple specialized agents collaborate to execute tasks like a real startup team. Each agent is responsible for a specific function — product planning, technical development, marketing strategy, or financial analysis.</p>
               <p>Instead of working independently, these agents are connected through a shared intelligence layer. When you provide an idea, the system breaks it down into structured tasks and assigns them to the appropriate agents — building on previous decisions in a continuous workflow.</p>
               <p>The system also maintains persistent memory, ensuring all agents remain aligned with your startup's context, goals, and progress. Rather than reacting to single inputs, it actively coordinates, updates, and suggests next steps.</p>
             </motion.div>
@@ -382,7 +383,7 @@ export function LandingPage({ onStart }: LandingPageProps) {
       </section>
 
       {/* Founder Section */}
-      <section id="founders" className="relative py-24 px-6 lg:px-14 z-10 bg-[#060411]/80 backdrop-blur-sm border-t border-white/[0.06]">
+      <section id="founders" className="relative py-24 px-6 lg:px-14 z-10 bg-[#060411]/80 backdrop-blur-md border-t border-white/[0.06]">
         <div className="max-w-[1200px] mx-auto text-center">
           <motion.p {...fadeIn} className="font-mono text-primary text-[0.65rem] tracking-[0.22em] uppercase mb-4">// The Architects</motion.p>
           <motion.h2 {...fadeIn} className="text-[3rem] font-headline font-extrabold uppercase mb-16">Meet the Founders</motion.h2>
@@ -393,7 +394,7 @@ export function LandingPage({ onStart }: LandingPageProps) {
                 name: "Muskan", 
                 role: "Co-Founder", 
                 image: "founder-muskan", 
-                desc: "Muskan shapes the vision and UX of AI Founder, transforming complex startup building into structured, intuitive AI workflows." 
+                desc: "Muskan shapes the vision and UX of AI Co-Founder, transforming complex startup building into structured, intuitive AI workflows." 
               },
               { 
                 name: "Navaneeth", 
@@ -425,14 +426,14 @@ export function LandingPage({ onStart }: LandingPageProps) {
       </section>
 
       {/* FAQ Section */}
-      <section id="faq" className="relative py-24 px-6 lg:px-14 z-10 bg-[#09071a]/85 backdrop-blur-sm">
+      <section id="faq" className="relative py-24 px-6 lg:px-14 z-10 bg-[#09071a]/85 backdrop-blur-md">
         <div className="max-w-[800px] mx-auto">
           <motion.p {...fadeIn} className="font-mono text-primary text-[0.65rem] tracking-[0.22em] uppercase">// FAQ</motion.p>
           <motion.h2 {...fadeIn} className="text-[3rem] font-headline font-extrabold uppercase mt-4 mb-12">Frequently Asked<br /><span className="text-accent italic">Questions.</span></motion.h2>
           
           <div className="space-y-0">
             {[
-              { q: "Do I need to log in?", a: "No — you can try AI Founder without logging in. However, logging in enables persistent saving, full access to Startup Brain, and cloud synchronization." },
+              { q: "Do I need to log in?", a: "No — you can try AI Co-Founder without logging in. However, logging in enables persistent saving, full access to Startup Brain, and cloud synchronization." },
               { q: "How do I save my work?", a: "Create a free account to save your ventures. With Founder Cloud ($29/mo), you get unlimited saves and full persistent memory across all sessions." },
               { q: "What AI models power the platform?", a: "We use a multi-agent architecture powered by state-of-the-art LLMs specialized for executive functions like product, marketing, and finance." },
               { q: "Can I generate real code?", a: "Yes. The CTO persona generates production-grade code, technical architecture plans, and MVP scaffolding based on your specifications." }
@@ -458,7 +459,7 @@ export function LandingPage({ onStart }: LandingPageProps) {
       </section>
 
       {/* Contact Section */}
-      <section id="contact" className="relative py-24 px-6 lg:px-14 z-10 bg-[#060411]/80 backdrop-blur-sm">
+      <section id="contact" className="relative py-24 px-6 lg:px-14 z-10 bg-[#060411]/80 backdrop-blur-md">
         <div className="max-w-[640px] mx-auto">
           <motion.p {...fadeIn} className="font-mono text-primary text-[0.65rem] tracking-[0.22em] uppercase">// Contact & Feedback</motion.p>
           <motion.h2 {...fadeIn} className="text-[3rem] font-headline font-extrabold uppercase mt-4 mb-12">We'd Love to<br /><span className="text-accent italic">Hear From You.</span></motion.h2>
@@ -487,7 +488,7 @@ export function LandingPage({ onStart }: LandingPageProps) {
       <footer className="relative z-10 bg-[#060411]/98 border-t border-white/[0.06] px-6 lg:px-14 pt-16 pb-9 backdrop-blur-xl">
         <div className="max-w-[1200px] mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-20 pb-12 border-b border-white/[0.06] mb-12">
           <div className="space-y-4">
-            <div className="text-white text-[1rem] font-extrabold tracking-[0.06em] uppercase">AI <span className="text-primary">Founder</span></div>
+            <div className="text-white text-[1rem] font-extrabold tracking-[0.06em] uppercase">AI <span className="text-primary">Co-Founder</span></div>
             <p className="font-mono text-[#7166a0] text-[0.72rem] leading-[1.8] max-w-[220px]">Empowering innovators with the intelligence of a full executive team. Built for founders and creators.</p>
           </div>
           <div>
@@ -516,7 +517,7 @@ export function LandingPage({ onStart }: LandingPageProps) {
           </div>
         </div>
         <div className="max-w-[1200px] mx-auto flex flex-col md:flex-row justify-between items-center gap-4 font-mono text-[#7166a0] text-[0.65rem] tracking-[0.08em]">
-          <div>© 2026 AI Founder Venture Studio. All rights reserved.</div>
+          <div>© 2026 AI Co-Founder Venture Studio. All rights reserved.</div>
           <div className="flex items-center gap-2">
             <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
             Secure Cloud Infrastructure

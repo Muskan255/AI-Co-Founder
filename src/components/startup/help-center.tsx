@@ -19,28 +19,17 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { 
   HelpCircle, 
-  Rocket, 
-  LayoutDashboard, 
-  Brain, 
   Users2, 
-  Wrench, 
   Save, 
   FastForward,
-  Lightbulb,
-  ShieldCheck,
   Cpu,
   Megaphone,
   Banknote,
-  Box,
-  Map,
-  Target,
   MessageSquare,
   Bug,
   Sparkles,
   LogOut,
   User,
-  Calendar,
-  Mail,
   Send
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -82,7 +71,7 @@ export function HelpCenter({ children }: { children?: React.ReactNode }) {
       
       toast({
         title: "Feedback Received",
-        description: "Thank you for helping us improve AI Founder!",
+        description: "Thank you for helping us improve AI Co-Founder!",
       });
       setFeedbackMessage('');
     } catch (error) {
@@ -137,7 +126,7 @@ export function HelpCenter({ children }: { children?: React.ReactNode }) {
                     </AccordionTrigger>
                     <AccordionContent className="text-muted-foreground space-y-4">
                       <p>
-                        <strong>AI Founder</strong> is an end-to-end platform that provides an AI Co-Founder to help you turn startup ideas into real, viable businesses.
+                        <strong>AI Co-Founder</strong> is an end-to-end platform that provides an AI Co-Founder to help you turn startup ideas into real, viable businesses.
                       </p>
                       <p className="text-sm">
                         Follow our 6-step roadmap: Idea Validation, Strategy Blueprint, Product Dev, Growth Plan, Financial Strategy, and Accountability.

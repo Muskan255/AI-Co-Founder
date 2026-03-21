@@ -24,7 +24,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { LogIn, UserPlus, Sparkles, Mail, Rocket } from 'lucide-react';
+import { LogIn, UserPlus, Sparkles } from 'lucide-react';
 import { AIFounderLogo } from '@/components/ui/logo';
 
 interface AuthModalProps {
@@ -119,7 +119,7 @@ export function AuthModal({ children, open, onOpenChange }: AuthModalProps) {
 
       toast({
         title: "Account Created",
-        description: "Welcome to AI Founder.",
+        description: "Welcome to AI Co-Founder.",
       });
       if (onOpenChange) onOpenChange(false);
     } catch (error: any) {

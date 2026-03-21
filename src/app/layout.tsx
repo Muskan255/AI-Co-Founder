@@ -5,8 +5,8 @@ import { FirebaseClientProvider } from '@/firebase';
 import { Toaster } from '@/components/ui/toaster';
 
 export const metadata: Metadata = {
-  title: 'AI Founder | Synthetic Intelligence Partner',
-  description: 'AI-powered founder to help entrepreneurs build startups from idea to execution with a full executive team.',
+  title: 'AI Co-Founder | Synthetic Intelligence Partner',
+  description: 'AI-powered co-founder to help entrepreneurs build startups from idea to execution with a full executive team.',
 };
 
 export default function RootLayout({

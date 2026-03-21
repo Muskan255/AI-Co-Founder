@@ -55,15 +55,13 @@ import { ProjectListView } from '@/components/startup/project-list-view';
 import { PersonaWorkspaceView } from '@/components/startup/persona-workspace-view';
 import { StartupBrainView } from '@/components/startup/startup-brain-view';
 import { ProjectAssetsView } from '@/components/startup/project-assets-view';
-import { HelpCenter } from '@/components/startup/help-center';
 import { NotificationCenter } from '@/components/startup/notification-center';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAuth, useUser } from '@/firebase';
 import { signOut } from 'firebase/auth';
 import { AuthModal } from '@/components/auth/auth-modal';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { AIFounderLogo } from '@/components/ui/logo';
 import { LandingPage } from '@/components/landing/landing-page';
@@ -73,7 +71,7 @@ type ViewType = 'landing' | 'projects' | 'dashboard' | 'validation' | 'blueprint
 function HealthScoreCard() {
   const { state } = useStartup();
   if (!state.healthScore) return null;
-  const { totalScore, breakdown, analysis } = state.healthScore;
+  const { totalScore, analysis } = state.healthScore;
 
   return (
     <Card className="glass-card border-accent/20 bg-accent/5 overflow-hidden">
@@ -404,7 +402,7 @@ function MainApp() {
               <AIFounderLogo className="w-4 h-4 text-white" />
             </div>
             <div className="flex flex-col group-data-[collapsible=icon]:hidden">
-              <span className="font-headline font-bold text-base leading-none uppercase tracking-tighter">AI Founder</span>
+              <span className="font-headline font-bold text-base leading-none uppercase tracking-tighter">AI Co-Founder</span>
             </div>
           </div>
         </SidebarHeader>
