@@ -1,3 +1,4 @@
+
 "use client"
 
 import React, { useState, useEffect } from 'react';
@@ -14,12 +15,13 @@ import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
 import Image from 'next/image';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { ParticleSphere } from './particle-sphere';
 import { CustomCursor } from './custom-cursor';
 import { cn } from '@/lib/utils';
-import { Separator } from '@/components/ui/separator';
 
 interface LandingPageProps {
   onStart: () => void;
@@ -346,68 +348,7 @@ export function LandingPage({ onStart }: LandingPageProps) {
         </div>
       </section>
 
-      {/* Help Section */}
-      <section id="help" className="relative py-24 px-6 lg:px-14 z-10 bg-[#060411]/70 backdrop-blur-md">
-        <div className="max-w-[1200px] mx-auto">
-          <motion.p {...fadeIn} className="font-mono text-primary text-[0.65rem] tracking-[0.22em] uppercase">// How to Use</motion.p>
-          <motion.h2 {...fadeIn} className="text-[clamp(2rem,4vw,3.6rem)] font-headline font-extrabold leading-[1.05] uppercase mt-4">
-            Master the Platform<br />in <span className="text-accent italic">Minutes.</span>
-          </motion.h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-0.5 bg-white/[0.06] mt-16 border border-white/[0.06] overflow-hidden">
-            {[
-              { title: "Create a startup", icon: <Lightbulb />, desc: "Use the validation tool to pitch your first idea." },
-              { title: "Use AI personas", icon: <Users2 />, desc: "Switch roles in the sidebar to get different perspectives." },
-              { title: "Generate strategies", icon: <Map />, desc: "Ask the board for blueprints, marketing plans, and tech stacks." },
-              { title: "Save and continue", icon: <Lock />, desc: "Log in to ensure your Venture Archive is synced to the cloud." }
-            ].map((g, i) => (
-              <motion.div key={i} {...fadeIn} className="bg-white/[0.03] backdrop-blur-md p-11 relative group hover:bg-secondary/[0.03] transition-all overflow-hidden border border-transparent hover:border-secondary/20">
-                <div className="w-10 h-10 border border-white/[0.06] flex items-center justify-center text-secondary mb-6">
-                  {React.cloneElement(g.icon as React.ReactElement, { className: "w-5 h-5" })}
-                </div>
-                <div className="font-mono text-secondary text-[0.58rem] tracking-[0.2em] mb-3">Step 0{i+1}</div>
-                <h3 className="text-[1.1rem] font-bold tracking-tight mb-3 text-white">{g.title}</h3>
-                <p className="font-mono text-[#7166a0] text-[0.75rem] leading-[1.8]">{g.desc}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* FAQ Section */}
-      <section id="faq" className="relative py-24 px-6 lg:px-14 z-10 bg-[#09071a]/75 backdrop-blur-md">
-        <div className="max-w-[800px] mx-auto">
-          <motion.p {...fadeIn} className="font-mono text-primary text-[0.65rem] tracking-[0.22em] uppercase">// FAQ</motion.p>
-          <motion.h2 {...fadeIn} className="text-[3rem] font-headline font-extrabold uppercase mt-4 mb-12">Frequently Asked<br /><span className="text-accent italic">Questions.</span></motion.h2>
-          
-          <div className="space-y-0">
-            {[
-              { q: "Do I need to log in?", a: "No — you can try AI Co-Founder without logging in. However, logging in enables persistent saving, full access to Startup Brain, and cloud synchronization." },
-              { q: "How do I save my work?", a: "Create a free account to save your ventures. With Founder Cloud ($29/mo), you get unlimited saves and full persistent memory across all sessions." },
-              { q: "What AI models power the platform?", a: "We use a multi-agent architecture powered by state-of-the-art LLMs specialized for executive functions like product, marketing, and finance." },
-              { q: "Can I generate real code?", a: "Yes. The CTO persona generates production-grade code, technical architecture plans, and MVP scaffolding based on your specifications." }
-            ].map((item, i) => (
-              <motion.div key={i} {...fadeIn} className="border-t border-white/[0.06] last:border-b">
-                <Accordion type="single" collapsible>
-                  <AccordionItem value={`item-${i}`} className="border-0">
-                    <AccordionTrigger className="hover:no-underline py-7 text-[1rem] font-bold text-left tracking-tight text-white group">
-                      <div className="flex justify-between items-center w-full pr-4">
-                        {item.q}
-                        <span className="text-primary text-xl font-normal group-data-[state=open]:rotate-45 transition-transform">+</span>
-                      </div>
-                    </AccordionTrigger>
-                    <AccordionContent className="font-mono text-[#7166a0] text-[0.78rem] font-medium leading-[1.85] pb-7 max-w-[600px]">
-                      {item.a}
-                    </AccordionContent>
-                  </AccordionItem>
-                </Accordion>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Agentic Section */}
+      {/* Agentic AI Section */}
       <section id="agentic" className="relative py-24 px-6 lg:px-14 z-10 bg-[#09071a]/75 backdrop-blur-md">
         <div className="max-w-[1200px] mx-auto">
           <motion.p {...fadeIn} className="font-mono text-primary text-[0.65rem] tracking-[0.22em] uppercase">// How Our Agentic AI Works</motion.p>
@@ -442,7 +383,7 @@ export function LandingPage({ onStart }: LandingPageProps) {
         </div>
       </section>
 
-      {/* Founder Section */}
+      {/* Founders Section */}
       <section id="founders" className="relative py-24 px-6 lg:px-14 z-10 bg-[#060411]/70 backdrop-blur-md border-t border-white/[0.06]">
         <div className="max-w-[1200px] mx-auto text-center">
           <motion.p {...fadeIn} className="font-mono text-primary text-[0.65rem] tracking-[0.22em] uppercase mb-4">// The Architects</motion.p>
@@ -501,6 +442,39 @@ export function LandingPage({ onStart }: LandingPageProps) {
               Share ideas, learn from other builders, and collaborate on the next big thing. Community features launching soon.
             </p>
           </motion.div>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section id="faq" className="relative py-24 px-6 lg:px-14 z-10 bg-[#09071a]/75 backdrop-blur-md">
+        <div className="max-w-[800px] mx-auto">
+          <motion.p {...fadeIn} className="font-mono text-primary text-[0.65rem] tracking-[0.22em] uppercase">// FAQ</motion.p>
+          <motion.h2 {...fadeIn} className="text-[3rem] font-headline font-extrabold uppercase mt-4 mb-12">Frequently Asked<br /><span className="text-accent italic">Questions.</span></motion.h2>
+          
+          <div className="space-y-0">
+            {[
+              { q: "Do I need to log in?", a: "No — you can try AI Co-Founder without logging in. However, logging in enables persistent saving, full access to Startup Brain, and cloud synchronization." },
+              { q: "How do I save my work?", a: "Create a free account to save your ventures. With Founder Cloud ($29/mo), you get unlimited saves and full persistent memory across all sessions." },
+              { q: "What AI models power the platform?", a: "We use a multi-agent architecture powered by state-of-the-art LLMs specialized for executive functions like product, marketing, and finance." },
+              { q: "Can I generate real code?", a: "Yes. The CTO persona generates production-grade code, technical architecture plans, and MVP scaffolding based on your specifications." }
+            ].map((item, i) => (
+              <motion.div key={i} {...fadeIn} className="border-t border-white/[0.06] last:border-b">
+                <Accordion type="single" collapsible>
+                  <AccordionItem value={`item-${i}`} className="border-0">
+                    <AccordionTrigger className="hover:no-underline py-7 text-[1rem] font-bold text-left tracking-tight text-white group">
+                      <div className="flex justify-between items-center w-full pr-4">
+                        {item.q}
+                        <span className="text-primary text-xl font-normal group-data-[state=open]:rotate-45 transition-transform">+</span>
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="font-mono text-[#7166a0] text-[0.78rem] font-medium leading-[1.85] pb-7 max-w-[600px]">
+                      {item.a}
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
 
