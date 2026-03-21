@@ -34,11 +34,10 @@ export function ParticleSphere() {
       pos[i * 3 + 1] = R * Math.sin(theta) * Math.sin(p);
       pos[i * 3 + 2] = R * Math.cos(theta);
 
-      // Normalized coordinates for color mapping
-      // Match reference image: magenta-purple left, orange-red center, gold right
       const nx = (pos[i * 3] / R + 1) / 2;
       const ny = (pos[i * 3 + 1] / R + 1) / 2;
       
+      // Match reference animation: magenta-purple left, orange-red center, gold right
       const t = nx;
       const r = t < 0.5 ? (0.5 + t * 1.0) : 1.0;
       const g = t < 0.5 ? (t * 0.3 * ny) : (t - 0.5) * 1.3 * ny;
@@ -55,7 +54,6 @@ export function ParticleSphere() {
     geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
     geo.setAttribute('size', new THREE.BufferAttribute(sz, 1));
 
-    // Create glow texture
     const tc = document.createElement('canvas');
     tc.width = tc.height = 64;
     const ctx = tc.getContext('2d');
@@ -112,7 +110,6 @@ export function ParticleSphere() {
       pts.rotation.y = t * 0.16 + cy;
       pts.rotation.x = cx * 0.4 + Math.sin(t * 0.1) * 0.05;
       
-      // Breathing pulse effect
       const br = 1 + Math.sin(bt) * 0.015;
       pts.scale.setScalar(br);
       

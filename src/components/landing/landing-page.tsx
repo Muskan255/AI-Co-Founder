@@ -1,4 +1,3 @@
-
 "use client"
 
 import React, { useState, useEffect } from 'react';
@@ -6,8 +5,8 @@ import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import { 
   Users2, Brain, Wrench, PlayCircle, ShieldCheck, 
-  Menu, Code2, Lightbulb, Map, Lock,
-  Cpu, Megaphone, Banknote, Box, Heart, Zap, Target, Share2, Send, MessageSquare, Bug
+  Menu, Code2, Lightbulb, Lock, Map,
+  Cpu, Megaphone, Banknote, Box, Heart, Zap, Target, Share2, Send, MessageSquare, Bug, ChevronRight
 } from 'lucide-react';
 import { AuthModal } from '@/components/auth/auth-modal';
 import { useFirestore, useUser } from '@/firebase';
@@ -81,7 +80,7 @@ export function LandingPage({ onStart }: LandingPageProps) {
         <button 
           key={item} 
           onClick={() => scrollTo(item)} 
-          className="text-[0.7rem] font-mono font-medium tracking-[0.12em] uppercase text-[#7166a0] hover:text-white transition-colors py-2 lg:py-0"
+          className="text-[0.7rem] font-mono font-medium tracking-[0.12em] uppercase text-[#7166a0] hover:text-white transition-colors py-2 lg:py-0 text-left lg:text-center"
         >
           {item}
         </button>
@@ -144,7 +143,7 @@ export function LandingPage({ onStart }: LandingPageProps) {
       </nav>
 
       {/* Hero Section */}
-      <section id="hero" className="relative min-h-screen flex flex-col justify-center items-center text-center px-6 pt-32 pb-20 z-10">
+      <section id="hero" className="relative min-h-screen flex flex-col justify-center items-center text-center px-6 pt-32 pb-20 z-10 bg-transparent">
         <motion.div 
           initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
@@ -447,7 +446,7 @@ export function LandingPage({ onStart }: LandingPageProps) {
                         <span className="text-primary text-xl font-normal group-data-[state=open]:rotate-45 transition-transform">+</span>
                       </div>
                     </AccordionTrigger>
-                    <AccordionContent className="font-mono text-[#7166a0] text-[0.78rem] leading-[1.85] pb-7 max-w-[600px]">
+                    <AccordionContent className="font-mono text-[#7166a0] text-[0.78rem] font-medium leading-[1.85] pb-7 max-w-[600px]">
                       {item.a}
                     </AccordionContent>
                   </AccordionItem>

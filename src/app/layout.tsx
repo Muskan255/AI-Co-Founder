@@ -1,4 +1,3 @@
-
 import type {Metadata} from 'next';
 import './globals.css';
 import { FirebaseClientProvider } from '@/firebase';
@@ -9,7 +8,7 @@ export const metadata: Metadata = {
   description: 'AI-powered co-founder to help entrepreneurs build startups from idea to execution with a full executive team.',
 };
 
-export default function RootLayout({
+export default function RootLayer({
   children,
 }: Readonly<{
   children: React.ReactNode;
