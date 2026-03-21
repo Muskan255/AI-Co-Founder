@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import { 
   Users2, Brain, Wrench, PlayCircle, ShieldCheck, 
-  Menu, Code2, Lightbulb, Lock, Map,
+  Menu, Code2, Lightbulb, Map,
   Cpu, Megaphone, Banknote, Box, Heart, Zap, Target, Share2, Send, MessageSquare, Bug, ChevronRight, Clock
 } from 'lucide-react';
 import { AuthModal } from '@/components/auth/auth-modal';
@@ -221,7 +221,7 @@ export function LandingPage({ onStart }: LandingPageProps) {
             </div>
           </motion.div>
           <motion.div {...fadeIn} className="flex justify-center">
-            <div className="text-center p-12 glass-card rounded-full aspect-square flex flex-col justify-center items-center border-dashed border-white/10">
+            <div className="text-center p-12 bg-white/[0.03] backdrop-blur-md border border-white/[0.06] rounded-full aspect-square flex flex-col justify-center items-center border-dashed border-white/10">
               <div className="font-mono text-[#7166a0] text-[0.65rem] tracking-[0.18em] uppercase">Ventures Launched</div>
               <div className="text-white text-[3.5rem] font-extrabold leading-none my-2">2.4<span className="text-primary">K+</span></div>
               <div className="font-mono text-[#7166a0] text-[0.65rem] tracking-[0.18em] uppercase">and counting</div>

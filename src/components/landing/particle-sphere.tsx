@@ -10,7 +10,7 @@ export function ParticleSphere() {
   useEffect(() => {
     if (!containerRef.current) return;
 
-    // ── Renderer
+    // ── Renderer Setup
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -21,15 +21,14 @@ export function ParticleSphere() {
     const camera = new THREE.PerspectiveCamera(58, window.innerWidth / window.innerHeight, 0.1, 1000);
     camera.position.z = 5;
 
-    // ── Particles (Fibonacci Distribution)
+    // ── Particle Creation (Fibonacci Sphere)
     const COUNT = 2000;
     const pos = new Float32Array(COUNT * 3);
     const col = new Float32Array(COUNT * 3);
-    const phi = (1 + Math.sqrt(5)) / 2; // Golden Ratio
-    const R = 2.3; // Sphere Radius
+    const phi = (1 + Math.sqrt(5)) / 2; // Golden ratio
+    const R = 2.3; // Sphere radius
 
     for (let i = 0; i < COUNT; i++) {
-      // Fibonacci sphere distribution
       const theta = Math.acos(1 - 2 * (i + 0.5) / COUNT);
       const p = 2 * Math.PI * i / phi;
       
@@ -42,7 +41,6 @@ export function ParticleSphere() {
       const ny = (pos[i * 3 + 1] / R + 1) / 2;
       const t = nx;
       
-      // Interpolation logic matching technical specification
       const r = t < 0.5 ? (0.5 + t * 1.0) : 1.0;
       const g = t < 0.5 ? (t * 0.3 * ny) : (t - 0.5) * 1.3 * ny;
       const b = t < 0.5 ? ((1 - t) * 0.95 * (1 - ny * 0.6)) : 0;
@@ -56,16 +54,16 @@ export function ParticleSphere() {
     geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
     geo.setAttribute('color',    new THREE.BufferAttribute(col, 3));
 
-    // ── Glow Texture (Radial Bloom)
+    // ── Glow Texture (The soft bloom)
     const tc = document.createElement('canvas');
     tc.width = tc.height = 64;
     const ctx2d = tc.getContext('2d')!;
-    const g = ctx2d.createRadialGradient(32, 32, 0, 32, 32, 32);
-    g.addColorStop(0,    'rgba(255,255,255,1)');       // Bright center
-    g.addColorStop(0.25, 'rgba(255,230,180,0.85)');    // Warm halo
-    g.addColorStop(0.55, 'rgba(255,100,50,0.25)');     // Orange fade
-    g.addColorStop(1,    'rgba(0,0,0,0)');             // Transparent edge
-    ctx2d.fillStyle = g;
+    const grad = ctx2d.createRadialGradient(32, 32, 0, 32, 32, 32);
+    grad.addColorStop(0,    'rgba(255,255,255,1)');       // bright white center
+    grad.addColorStop(0.25, 'rgba(255,230,180,0.85)');    // warm halo
+    grad.addColorStop(0.55, 'rgba(255,100,50,0.25)');     // orange fade
+    grad.addColorStop(1,    'rgba(0,0,0,0)');             // transparent edge
+    ctx2d.fillStyle = grad;
     ctx2d.fillRect(0, 0, 64, 64);
 
     const mat = new THREE.PointsMaterial({
@@ -106,7 +104,7 @@ export function ParticleSphere() {
       requestAnimationFrame(loop);
 
       const t = clock.getElapsedTime();
-      bt += 0.006; // Breath speed
+      bt += 0.006; // Increment breath timer
 
       // Smooth mouse lerp (0.035 factor)
       cx += (tx - cx) * 0.035;
@@ -136,5 +134,5 @@ export function ParticleSphere() {
     };
   }, []);
 
-  return <div ref={containerRef} className="fixed top-0 left-0 w-full h-full z-0 pointer-events-none bg-transparent" />;
+  return <div ref={containerRef} className="fixed inset-0 z-0 pointer-events-none bg-transparent" />;
 }
