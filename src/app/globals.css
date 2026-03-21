@@ -1,29 +1,30 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 220 18% 10%;
-    --foreground: 210 20% 98%;
-    --card: 220 18% 12%;
-    --card-foreground: 210 20% 98%;
-    --popover: 220 18% 10%;
-    --popover-foreground: 210 20% 98%;
-    --primary: 217 75% 40%;
-    --primary-foreground: 210 20% 98%;
-    --secondary: 220 18% 15%;
-    --secondary-foreground: 210 20% 98%;
-    --muted: 220 18% 15%;
-    --muted-foreground: 215 15% 65%;
-    --accent: 188 73% 52%;
-    --accent-foreground: 220 18% 10%;
+    --background: 251 46% 5%;
+    --foreground: 255 100% 95%;
+    --card: 255 100% 100% / 0.03;
+    --card-foreground: 255 100% 95%;
+    --popover: 251 46% 5%;
+    --popover-foreground: 255 100% 95%;
+    --primary: 9 100% 50%;
+    --primary-foreground: 0 0% 0%;
+    --secondary: 288 100% 50%;
+    --secondary-foreground: 255 100% 95%;
+    --muted: 251 22% 52%;
+    --muted-foreground: 251 22% 52%;
+    --accent: 40 100% 50%;
+    --accent-foreground: 0 0% 0%;
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 20% 98%;
-    --border: 220 18% 18%;
-    --input: 220 18% 18%;
-    --ring: 217 75% 40%;
-    --radius: 0.75rem;
+    --destructive-foreground: 255 100% 95%;
+    --border: 255 100% 100% / 0.06;
+    --input: 255 100% 100% / 0.06;
+    --ring: 9 100% 50%;
+    --radius: 0rem;
   }
 }
 
@@ -32,7 +33,7 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground font-body;
+    @apply bg-background text-foreground font-body cursor-none;
   }
   h1, h2, h3, h4, h5, h6 {
     @apply font-headline tracking-tight;
@@ -42,33 +43,51 @@
   }
 }
 
+@layer utilities {
+  .font-headline {
+    font-family: 'Bricolage Grotesque', sans-serif;
+  }
+  .font-body, .font-code {
+    font-family: 'Geist Mono', monospace;
+  }
+}
+
+.noise-overlay {
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.022;
+  pointer-events: none;
+  z-index: 8000;
+}
+
+.text-outline {
+  -webkit-text-stroke: 1.5px hsl(var(--primary));
+  color: transparent;
+}
+
 .glass-card {
-  @apply bg-card/50 backdrop-blur-md border border-white/5;
+  @apply bg-white/5 backdrop-blur-sm border border-white/10;
 }
 
-.gradient-text {
-  @apply bg-clip-text text-transparent bg-gradient-to-r from-[#1A55B3] to-[#2DBEDE];
+.gradient-orange-violet {
+  background: linear-gradient(90deg, #cc00ff, #ff4500);
 }
 
-@keyframes float {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
-  100% { transform: translateY(0px); }
+@keyframes pulse-dot {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 69, 0, 0.6); }
+  50% { box-shadow: 0 0 0 8px rgba(255, 69, 0, 0); }
 }
 
-@keyframes pulse-glow {
-  0%, 100% { opacity: 0.5; filter: blur(20px); }
-  50% { opacity: 0.8; filter: blur(35px); }
+.animate-pulse-dot {
+  animation: pulse-dot 2s ease-in-out infinite;
 }
 
-.animate-float {
-  animation: float 4s ease-in-out infinite;
+@keyframes scroll-bar-anim {
+  0%, 100% { transform: scaleY(0.5); opacity: 0.3; }
+  50% { transform: scaleY(1); opacity: 1; }
 }
 
-.animate-pulse-glow {
-  animation: pulse-glow 3s ease-in-out infinite;
-}
-
-.landing-accent-pink {
-  background: radial-gradient(circle at center, hsla(322, 81%, 75%, 0.15) 0%, transparent 70%);
+.animate-scroll-bar {
+  animation: scroll-bar-anim 2s ease-in-out infinite;
 }
