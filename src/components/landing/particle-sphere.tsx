@@ -127,5 +127,5 @@ export function ParticleSphere() {
     };
   }, []);
 
-  return <div ref={containerRef} className="fixed top-0 left-0 w-full h-full z-[-1] pointer-events-none" />;
+  return <div ref={containerRef} className="fixed top-0 left-0 w-full h-full z-0 pointer-events-none" />;
 }
