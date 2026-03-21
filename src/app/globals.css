@@ -31,8 +31,12 @@
   * {
     @apply border-border;
   }
+  html {
+    background-color: #060411;
+  }
   body {
-    @apply bg-background text-foreground font-body cursor-none selection:bg-primary selection:text-white;
+    background-color: #060411;
+    @apply text-foreground font-body cursor-none selection:bg-primary selection:text-white;
   }
   h1, h2, h3, h4, h5, h6 {
     @apply font-headline tracking-tight;
@@ -44,15 +48,17 @@
 
 @layer components {
   .cinematic-card {
-    @apply bg-white/[0.03] border border-white/[0.06] transition-all duration-300 relative overflow-hidden backdrop-blur-md;
+    @apply bg-white/[0.03] border border-white/[0.06] transition-all duration-300 relative overflow-hidden;
   }
   
   .cinematic-card-hover-primary:hover {
-    @apply border-primary/20 bg-primary/[0.03];
+    @apply border-primary/25 bg-primary/[0.04];
+    box-shadow: 0 0 40px rgba(255, 69, 0, 0.06), inset 0 0 40px rgba(255, 69, 0, 0.02);
   }
   
   .cinematic-card-hover-secondary:hover {
     @apply border-secondary/30 bg-secondary/[0.03];
+    box-shadow: 0 0 40px rgba(204, 0, 255, 0.06);
   }
 
   .hover-line-effect::after {
@@ -67,10 +73,13 @@
 
 @layer utilities {
   .font-headline {
-    font-family: 'Bricolage Grotesque', sans-serif;
+    font-family: 'Space Grotesk', sans-serif;
   }
-  .font-body, .font-code {
-    font-family: 'Geist Mono', monospace;
+  .font-body {
+    font-family: 'Inter', sans-serif;
+  }
+  .font-code {
+    font-family: 'Source Code Pro', monospace;
   }
   .gradient-text {
     @apply bg-clip-text text-transparent bg-gradient-to-r from-white via-white to-white/40;

@@ -1,34 +1,52 @@
-
 "use client"
-
-import React, { useEffect, useState } from 'react';
-import { motion, useSpring } from 'framer-motion';
+import { useEffect, useRef } from 'react';
 
 export function CustomCursor() {
-  const [pos, setPos] = useState({ x: 0, y: 0 });
-  const springX = useSpring(0, { damping: 25, stiffness: 200 });
-  const springY = useSpring(0, { damping: 25, stiffness: 200 });
+  const dotRef  = useRef<HTMLDivElement>(null);
+  const ringRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const onMouseMove = (e: MouseEvent) => {
-      setPos({ x: e.clientX, y: e.clientY });
-      springX.set(e.clientX);
-      springY.set(e.clientY);
+    let rx = 0, ry = 0, mx = 0, my = 0;
+
+    const onMove = (e: MouseEvent) => { mx = e.clientX; my = e.clientY; };
+    window.addEventListener('mousemove', onMove, { passive: true });
+
+    let raf: number;
+    const tick = () => {
+      rx += (mx - rx) * 0.15;
+      ry += (my - ry) * 0.15;
+      if (dotRef.current) {
+        dotRef.current.style.left = mx + 'px';
+        dotRef.current.style.top  = my + 'px';
+      }
+      if (ringRef.current) {
+        ringRef.current.style.left = rx + 'px';
+        ringRef.current.style.top  = ry + 'px';
+      }
+      raf = requestAnimationFrame(tick);
     };
-    window.addEventListener('mousemove', onMouseMove);
-    return () => window.removeEventListener('mousemove', onMouseMove);
-  }, [springX, springY]);
+    tick();
+
+    return () => {
+      window.removeEventListener('mousemove', onMove);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, []);
 
   return (
     <>
-      <motion.div 
-        className="fixed z-[9999] w-2 h-2 rounded-full bg-primary pointer-events-none mix-blend-screen"
-        style={{ left: pos.x, top: pos.y, transform: 'translate(-50%, -50%)' }}
-      />
-      <motion.div 
-        className="fixed z-[9998] w-8 h-8 rounded-full border border-secondary/45 pointer-events-none"
-        style={{ left: springX, top: springY, transform: 'translate(-50%, -50%)' }}
-      />
+      <div ref={dotRef} style={{
+        position: 'fixed', width: 8, height: 8, borderRadius: '50%',
+        background: 'hsl(9,100%,50%)', pointerEvents: 'none',
+        transform: 'translate(-50%,-50%)', mixBlendMode: 'screen',
+        zIndex: 9999,
+      }} />
+      <div ref={ringRef} style={{
+        position: 'fixed', width: 32, height: 32, borderRadius: '50%',
+        border: '1px solid rgba(204,0,255,0.45)', pointerEvents: 'none',
+        transform: 'translate(-50%,-50%)', zIndex: 9998,
+        transition: 'width 0.25s, height 0.25s',
+      }} />
     </>
   );
 }
