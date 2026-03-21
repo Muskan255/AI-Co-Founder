@@ -1,4 +1,3 @@
-
 "use client"
 
 import React, { useState } from 'react';
@@ -41,6 +40,8 @@ import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import Image from 'next/image';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 interface LandingPageProps {
   onStart: () => void;
@@ -357,7 +358,7 @@ export function LandingPage({ onStart }: LandingPageProps) {
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="item-2" className="border-white/5">
-                <AccordionTrigger className="hover:no-underline font-bold text-white text-xs sm:text-sm">How do I save my work?</AccordionTrigger>
+                <AccordionTrigger className="hover:no-underline font-bold text-white text-xs sm:text-sm">How do I save my startup?</AccordionTrigger>
                 <AccordionContent className="text-muted-foreground text-[11px] sm:text-xs">
                   Once you sign in, any active experiment is automatically synchronized to your Founder Cloud account.
                 </AccordionContent>
@@ -434,6 +435,69 @@ export function LandingPage({ onStart }: LandingPageProps) {
         </div>
       </section>
 
+      {/* Meet the Founders Section */}
+      <section className="relative py-16 sm:py-24 px-4 sm:px-6 z-10 border-t border-white/5 bg-white/[0.01]">
+        <div className="max-w-5xl mx-auto space-y-12 sm:space-y-16">
+          <div className="text-center space-y-4">
+            <h2 className="text-3xl sm:text-5xl font-headline font-bold text-white">Meet the Founders</h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-12">
+            {/* Founder 1: Muskan */}
+            <Card className="glass-card border-white/5 hover:border-accent/30 transition-all duration-500 overflow-hidden group">
+              <div className="relative aspect-square w-full">
+                <Image 
+                  src={PlaceHolderImages.find(img => img.id === 'founder-muskan')?.imageUrl || ''} 
+                  alt="Muskan" 
+                  fill 
+                  className="object-cover group-hover:scale-105 transition-transform duration-700"
+                  data-ai-hint="professional woman"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0A0C10] to-transparent opacity-60" />
+              </div>
+              <CardContent className="p-6 sm:p-8 space-y-3 relative">
+                <div className="space-y-1">
+                  <h3 className="text-xl sm:text-2xl font-headline font-bold text-white">Muskan</h3>
+                  <Badge variant="outline" className="text-accent border-accent/20 uppercase tracking-widest text-[10px]">Co-Founder</Badge>
+                </div>
+                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+                  Muskan is focused on shaping the vision and user experience of AI Founder. She works on designing how the system thinks, guides users, and transforms ideas into structured startup workflows. Her approach is centered around making complex startup building simple, intuitive, and accessible through intelligent systems.
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* Founder 2: Navaneeth */}
+            <Card className="glass-card border-white/5 hover:border-accent/30 transition-all duration-500 overflow-hidden group">
+              <div className="relative aspect-square w-full">
+                <Image 
+                  src={PlaceHolderImages.find(img => img.id === 'founder-navaneeth')?.imageUrl || ''} 
+                  alt="Navaneeth" 
+                  fill 
+                  className="object-cover group-hover:scale-105 transition-transform duration-700"
+                  data-ai-hint="professional man"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0A0C10] to-transparent opacity-60" />
+              </div>
+              <CardContent className="p-6 sm:p-8 space-y-3 relative">
+                <div className="space-y-1">
+                  <h3 className="text-xl sm:text-2xl font-headline font-bold text-white">Navaneeth</h3>
+                  <Badge variant="outline" className="text-accent border-accent/20 uppercase tracking-widest text-[10px]">Co-Founder</Badge>
+                </div>
+                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+                  Navaneeth works on building and structuring the technical backbone of AI Founder. He focuses on developing scalable systems, connecting AI components, and ensuring the platform runs smoothly as a coordinated multi-agent system.
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="text-center pt-8 border-t border-white/5">
+            <p className="text-sm sm:text-base text-muted-foreground italic max-w-2xl mx-auto">
+              "Built together with a shared vision to create an AI system that doesn’t just assist—but builds alongside you."
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* Footer */}
       <footer className="relative z-10 py-12 sm:py-16 px-4 sm:px-6 border-t border-white/5 bg-[#0A0C10]">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-10 sm:gap-12">
@@ -463,9 +527,16 @@ export function LandingPage({ onStart }: LandingPageProps) {
           <div className="space-y-4">
             <h5 className="font-bold text-[10px] uppercase tracking-widest text-accent">Connect</h5>
             <div className="flex gap-4">
-              {["Twitter", "LinkedIn", "GitHub"].map((s, i) => (
-                <a key={i} href="#" className="text-[10px] font-bold text-muted-foreground hover:text-accent transition-colors uppercase tracking-widest">{s}</a>
-              ))}
+              <a href="#" className="text-[10px] font-bold text-muted-foreground hover:text-accent transition-colors uppercase tracking-widest">Twitter</a>
+              <a 
+                href="https://www.linkedin.com/in/muskan-843434323?utm_source=share_via&utm_content=profile&utm_medium=member_android" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="text-[10px] font-bold text-muted-foreground hover:text-accent transition-colors uppercase tracking-widest"
+              >
+                LinkedIn
+              </a>
+              <a href="#" className="text-[10px] font-bold text-muted-foreground hover:text-accent transition-colors uppercase tracking-widest">GitHub</a>
             </div>
           </div>
         </div>
