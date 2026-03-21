@@ -8,7 +8,7 @@ import {
   Users2, Brain, Wrench, PlayCircle, Bell, ShieldCheck, 
   ArrowRight, Sparkles, Zap, Menu, Send, Globe, Check, 
   Code2, Target, Lock, Lightbulb, Map, Clock, 
-  MessageSquare, Bug, Cpu, Megaphone, Banknote, Box, Info
+  MessageSquare, Bug, Cpu, Megaphone, Banknote, Box, Info, X
 } from 'lucide-react';
 import { AuthModal } from '@/components/auth/auth-modal';
 import { Badge } from '@/components/ui/badge';
@@ -26,6 +26,7 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { ParticleSphere } from './particle-sphere';
 import { CustomCursor } from './custom-cursor';
 import { cn } from '@/lib/utils';
+import { Separator } from '@/components/ui/separator';
 
 interface LandingPageProps {
   onStart: () => void;
@@ -95,7 +96,7 @@ export function LandingPage({ onStart }: LandingPageProps) {
   );
 
   return (
-    <div className="min-h-screen bg-[#060411] text-[#ede8ff] overflow-x-hidden font-body">
+    <div className="min-h-screen bg-[#060411] text-[#ede8ff] overflow-x-hidden font-body selection:bg-primary selection:text-white">
       <div className="noise-overlay" />
       <ParticleSphere />
       <CustomCursor />
@@ -104,7 +105,7 @@ export function LandingPage({ onStart }: LandingPageProps) {
       {/* Navigation */}
       <nav className={cn(
         "fixed top-0 left-0 right-0 z-[200] px-6 lg:px-14 h-20 flex items-center justify-between transition-all duration-400",
-        scrolled ? "bg-[#060411]/85 backdrop-blur-xl border-b border-white/5" : "bg-transparent"
+        scrolled ? "bg-[#060411]/85 backdrop-blur-xl border-b border-white/5" : "bg-transparent border-b border-transparent"
       )}>
         <div className="flex items-center gap-3 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
           <div className="w-2 h-2 rounded-full bg-primary animate-pulse-dot" />
@@ -125,20 +126,23 @@ export function LandingPage({ onStart }: LandingPageProps) {
           
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="lg:hidden text-white">
+              <Button variant="ghost" size="icon" className="lg:hidden text-white hover:bg-white/5">
                 <Menu className="w-6 h-6" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="bg-[#060411] border-white/5 text-white">
-              <SheetHeader className="text-left">
-                <SheetTitle className="text-white flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-primary" />
-                  AI Founder
-                </SheetTitle>
-              </SheetHeader>
-              <div className="flex flex-col gap-4 mt-8">
-                <NavLinks />
-                <Button variant="outline" className="w-full border-white/5 text-[0.68rem] tracking-[0.1em] uppercase" onClick={() => setAuthOpen(true)}>Sign In</Button>
+            <SheetContent side="right" className="bg-[#060411] border-white/5 text-white p-0">
+              <div className="p-8 space-y-8">
+                <SheetHeader className="text-left">
+                  <SheetTitle className="text-white flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-primary" />
+                    AI Founder
+                  </SheetTitle>
+                </SheetHeader>
+                <div className="flex flex-col gap-6 mt-8">
+                  <NavLinks />
+                  <Separator className="bg-white/5" />
+                  <Button variant="outline" className="w-full border-white/10 text-[0.68rem] tracking-[0.1em] uppercase h-12" onClick={() => setAuthOpen(true)}>Sign In</Button>
+                </div>
               </div>
             </SheetContent>
           </Sheet>
