@@ -32,7 +32,7 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground font-body cursor-none;
+    @apply bg-background text-foreground font-body cursor-none selection:bg-primary selection:text-white;
   }
   h1, h2, h3, h4, h5, h6 {
     @apply font-headline tracking-tight;
@@ -42,12 +42,38 @@
   }
 }
 
+@layer components {
+  .cinematic-card {
+    @apply bg-white/[0.03] border border-white/[0.06] transition-all duration-300 relative overflow-hidden backdrop-blur-md;
+  }
+  
+  .cinematic-card-hover-primary:hover {
+    @apply border-primary/20 bg-primary/[0.03];
+  }
+  
+  .cinematic-card-hover-secondary:hover {
+    @apply border-secondary/30 bg-secondary/[0.03];
+  }
+
+  .hover-line-effect::after {
+    content: '';
+    @apply absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-primary to-transparent scale-x-0 transition-transform duration-500;
+  }
+  
+  .hover-line-effect:hover::after {
+    @apply scale-x-100;
+  }
+}
+
 @layer utilities {
   .font-headline {
     font-family: 'Bricolage Grotesque', sans-serif;
   }
   .font-body, .font-code {
     font-family: 'Geist Mono', monospace;
+  }
+  .gradient-text {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-white via-white to-white/40;
   }
 }
 
@@ -63,10 +89,6 @@
 .text-outline {
   -webkit-text-stroke: 1.5px hsl(var(--primary));
   color: transparent;
-}
-
-.glass-card {
-  @apply bg-white/[0.03] backdrop-blur-md border border-white/[0.06];
 }
 
 @keyframes pulse-dot {

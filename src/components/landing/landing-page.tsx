@@ -1,4 +1,3 @@
-
 "use client"
 
 import React, { useState, useEffect } from 'react';
@@ -7,7 +6,7 @@ import { motion } from 'framer-motion';
 import { 
   Users2, Brain, Wrench, PlayCircle, ShieldCheck, 
   Menu, Code2, Lightbulb, Map,
-  Cpu, Megaphone, Banknote, Box, Heart, Zap, Target, Share2, Send, MessageSquare, Bug, ChevronRight, Clock
+  Cpu, Megaphone, Banknote, Box, Heart, Zap, Target, Share2, Send, MessageSquare, Bug, ChevronRight, Clock, Plus, Infinity
 } from 'lucide-react';
 import { AuthModal } from '@/components/auth/auth-modal';
 import { useFirestore, useUser } from '@/firebase';
@@ -91,7 +90,7 @@ export function LandingPage({ onStart }: LandingPageProps) {
   );
 
   return (
-    <div className="min-h-screen bg-transparent text-[#ede8ff] overflow-x-hidden font-body selection:bg-primary selection:text-white relative">
+    <div className="min-h-screen bg-transparent text-[#ede8ff] overflow-x-hidden font-body relative">
       <div className="noise-overlay" />
       <ParticleSphere />
       <CustomCursor />
@@ -197,7 +196,7 @@ export function LandingPage({ onStart }: LandingPageProps) {
       </section>
 
       {/* About Section */}
-      <section id="about" className="relative py-24 px-6 lg:px-14 z-10 bg-[#060411]/70 backdrop-blur-md">
+      <section id="about" className="relative py-24 px-6 lg:px-14 z-10 bg-[#060411]/40 backdrop-blur-sm">
         <div className="max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
           <motion.div {...fadeIn} className="space-y-6">
             <p className="font-mono text-primary text-[0.65rem] tracking-[0.22em] uppercase">// What is AI Co-Founder</p>
@@ -212,8 +211,7 @@ export function LandingPage({ onStart }: LandingPageProps) {
                 { title: "Our Mission", content: "Make startup building accessible to everyone, regardless of background, by providing intelligent tools that simulate a full executive team." },
                 { title: "Our Vision", content: "Become the operating system for future entrepreneurs — where building a startup is no longer limited by knowledge or technical skills." }
               ].map((item, i) => (
-                <div key={i} className="p-7 bg-white/[0.03] backdrop-blur-md border border-white/[0.06] relative overflow-hidden group hover:border-white/10 transition-colors">
-                  <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-secondary to-primary" />
+                <div key={i} className="p-7 cinematic-card border-t-2 border-t-secondary/50">
                   <h4 className="font-mono text-secondary text-[0.75rem] tracking-[0.18em] uppercase mb-3 font-bold">{item.title}</h4>
                   <p className="font-mono text-[0.76rem] leading-[1.75] text-[#7166a0]">{item.content}</p>
                 </div>
@@ -231,7 +229,7 @@ export function LandingPage({ onStart }: LandingPageProps) {
       </section>
 
       {/* Capabilities */}
-      <section id="capabilities" className="relative py-24 px-6 lg:px-14 z-10 bg-[#09071a]/75 backdrop-blur-md">
+      <section id="capabilities" className="relative py-24 px-6 lg:px-14 z-10 bg-[#09071a]/40 backdrop-blur-sm">
         <div className="max-w-[1200px] mx-auto">
           <motion.p {...fadeIn} className="font-mono text-primary text-[0.65rem] tracking-[0.22em] uppercase">// Platform Capabilities</motion.p>
           <motion.h2 {...fadeIn} className="text-[clamp(2rem,4vw,3.6rem)] font-headline font-extrabold leading-[1.05] uppercase mt-4">
@@ -247,14 +245,13 @@ export function LandingPage({ onStart }: LandingPageProps) {
               { title: "Startup Simulations", desc: "Test your startup with investor scenarios, user feedback, and market reactions.", icon: <PlayCircle /> },
               { title: "Health Score", desc: "Track how strong your startup foundation is across 4 key dimensions in real-time.", icon: <ShieldCheck /> }
             ].map((f, i) => (
-              <motion.div key={i} {...fadeIn} className="bg-white/[0.03] backdrop-blur-md p-11 relative group hover:bg-primary/[0.03] transition-all overflow-hidden border border-transparent hover:border-primary/20">
+              <motion.div key={i} {...fadeIn} className="p-11 cinematic-card cinematic-card-hover-primary hover-line-effect cursor-default">
                 <div className="w-10 h-10 border border-white/[0.06] flex items-center justify-center text-primary mb-6">
                   {React.cloneElement(f.icon as React.ReactElement, { className: "w-5 h-5" })}
                 </div>
                 <div className="font-mono text-primary text-[0.58rem] tracking-[0.2em] mb-3">0{i+1}</div>
                 <h3 className="text-[1.1rem] font-bold tracking-tight mb-3 text-white">{f.title}</h3>
                 <p className="font-mono text-[#7166a0] text-[0.75rem] leading-[1.8]">{f.desc}</p>
-                <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-primary to-transparent scale-x-0 group-hover:scale-x-100 transition-transform duration-500" />
               </motion.div>
             ))}
           </div>
@@ -262,7 +259,7 @@ export function LandingPage({ onStart }: LandingPageProps) {
       </section>
 
       {/* Path Section */}
-      <section id="path" className="relative py-24 px-6 lg:px-14 z-10 bg-[#060411]/70 backdrop-blur-md">
+      <section id="path" className="relative py-24 px-6 lg:px-14 z-10 bg-[#060411]/40 backdrop-blur-sm">
         <div className="max-w-[1200px] mx-auto">
           <motion.p {...fadeIn} className="font-mono text-primary text-[0.65rem] tracking-[0.22em] uppercase">// The Path to Exit</motion.p>
           <motion.h2 {...fadeIn} className="text-[clamp(2rem,4vw,3.6rem)] font-headline font-extrabold leading-[1.05] uppercase mt-4">
@@ -279,9 +276,7 @@ export function LandingPage({ onStart }: LandingPageProps) {
                 { step: "04", title: "Build and Execute", desc: "Use the generated assets to build your MVP and growth loops. Code, copy, and strategy in one place." },
                 { step: "05", title: "Continue and Scale", desc: "Refine your health score and keep building toward exit with proactive AI guidance." }
               ].map((s, i) => (
-                <motion.div key={i} {...fadeIn} className={cn(
-                  "relative py-9 border-b border-white/[0.06] last:border-0 group",
-                )}>
+                <motion.div key={i} {...fadeIn} className="relative py-9 border-b border-white/[0.06] last:border-0 group">
                   <div className="absolute left-[-41px] w-14 h-14 rounded-full border border-white/[0.06] bg-[#060411] flex items-center justify-center text-primary font-mono text-[0.68rem] tracking-[0.1em] font-medium z-10 group-hover:border-primary/30 transition-colors">
                     {s.step}
                   </div>
@@ -297,7 +292,7 @@ export function LandingPage({ onStart }: LandingPageProps) {
       </section>
 
       {/* Pricing Section */}
-      <section id="pricing" className="relative py-24 px-6 lg:px-14 z-10 bg-[#09071a]/75 backdrop-blur-md">
+      <section id="pricing" className="relative py-24 px-6 lg:px-14 z-10 bg-[#09071a]/40 backdrop-blur-sm">
         <div className="max-w-[1200px] mx-auto">
           <motion.p {...fadeIn} className="font-mono text-primary text-[0.65rem] tracking-[0.22em] uppercase">// Venture Access</motion.p>
           <motion.h2 {...fadeIn} className="text-[clamp(2rem,4vw,3.6rem)] font-headline font-extrabold leading-[1.05] uppercase mt-4">
@@ -305,7 +300,7 @@ export function LandingPage({ onStart }: LandingPageProps) {
           </motion.h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-0.5 bg-white/[0.06] mt-16 max-w-[800px] mx-auto border border-white/[0.06]">
-            <motion.div {...fadeIn} className="bg-white/[0.03] backdrop-blur-md p-12 relative flex flex-col">
+            <motion.div {...fadeIn} className="p-12 relative flex flex-col cinematic-card">
               <div className="font-mono text-[#7166a0] text-[0.65rem] tracking-[0.18em] uppercase mb-1">Tier 01</div>
               <h3 className="text-[1.4rem] font-extrabold mb-1">Free Mode</h3>
               <p className="font-mono text-[0.72rem] text-[#7166a0] mb-8 leading-relaxed">Venture Experiment — perfect for exploring ideas.</p>
@@ -323,7 +318,7 @@ export function LandingPage({ onStart }: LandingPageProps) {
               </Button>
             </motion.div>
 
-            <motion.div {...fadeIn} className="bg-primary/[0.04] backdrop-blur-md p-12 relative flex flex-col border border-primary/30">
+            <motion.div {...fadeIn} className="p-12 relative flex flex-col cinematic-card bg-primary/[0.04] border-primary/30">
               <div className="absolute top-[-1px] left-1/2 -translate-x-1/2 bg-primary text-black font-mono text-[0.55rem] tracking-[0.2em] font-bold px-3.5 py-1">RECOMMENDED</div>
               <div className="font-mono text-[#7166a0] text-[0.65rem] tracking-[0.18em] uppercase mb-1">Tier 02</div>
               <h3 className="text-[1.4rem] font-extrabold mb-1">Founder Cloud</h3>
@@ -346,7 +341,7 @@ export function LandingPage({ onStart }: LandingPageProps) {
       </section>
 
       {/* Agentic AI Section */}
-      <section id="agentic" className="relative py-24 px-6 lg:px-14 z-10 bg-[#09071a]/75 backdrop-blur-md">
+      <section id="agentic" className="relative py-24 px-6 lg:px-14 z-10 bg-[#09071a]/40 backdrop-blur-sm">
         <div className="max-w-[1200px] mx-auto">
           <motion.p {...fadeIn} className="font-mono text-primary text-[0.65rem] tracking-[0.22em] uppercase">// How Our Agentic AI Works</motion.p>
           <motion.h2 {...fadeIn} className="text-[clamp(2rem,4vw,3.6rem)] font-headline font-extrabold leading-[1.05] uppercase mt-4">
@@ -366,7 +361,7 @@ export function LandingPage({ onStart }: LandingPageProps) {
                 { role: "Chief Financial Officer", active: true },
                 { role: "Growth Hacker", active: true }
               ].map((agent, i) => (
-                <motion.div key={i} {...fadeIn} className="p-6 border border-white/[0.06] bg-white/[0.03] backdrop-blur-md hover:border-secondary/30 transition-all group">
+                <motion.div key={i} {...fadeIn} className="p-6 cinematic-card cinematic-card-hover-secondary group">
                   <div className="font-mono text-secondary text-[0.58rem] tracking-[0.2em] uppercase mb-1.5 font-bold">Role</div>
                   <div className="text-[0.95rem] font-bold text-white mb-2.5">{agent.role}</div>
                   <div className="flex items-center gap-1.5">
@@ -381,7 +376,7 @@ export function LandingPage({ onStart }: LandingPageProps) {
       </section>
 
       {/* Founders Section */}
-      <section id="founders" className="relative py-24 px-6 lg:px-14 z-10 bg-[#060411]/70 backdrop-blur-md border-t border-white/[0.06]">
+      <section id="founders" className="relative py-24 px-6 lg:px-14 z-10 bg-[#060411]/40 backdrop-blur-sm border-t border-white/[0.06]">
         <div className="max-w-[1200px] mx-auto text-center">
           <motion.p {...fadeIn} className="font-mono text-primary text-[0.65rem] tracking-[0.22em] uppercase mb-4">// The Architects</motion.p>
           <motion.h2 {...fadeIn} className="text-[3rem] font-headline font-extrabold uppercase mb-16">Meet the Founders</motion.h2>
@@ -401,8 +396,7 @@ export function LandingPage({ onStart }: LandingPageProps) {
                 desc: "Navaneeth architects the technical backbone, developing the multi-agent coordination layer and scalable cloud infrastructure." 
               }
             ].map((f, i) => (
-              <motion.div key={i} {...fadeIn} className="group relative bg-white/[0.03] backdrop-blur-md border border-white/[0.06] p-8 text-left hover:border-primary/20 transition-all">
-                <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-primary/30 to-transparent scale-x-0 group-hover:scale-x-100 transition-transform duration-700" />
+              <motion.div key={i} {...fadeIn} className="p-8 text-left cinematic-card cinematic-card-hover-primary hover-line-effect">
                 <div className="relative aspect-square w-24 mb-6 grayscale group-hover:grayscale-0 transition-all duration-500 overflow-hidden border border-white/10">
                   <Image 
                     src={PlaceHolderImages.find(img => img.id === f.image)?.imageUrl || ''} 
@@ -424,14 +418,14 @@ export function LandingPage({ onStart }: LandingPageProps) {
       </section>
 
       {/* Community Section */}
-      <section id="community" className="relative py-24 px-6 lg:px-14 z-10 bg-[#060411]/70 backdrop-blur-md">
+      <section id="community" className="relative py-24 px-6 lg:px-14 z-10 bg-[#060411]/40 backdrop-blur-sm">
         <div className="max-w-[1200px] mx-auto text-center">
           <motion.p {...fadeIn} className="font-mono text-primary text-[0.65rem] tracking-[0.22em] uppercase">// Founder Community</motion.p>
           <motion.h2 {...fadeIn} className="text-[clamp(2rem,4vw,3.6rem)] font-headline font-extrabold leading-[1.05] uppercase mt-4 mb-12">
             Join a Growing Network<br />of <span className="text-accent italic">Builders.</span>
           </motion.h2>
           
-          <motion.div {...fadeIn} className="community-box bg-white/[0.03] backdrop-blur-md p-20 border border-white/[0.06] relative overflow-hidden group">
+          <motion.div {...fadeIn} className="p-20 relative overflow-hidden cinematic-card text-center group">
             <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-secondary via-primary to-accent" />
             <Badge variant="outline" className="text-secondary border-secondary/25 text-[0.62rem] tracking-[0.2em] mb-6">Coming Soon</Badge>
             <h3 className="text-3xl font-extrabold mb-4 tracking-tight">The Founder Hub</h3>
@@ -443,7 +437,7 @@ export function LandingPage({ onStart }: LandingPageProps) {
       </section>
 
       {/* FAQ Section */}
-      <section id="faq" className="relative py-24 px-6 lg:px-14 z-10 bg-[#09071a]/75 backdrop-blur-md">
+      <section id="faq" className="relative py-24 px-6 lg:px-14 z-10 bg-[#09071a]/40 backdrop-blur-sm">
         <div className="max-w-[800px] mx-auto">
           <motion.p {...fadeIn} className="font-mono text-primary text-[0.65rem] tracking-[0.22em] uppercase">// FAQ</motion.p>
           <motion.h2 {...fadeIn} className="text-[3rem] font-headline font-extrabold uppercase mt-4 mb-12">Frequently Asked<br /><span className="text-accent italic">Questions.</span></motion.h2>
@@ -476,7 +470,7 @@ export function LandingPage({ onStart }: LandingPageProps) {
       </section>
 
       {/* Contact Section */}
-      <section id="contact" className="relative py-24 px-6 lg:px-14 z-10 bg-[#060411]/70 backdrop-blur-md">
+      <section id="contact" className="relative py-24 px-6 lg:px-14 z-10 bg-[#060411]/40 backdrop-blur-sm">
         <div className="max-w-[640px] mx-auto">
           <motion.p {...fadeIn} className="font-mono text-primary text-[0.65rem] tracking-[0.22em] uppercase">// Contact & Feedback</motion.p>
           <motion.h2 {...fadeIn} className="text-[3rem] font-headline font-extrabold uppercase mt-4 mb-12">We'd Love to<br /><span className="text-accent italic">Hear From You.</span></motion.h2>
