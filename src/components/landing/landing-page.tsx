@@ -221,13 +221,10 @@ export function LandingPage({ onStart }: LandingPageProps) {
             </div>
           </motion.div>
           <motion.div {...fadeIn} className="flex justify-center">
-            <div className="w-[340px] h-[340px] rounded-full border border-white/[0.06] relative flex items-center justify-center">
-              <div className="absolute inset-[-1px] rounded-full bg-[conic-gradient(from_180deg,transparent_60%,rgba(255,69,0,0.2),rgba(204,0,255,0.2),transparent)] animate-[spin_8s_linear_infinite]" />
-              <div className="text-center">
-                <div className="font-mono text-[#7166a0] text-[0.65rem] tracking-[0.18em] uppercase">Ventures Launched</div>
-                <div className="text-white text-[3.5rem] font-extrabold leading-none my-2">2.4<span className="text-primary">K+</span></div>
-                <div className="font-mono text-[#7166a0] text-[0.65rem] tracking-[0.18em] uppercase">and counting</div>
-              </div>
+            <div className="text-center p-12 glass-card rounded-full aspect-square flex flex-col justify-center items-center border-dashed border-white/10">
+              <div className="font-mono text-[#7166a0] text-[0.65rem] tracking-[0.18em] uppercase">Ventures Launched</div>
+              <div className="text-white text-[3.5rem] font-extrabold leading-none my-2">2.4<span className="text-primary">K+</span></div>
+              <div className="font-mono text-[#7166a0] text-[0.65rem] tracking-[0.18em] uppercase">and counting</div>
             </div>
           </motion.div>
         </div>
