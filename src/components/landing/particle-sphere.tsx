@@ -1,3 +1,4 @@
+
 "use client"
 
 import React, { useEffect, useRef } from 'react';
@@ -23,7 +24,7 @@ export function ParticleSphere() {
     const pos = new Float32Array(COUNT * 3);
     const col = new Float32Array(COUNT * 3);
     const sz = new Float32Array(COUNT);
-    const phi = (1 + Math.sqrt(5)) / 2;
+    const phi = (1 + Math.sqrt(5)) / 2; // Golden ratio for Fibonacci sphere
 
     const R = 2.3;
     for (let i = 0; i < COUNT; i++) {
@@ -37,7 +38,7 @@ export function ParticleSphere() {
       const nx = (pos[i * 3] / R + 1) / 2;
       const ny = (pos[i * 3 + 1] / R + 1) / 2;
       
-      // Match reference animation: magenta-purple left, orange-red center, gold right
+      // Color gradient: magenta → red-orange → gold
       const t = nx;
       const r = t < 0.5 ? (0.5 + t * 1.0) : 1.0;
       const g = t < 0.5 ? (t * 0.3 * ny) : (t - 0.5) * 1.3 * ny;
@@ -54,15 +55,16 @@ export function ParticleSphere() {
     geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
     geo.setAttribute('size', new THREE.BufferAttribute(sz, 1));
 
+    // Glow Texture
     const tc = document.createElement('canvas');
     tc.width = tc.height = 64;
     const ctx = tc.getContext('2d');
     if (ctx) {
       const g = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
-      g.addColorStop(0, 'rgba(255,255,255,1)');
-      g.addColorStop(0.25, 'rgba(255,230,180,0.85)');
-      g.addColorStop(0.55, 'rgba(255,100,50,0.25)');
-      g.addColorStop(1, 'rgba(0,0,0,0)');
+      g.addColorStop(0, 'rgba(255,255,255,1)');       // bright white center
+      g.addColorStop(0.25, 'rgba(255,230,180,0.85)'); // warm halo
+      g.addColorStop(0.55, 'rgba(255,100,50,0.25)');  // orange fade
+      g.addColorStop(1, 'rgba(0,0,0,0)');             // transparent edge
       ctx.fillStyle = g;
       ctx.fillRect(0, 0, 64, 64);
     }
@@ -84,8 +86,9 @@ export function ParticleSphere() {
 
     let tx = 0, ty = 0, cx = 0, cy = 0;
     const onMouseMove = (e: MouseEvent) => {
-      tx = ((e.clientY / window.innerHeight) - 0.5) * 0.7;
-      ty = ((e.clientX / window.innerWidth) - 0.5) * 0.7;
+      // Capture mouse position, normalized to -0.5 → +0.5
+      tx = ((e.clientY / window.innerHeight) - 0.5) * 0.7; // target X tilt
+      ty = ((e.clientX / window.innerWidth) - 0.5) * 0.7;  // target Y tilt
     };
     window.addEventListener('mousemove', onMouseMove);
 
@@ -97,20 +100,24 @@ export function ParticleSphere() {
     window.addEventListener('resize', onResize);
 
     const clock = new THREE.Clock();
-    let bt = 0;
+    let bt = 0; // breath timer
     let frameId: number;
 
     const loop = () => {
       frameId = requestAnimationFrame(loop);
       const t = clock.getElapsedTime();
-      bt += 0.006;
-      cx += (tx - cx) * 0.035;
+      
+      // Smooth lerp toward target (0.035 factor)
+      cx += (tx - cx) * 0.035; 
       cy += (ty - cy) * 0.035;
       
-      pts.rotation.y = t * 0.16 + cy;
-      pts.rotation.x = cx * 0.4 + Math.sin(t * 0.1) * 0.05;
+      // Continuous Rotation + Mouse Tilt
+      pts.rotation.y = t * 0.16 + cy; // spin on Y axis over time + mouse Y
+      pts.rotation.x = cx * 0.4 + Math.sin(t * 0.1) * 0.05; // tilt + organic wobble
       
-      const br = 1 + Math.sin(bt) * 0.015;
+      // Breathing Pulse
+      bt += 0.006; 
+      const br = 1 + Math.sin(bt) * 0.015; // oscillates ±1.5%
       pts.scale.setScalar(br);
       
       renderer.render(scene, camera);
