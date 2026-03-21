@@ -414,6 +414,26 @@ export function LandingPage({ onStart }: LandingPageProps) {
         </div>
       </section>
 
+      {/* Agentic AI Section */}
+      <section className="relative py-16 sm:py-24 px-4 sm:px-6 z-10 border-t border-white/5">
+        <div className="max-w-4xl mx-auto space-y-8 sm:space-y-10">
+          <div className="text-center space-y-4">
+            <h2 className="text-3xl sm:text-4xl font-headline font-bold text-white">How Our Agentic AI Works</h2>
+          </div>
+          <div className="space-y-6 text-center max-w-3xl mx-auto">
+            <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
+              AI Founder is powered by an agentic AI system where multiple specialized agents collaborate to execute tasks like a real startup team. Each agent is responsible for a specific function—such as product planning, technical development, marketing strategy, or financial analysis.
+            </p>
+            <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
+              Instead of working independently, these agents are connected through a shared intelligence layer. When a user provides an idea, the system breaks it down into structured tasks and assigns them to the appropriate agents. Each agent processes its part, passes the output forward, and builds on previous decisions. This creates a continuous workflow where ideas evolve into structured plans, and plans turn into execution.
+            </p>
+            <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
+              The system also maintains a persistent memory, ensuring that all agents remain aligned with the startup’s context, goals, and progress. Rather than reacting to single inputs, the system actively coordinates, updates, and suggests next steps—making it a working system, not just a response-based tool.
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* Footer */}
       <footer className="relative z-10 py-12 sm:py-16 px-4 sm:px-6 border-t border-white/5 bg-[#0A0C10]">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-10 sm:gap-12">
