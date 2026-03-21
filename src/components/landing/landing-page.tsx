@@ -104,19 +104,29 @@ export function LandingPage({ onStart }: LandingPageProps) {
   const renderHome = () => (
     <>
       {/* Hero Section */}
-      <section className="relative pt-32 pb-20 px-6">
+      <section className="relative pt-24 pb-20 px-6">
         <div className="max-w-5xl mx-auto text-center space-y-12">
-          <div className="relative inline-block animate-float">
-            <div className="absolute inset-0 bg-accent/20 rounded-full blur-3xl animate-pulse-glow" />
-            <div className="relative w-32 h-32 md:w-40 md:h-40 rounded-[2rem] bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-2xl shadow-accent/20 border border-white/10">
-              <AIFounderLogo className="w-16 h-16 md:w-20 md:h-20 text-white" />
+          {/* Visual Identity Block from Image */}
+          <div className="relative flex flex-col items-center justify-center space-y-12 mb-8">
+            <div className="relative group cursor-default">
+              {/* Glowing Background Effect */}
+              <div className="absolute inset-0 bg-blue-500/20 rounded-[2.5rem] blur-2xl group-hover:bg-blue-400/30 transition-all duration-700 animate-pulse-glow" />
+              
+              {/* The Blue Box from Image */}
+              <div className="relative w-48 h-48 md:w-56 md:h-56 rounded-[2.5rem] bg-gradient-to-br from-[#2DBEDE] via-[#1A55B3] to-[#1A55B3] flex items-center justify-center shadow-2xl border border-white/10 transition-transform duration-500 hover:scale-105">
+                <AIFounderLogo className="w-20 h-20 md:w-24 md:h-24 text-white drop-shadow-lg" />
+              </div>
+            </div>
+
+            {/* Tagline Badge from Image */}
+            <div className="inline-flex items-center justify-center px-8 py-3 rounded-full border border-teal-500/30 bg-teal-500/5 backdrop-blur-sm animate-in fade-in slide-in-from-bottom-4 duration-1000">
+              <span className="text-teal-400 text-sm font-bold uppercase tracking-[0.25em]">
+                An AI Partner for Entrepreneurs
+              </span>
             </div>
           </div>
 
           <div className="space-y-6 animate-in fade-in slide-in-from-bottom-8 duration-700">
-            <Badge variant="outline" className="bg-accent/10 text-accent border-accent/20 px-4 py-1.5 font-bold uppercase tracking-[0.2em] text-[10px]">
-              An AI Partner for Entrepreneurs
-            </Badge>
             <h1 className="text-6xl md:text-8xl font-headline font-bold tracking-tight">
               Build Your Startup <br />
               <span className="gradient-text">From Idea to Exit</span>
@@ -523,7 +533,7 @@ export function LandingPage({ onStart }: LandingPageProps) {
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center">
               <AIFounderLogo className="w-6 h-6 text-white" />
             </div>
-            <span className="font-headline font-bold text-xl tracking-tight uppercase">AI Founder</span>
+            <span className="font-headline font-bold text-xl tracking-tight uppercase text-white">AI Founder</span>
           </div>
           
           <div className="hidden md:flex items-center gap-8">
@@ -580,7 +590,7 @@ export function LandingPage({ onStart }: LandingPageProps) {
               <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
                 <AIFounderLogo className="w-4 h-4 text-white" />
               </div>
-              <span className="font-headline font-bold text-lg tracking-tight uppercase">AI Founder</span>
+              <span className="font-headline font-bold text-lg tracking-tight uppercase text-white">AI Founder</span>
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed">
               Empowering innovators with the intelligence of a full executive team.
